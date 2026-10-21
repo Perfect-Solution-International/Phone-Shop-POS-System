@@ -1,0 +1,9 @@
+# Shared-database tenancy and module boundaries
+
+The planned system is one Laravel application backed by one MySQL database. Each phone shop is a tenant. Platform data, such as shops, plans, subscriptions, billing records, settings, and support administration, belongs to the SaaS platform. Shop business data, such as products, stock, sales, repairs, warranties, customers, staff, and branches, will carry a shop identifier and must only be accessed within the authorized shop context.
+
+The directory boundaries distinguish Super Admin, Shop Management, and Customer & Service Portal HTTP entry points. Shared operations can live in focused `app/Services` directories when real workflows require them. `app/Models/Platform` and `app/Models/Shop` reserve model namespaces; they do not currently contain tenant-aware models. Blade view folders reserve the three presentation areas. The existing React/Inertia starter is retained until a separate frontend transition is approved and implemented.
+
+Tenant context must be established from a trusted server-side source associated with the authenticated user or an authorized domain. A client-supplied shop ID must never grant access. Future tenant-owned queries, route model binding, writes, queued work, and file access must enforce the resolved shop boundary; platform operations require their own authorization. Cross-tenant requests should fail even when a record ID is known. The `shop_id` value in `config/tenancy.php` is a naming placeholder, not an active scope or security control.
+
+The route files are registered under `/super-admin`, `/shop`, `/customer-portal`, and `/api`. They intentionally define no endpoints. Before adding endpoints, implement and test the relevant authentication, authorization, tenant resolution, and ownership rules. No business database schema, subscription processor, payment integration, or customer portal workflow exists yet.
