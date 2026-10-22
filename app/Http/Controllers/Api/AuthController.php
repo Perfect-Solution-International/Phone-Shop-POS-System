@@ -24,6 +24,12 @@ class AuthController extends Controller
 
     public function showLogin(Request $request): View|RedirectResponse
     {
+        if ($request->has('logout') || $request->has('switch')) {
+            Auth::guard('web')->logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+        }
+
         return $request->user() ? redirect($this->destination($request->user())) : view('auth.login', [
             'applicationName' => config('app.name') === 'Laravel' ? 'Phone Shop POS SaaS' : config('app.name'),
             'loginPreviewUrl' => $this->loginPreviewEnabled() ? route('login.preview', [], false) : '',
@@ -129,7 +135,7 @@ class AuthController extends Controller
             return route('superadmin.dashboard');
         }
 
-        if ($user->hasRole('Customer')) {
+        if ($user->hasRole('Customer') || $user->can('customer.portal')) {
             return route('customer.portal');
         }
 
@@ -138,6 +144,10 @@ class AuthController extends Controller
         }
 
         if ($user->shop_id !== null) {
+            if ($user->hasRole(['Shop Owner', 'Shop Manager', 'Cashier', 'Technician', 'Stock Manager'])) {
+                return route('shop.dashboard');
+            }
+
             foreach (['hrm.view' => '', 'payroll.view' => 'hrm/payroll', 'settings.manage' => 'settings'] as $permission => $path) {
                 if ($user->can($permission)) {
                     return route('app', ['path' => $path]);

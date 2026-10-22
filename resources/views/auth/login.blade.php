@@ -622,6 +622,74 @@
                 font-size: 0.875rem !important;
             }
         }
+
+        /* 1-Click Demo Account Switcher */
+        .role-switcher-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: var(--radius-md);
+            padding: 0.85rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .role-switcher-title {
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #4f46e5;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+
+        .role-btn-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.4rem;
+        }
+
+        .role-pill-btn {
+            background: #ffffff;
+            border: 1.5px solid #cbd5e1;
+            border-radius: 8px;
+            padding: 0.45rem 0.25rem;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .role-pill-btn:hover {
+            border-color: #4f46e5;
+            background: #eef2ff;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.1);
+        }
+
+        .role-pill-btn.active {
+            border-color: #4f46e5;
+            background: #eef2ff;
+            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.25);
+        }
+
+        .role-pill-title {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #0f172a;
+            line-height: 1.2;
+        }
+
+        .role-pill-route {
+            font-size: 0.65rem;
+            color: #64748b;
+            margin-top: 0.15rem;
+            font-family: monospace;
+        }
     </style>
 </head>
 <body data-application-name="{{ $applicationName }}" data-login-preview-url="{{ $loginPreviewUrl }}" data-login-url="{{ route('login', [], false) }}" data-login-store-url="{{ route('login.store', [], false) }}" data-csrf-url="{{ route('sanctum.csrf-cookie', [], false) }}">
@@ -662,6 +730,28 @@
                         </div>
                     </div>
                 @endif
+
+                <!-- 1-Click Role Switcher Demo Buttons -->
+                <div class="role-switcher-card">
+                    <div class="role-switcher-title">
+                        <span>Select Demo Role &amp; Workspace</span>
+                        <span style="font-size: 0.68rem; color: #94a3b8; font-weight: normal;">1-Click Autofill</span>
+                    </div>
+                    <div class="role-btn-grid">
+                        <button type="button" class="role-pill-btn" onclick="selectRole('superadmin@pos.lk', 'password', this)">
+                            <span class="role-pill-title">🏢 Super Admin</span>
+                            <span class="role-pill-route">/super-admin</span>
+                        </button>
+                        <button type="button" class="role-pill-btn" onclick="selectRole('t2@gmail.com', 'password', this)">
+                            <span class="role-pill-title">📱 Shop Owner</span>
+                            <span class="role-pill-route">/shop (POS)</span>
+                        </button>
+                        <button type="button" class="role-pill-btn" onclick="selectRole('customer@gmail.com', 'password', this)">
+                            <span class="role-pill-title">👤 Customer</span>
+                            <span class="role-pill-route">/portal</span>
+                        </button>
+                    </div>
+                </div>
 
                 <form id="fallbackLoginForm" method="POST" action="{{ route('login.store') }}" novalidate>
                     @csrf
@@ -780,6 +870,23 @@
             }
         }
 
+        function selectRole(email, password, btn) {
+            document.querySelectorAll('.role-pill-btn').forEach(function(b) {
+                b.classList.remove('active');
+            });
+            if (btn) btn.classList.add('active');
+
+            const emailInput = document.getElementById('email');
+            const passwordInput = document.getElementById('password');
+
+            if (emailInput) {
+                emailInput.value = email;
+            }
+            if (passwordInput) {
+                passwordInput.value = password;
+            }
+        }
+
         const loginForm = document.getElementById('fallbackLoginForm');
         const loginBtn = document.getElementById('loginSubmitBtn');
         const loginBtnText = document.getElementById('loginSubmitText');
@@ -796,5 +903,4 @@
         }
     </script>
 </body>
-</html>
 </html>

@@ -92,3 +92,52 @@ test('login redirection prevents open redirects to external domains', function (
     expect($targetUrl)->toContain('/app');
 });
 
+test('super admin logging in redirects directly to superadmin dashboard', function (): void {
+    $superadmin = User::factory()->create(['shop_id' => null, 'password' => bcrypt('password')]);
+    $superadmin->assignRole('Super Administrator');
+
+    $response = $this->post('/login', [
+        'email' => $superadmin->email,
+        'password' => 'password',
+    ]);
+
+    $response->assertRedirect(route('superadmin.dashboard'));
+});
+
+test('shop owner logging in redirects directly to phone shop management panel', function (): void {
+    $shop = Shop::factory()->create();
+    $owner = User::factory()->create(['shop_id' => $shop->id, 'password' => bcrypt('password')]);
+    $owner->assignRole('Shop Owner');
+
+    $response = $this->post('/login', [
+        'email' => $owner->email,
+        'password' => 'password',
+    ]);
+
+    $response->assertRedirect(route('shop.dashboard'));
+});
+
+test('customer logging in redirects directly to customer care portal', function (): void {
+    $shop = Shop::factory()->create();
+    $customer = User::factory()->create(['shop_id' => $shop->id, 'password' => bcrypt('password')]);
+    $customer->assignRole('Customer');
+
+    $response = $this->post('/login', [
+        'email' => $customer->email,
+        'password' => 'password',
+    ]);
+
+    $response->assertRedirect(route('customer.portal'));
+});
+
+test('get request to logout terminates session and redirects to login with success flash', function (): void {
+    $user = User::factory()->create();
+    $this->actingAs($user, 'web');
+
+    $response = $this->get('/logout');
+
+    $response->assertRedirect(route('login'));
+    $response->assertSessionHas('status', 'You have been successfully signed out.');
+    $this->assertGuest('web');
+});
+

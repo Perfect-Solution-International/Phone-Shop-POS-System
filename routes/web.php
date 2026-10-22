@@ -14,7 +14,7 @@ Route::get('/track-repair', [\App\Http\Controllers\PublicRepairTrackingControlle
 // Authentication (Login / Logout)
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'browserLogin'])->middleware('throttle:login')->name('login.store');
-Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->name('logout');
+Route::match(['get', 'post'], '/logout', [AuthController::class, 'logout'])->name('logout');
 
 // Tenant Onboarding / Registration
 Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');

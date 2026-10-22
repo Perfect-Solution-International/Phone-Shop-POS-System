@@ -78,8 +78,8 @@ class ShopOnboardingService
             $user->shop()->associate($shop);
             $user->save();
 
-            // 5. Grant shop administrator privileges
-            $user->assignRole('Administrator');
+            // 5. Grant shop administrator & owner privileges
+            $user->assignRole(['Shop Owner', 'Administrator']);
 
             // 5. Fire Registered event for email verification notification
             event(new Registered($user));

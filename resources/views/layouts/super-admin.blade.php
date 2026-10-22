@@ -377,10 +377,18 @@
                 <span>All Payments</span>
             </a>
 
-            <div class="saas-nav-header">Navigation</div>
+            <div class="saas-nav-header">Workspaces</div>
+            <a href="{{ route('shop.dashboard') }}" class="saas-nav-link" target="_blank">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
+                <span>Phone Shop Management</span>
+            </a>
+            <a href="{{ route('customer.portal') }}" class="saas-nav-link" target="_blank">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                <span>Customer Care Portal</span>
+            </a>
             <a href="{{ route('app') }}" class="saas-nav-link" target="_blank">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 3 21 3 21 9"></polyline><polyline points="9 21 3 21 3 15"></polyline><line x1="21" y1="3" x2="14" y2="10"></line><line x1="3" y1="21" x2="10" y2="14"></line></svg>
-                <span>Open Shop App</span>
+                <span>Staff HRM Workspace</span>
             </a>
         </nav>
     </aside>

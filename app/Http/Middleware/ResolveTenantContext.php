@@ -22,6 +22,14 @@ class ResolveTenantContext
     {
         $user = $request->user();
 
+        // Allow Super Administrator to inspect shop panels
+        if ($user && ! $user->shop_id && ($user->hasRole('Super Administrator') || $user->can('superadmin.view'))) {
+            $defaultShop = Shop::first();
+            if ($defaultShop) {
+                $user->shop_id = $defaultShop->id;
+            }
+        }
+
         // 1. Must be authenticated and assigned to a tenant
         abort_unless($user && $user->shop_id, 403, 'A shop assignment is required.');
 
