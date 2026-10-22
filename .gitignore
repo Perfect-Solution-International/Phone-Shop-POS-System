@@ -1,13 +1,11 @@
 /.phpunit.cache
-/bootstrap/ssr
 /node_modules
 /public/build
-/public/fonts-manifest.dev.json
+/public/js
+/public/css
+/public/mix-manifest.json
 /public/hot
 /public/storage
-/resources/js/actions
-/resources/js/routes
-/resources/js/wayfinder
 /storage/*.key
 /storage/pail
 /vendor

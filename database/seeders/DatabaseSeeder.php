@@ -2,24 +2,23 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
+use Spatie\Permission\PermissionRegistrar;
 
 class DatabaseSeeder extends Seeder
 {
-    use WithoutModelEvents;
-
-    /**
-     * Seed the application's database.
-     */
     public function run(): void
     {
-        // User::factory(10)->create();
+        app(PermissionRegistrar::class)->forgetCachedPermissions();
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
+        $permissions = ['hrm.view', 'hrm.manage', 'payroll.view', 'payroll.manage', 'reports.view', 'settings.manage'];
+        foreach ($permissions as $permission) {
+            Permission::findOrCreate($permission, 'web');
+        }
+        Role::findOrCreate('Administrator', 'web')->syncPermissions($permissions);
+        Role::findOrCreate('HR Manager', 'web')->syncPermissions(['hrm.view', 'hrm.manage', 'payroll.view', 'payroll.manage', 'reports.view']);
+        Role::findOrCreate('Viewer', 'web')->syncPermissions(['hrm.view']);
     }
 }

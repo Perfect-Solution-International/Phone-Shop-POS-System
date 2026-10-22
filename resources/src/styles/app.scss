@@ -1,0 +1,33 @@
+@import "~bootstrap/scss/bootstrap";
+@import "~bootstrap-vue/src/index.scss";
+@import "~vue-good-table/dist/vue-good-table.css";
+@import "~sweetalert2/dist/sweetalert2.min.css";
+
+body { background: #f4f6fa; color: #26334d; }
+[v-cloak] { display: none; }
+.workspace { display: flex; min-height: calc(100vh - 56px); }
+.workspace-sidebar { width: 220px; flex-shrink: 0; background: #23334d; padding: 1.25rem; }
+.workspace-sidebar .nav-link { color: #e1e7f0; border-radius: .35rem; margin-bottom: .25rem; }
+.workspace-sidebar .router-link-exact-active { background: #365174; color: #fff; }
+.workspace-content { min-width: 0; flex: 1; padding: 2rem; max-width: 1600px; }
+.workspace.compact .workspace-sidebar { width: 165px; padding: .75rem; }
+.login-shell { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 1.25rem; }
+.login-card { width: 100%; max-width: 430px; box-shadow: 0 12px 40px rgba(35,51,77,.08); }
+.card { border-color: #e5e9f0; border-radius: .6rem; }
+.dashboard-chart { width: 100%; height: 320px; }
+.table-toolbar { display: flex; gap: .75rem; flex-wrap: wrap; align-items: center; margin-bottom: 1rem; }
+.table-toolbar .search-input { max-width: 300px; }
+.vgt-responsive { overflow-x: auto; }
+.scanner-video { min-height: 240px; }
+.employee-badge svg, .employee-badge canvas { max-width: 100%; height: auto; }
+.sr-skip { position: absolute; left: -9999px; }
+.sr-skip:focus { left: 1rem; top: 1rem; z-index: 2000; background: #fff; padding: 1rem; }
+@media (max-width: 767px) {
+    .workspace { flex-direction: column; }
+    .workspace-sidebar, .workspace.compact .workspace-sidebar { width: 100%; padding: .75rem; }
+    .workspace-sidebar nav { flex-direction: row !important; flex-wrap: wrap; }
+    .workspace-sidebar .nav-link { padding: .45rem .6rem; font-size: .9rem; }
+    .workspace-content { padding: 1rem; }
+    .table-toolbar .search-input { max-width: none; }
+}
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; } }

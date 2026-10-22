@@ -1,54 +1,44 @@
 # Phone Shop POS SaaS
 
-Perfect Solution International (Pvt) Ltd. is preparing a single Laravel application for independent phone shops. The planned product has a SaaS Super Admin area, a Shop Management area, and a Customer & Service Portal. This repository currently contains the application foundation and directory boundaries only; business features and tenant isolation are not implemented.
+Laravel 10 REST API with a Vue.js 2.6 SPA, Vue Router 3.5, Vuex 3, Bootstrap 4 and BootstrapVue. MySQL or MariaDB stores application data through Eloquent migrations. Laravel Mix 6 compiles separate application and login bundles and lazy-loaded page chunks.
 
-## Stack and architecture
+## Installation
 
-- PHP 8.5 and Laravel 13, with Pest for tests.
-- MySQL is the intended shared database, selected through `DB_CONNECTION=mysql` in the environment.
-- Laravel Blade and Vite are the target for new application pages. The existing React/Inertia welcome starter, its Vite configuration, and its home route are retained so the current application continues to run. No new application pages have been added.
-- A modular monolith: one deployment and one database, with planned server-side shop identification and authorization. See [the architecture note](docs/architecture/shared-database-tenancy.md).
+1. Install PHP 8.1+ with PDO MySQL, GD, DOM, Fileinfo, Mbstring, XML and ZIP, Composer, Node.js 22 and MySQL/MariaDB. PHP 8.1 dependency compatibility is enforced in Composer's platform configuration.
+2. Run `composer install` and `npm ci`. Copy `.env.example` to `.env` only for a new installation, then run `php artisan key:generate`. Keep existing environment files, keys and databases.
+3. Configure your database and run `php artisan migrate --no-interaction`. Existing framework migration files retain their identities; new migrations add shop ownership, HRM records, permissions and tokens.
+4. Run `php artisan db:seed --no-interaction` to create permission definitions and roles. This does not create login accounts or sample HR records.
+5. Create an administrator with `php artisan app:create-administrator admin@example.com --name="Administrator" --shop="My shop"`. Enter a strong password at the hidden prompt. This creates a new shop; existing accounts are never promoted or reassigned.
+6. Run `npm run build` and `php artisan serve`. For asset development, run `npm run watch` separately. `npm run dev` compiles once.
+7. Start `php artisan queue:work --tries=3 --timeout=60` for queued payroll notifications. Schedule `php artisan schedule:run` every minute for expired-token cleanup. The default mailer writes locally to logs; configure SMTP before expecting delivery.
 
-## Folder organization
+## Application boundaries
 
-| Path | Planned responsibility |
-| --- | --- |
-| `app/Http/Controllers/{SuperAdmin,Shop,CustomerPortal,Api}` | Area-specific HTTP entry points |
-| `app/Http/Requests/` and `app/Http/Resources/` | Validation and response boundaries |
-| `app/Models/{Platform,Shop}` | Platform and shop-owned data models |
-| `app/Services/` | Shared domain services, grouped by business capability |
-| `app/Support/`, `app/Actions/`, `app/DTOs/`, `app/Contracts/` | Cross-cutting code when it becomes necessary |
-| `resources/views/{super-admin,shop,customer-portal}` | Future Blade views for each area |
-| `routes/{super-admin,shop,customer-portal,api}.php` | Empty route files registered with area prefixes |
-| `tests/{Feature,Unit}` | Future behavior and isolation tests |
-| `docs/` | Architecture and future project documentation |
+- `/` renders a Blade marketing page with server-rendered metadata.
+- `/login` mounts `resources/src/login.js`; `/app/` mounts `resources/src/main.js` and supports Vue Router history deep links.
+- REST endpoints live under `/api/v1`. Sanctum bearer tokens expire after eight hours. Axios attaches the current token; a 401 clears it and returns to login. Logout revokes the current token on the server.
+- Passwords use Laravel's hashing service (Bcrypt by default, Argon2 configurable). Form Requests enforce server validation; Vue forms use vee-validate 3 and BootstrapVue controls.
+- HRM supports employee create/edit/archive, attendance create/edit/delete, leave create/edit/delete and payroll create/edit/delete. Tables use server pagination, search and allow-listed sorting.
+- Payroll records store monthly salary components and compute the net amount on the server using integer minor units. These records do not calculate statutory taxes, process payments, or replace an approved payroll engine. A transition to ready queues an informational email.
+- Payroll reports use Dompdf and Laravel Excel. Full PDF reports are capped at 2,000 rows; spreadsheet reports read records in chunks. Client PDF exports cover the current table page.
+- Employee codes support Code 128 barcodes and QR badges. Attendance/leave/payroll employee selectors can scan QR codes; camera scanning needs HTTPS or localhost and browser permission.
+- Dashboard charts use vue-echarts/Apache ECharts. Settings store a shop timezone and currency. Timestamps persist in UTC, with workspace display formatting. Attendance form inputs use the device timezone.
+- The messaging directory is reserved; there is no messaging inbox implementation or migrated legacy data in this checkout.
 
-Empty directories contain `.gitkeep`. They do not represent implemented functionality. The existing `app/Models/User.php`, framework migrations, test setup, and frontend starter remain in place.
+## Ownership and permissions
 
-## Local installation
+The authenticated user's stored shop assignment establishes tenant context before route binding. Every HRM query, mutation, report and employee reference is limited to that shop. Client shop IDs are rejected. Queries outside a shop context fail closed. Existing users receive no automatic shop assignment or permissions; provision these deliberately before granting HRM access.
 
-1. Install PHP 8.5 with the extensions required by Laravel and the PDO MySQL extension, Composer, Node.js, and a compatible MySQL server.
-2. Run `composer install` and `npm install` from the project root.
-3. Copy `.env.example` to `.env` and run `php artisan key:generate` for a new local environment. Do not replace an existing `.env` or application key.
-4. Create a local MySQL database and set `DB_HOST`, `DB_PORT`, `DB_DATABASE`, `DB_USERNAME`, and `DB_PASSWORD` in `.env`. The example uses `phone_shop_pos_saas`; the database must be created separately. Keep `.env` out of Git.
-5. Run `php artisan serve` and `npm run dev` in separate terminals. The existing welcome page uses the retained React/Inertia starter and Vite assets.
+Roles seeded are Administrator, HR Manager and Viewer. Permissions are `hrm.view`, `hrm.manage`, `payroll.view`, `payroll.manage`, `reports.view`, and `settings.manage`. Financial reports require both payroll viewing and report permission. Payroll entry also needs HR viewing to select employees. Authorization is checked by Laravel regardless of Vue navigation visibility.
 
-`APP_ENV=local` and `APP_DEBUG=true` are for local development only. Set `APP_DEBUG=false` in production. `APP_TIMEZONE` defaults to UTC; shop-specific display timezones can be designed later. The standard Laravel session, cache, queue, mail, and exception configuration remains intact. The existing `composer run setup` command runs Laravel's default migrations; use it only when you intend to create those framework tables.
+The existing platform, shop and customer-portal directory boundaries remain reserved for the phone-shop product. They do not implement POS, subscriptions, payments or customer-service workflows. See [the architecture specification](docs/architecture/shared-database-tenancy.md).
 
-## Development and verification commands
+## Source and assets
 
-```text
-php artisan about
-php artisan route:list
-php artisan config:show database.default
-php artisan test --compact
-npm run build
-```
+Application controllers, requests, models and mailables live in `app/`; schema and seeders in `database/`; API routing in `routes/api.php`; Blade shells in `resources/views/`. The SPA lives in `resources/src/{views,components,store,api}`. `webpack.mix.js` builds `public/js/main.min.js`, `public/js/login.min.js`, `public/js/chunks/`, `public/css/app.min.css` and the versioned Mix manifest. Generated assets are ignored and must be built for deployment.
 
-No gateway, SMTP, SMS, or other external credentials are needed for this foundation. Do not add shop business routes before server-side authentication, shop identification, and tenant authorization are implemented and tested.
+## Verification and compatibility
 
-## Future implementation phases
+Run `npm test`, `npm run build` and `php artisan test --compact`. Tests use an isolated in-memory SQLite database; they do not migrate the configured development database. CI installs PHP 8.1 with the required extensions and builds the SPA before running tests.
 
-1. Define the platform and shop data model, migrations, tenant context, and cross-tenant protection tests.
-2. Add authentication, roles and permissions, plans, subscriptions, trials, and billing boundaries.
-3. Build shop operations and the customer portal in the existing Laravel application, with feature tests for each owned workflow.
+The requested framework and UI versions are legacy releases. The resolved Laravel 10 and Pest 2 dependency tree currently has Composer advisories affecting Laravel and PHPUnit; Pest 2 caps PHPUnit at 10.5.36. Review `composer audit` and `npm audit` before production use. Do not expose debug mode publicly. GD is required by spreadsheet dependencies even when basic report generation does not use image rendering.
