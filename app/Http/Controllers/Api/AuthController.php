@@ -22,17 +22,13 @@ class AuthController extends Controller
         return redirect($request->user() ? $this->destination($request->user()) : route('login'));
     }
 
-    public function showLogin(Request $request): View|RedirectResponse
+    public function showLogin(Request $request): View
     {
-        if ($request->has('logout') || $request->has('switch')) {
-            Auth::guard('web')->logout();
-            $request->session()->invalidate();
-            $request->session()->regenerateToken();
-        }
-
-        return $request->user() ? redirect($this->destination($request->user())) : view('auth.login', [
+        return view('auth.login', [
             'applicationName' => config('app.name') === 'Laravel' ? 'Phone Shop POS SaaS' : config('app.name'),
             'loginPreviewUrl' => $this->loginPreviewEnabled() ? route('login.preview', [], false) : '',
+            'currentUser' => $request->user(),
+            'currentDestination' => $request->user() ? $this->destination($request->user()) : null,
         ]);
     }
 

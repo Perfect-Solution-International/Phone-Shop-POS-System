@@ -731,6 +731,26 @@
                     </div>
                 @endif
 
+                @if (isset($currentUser) && $currentUser)
+                    <div style="background: #eef2ff; border: 1.5px solid #c7d2fe; border-radius: 12px; padding: 0.85rem 1rem; margin-bottom: 1.25rem; font-size: 0.8125rem;">
+                        <div style="display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; flex-wrap: wrap;">
+                            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #10b981;"></span>
+                                <span style="color: #4338ca; font-weight: 600;">Signed in as:</span>
+                                <strong style="color: #1e1b4b;">{{ $currentUser->name }} ({{ $currentUser->email }})</strong>
+                            </div>
+                            <div style="display: flex; gap: 0.75rem; align-items: center;">
+                                @if (isset($currentDestination) && $currentDestination)
+                                    <a href="{{ $currentDestination }}" style="color: #4f46e5; font-weight: 700; text-decoration: none; display: inline-flex; align-items: center; gap: 0.25rem;">
+                                        Open Dashboard &rarr;
+                                    </a>
+                                @endif
+                                <a href="{{ route('logout') }}" style="color: #ef4444; font-weight: 600; text-decoration: underline;">Sign out</a>
+                            </div>
+                        </div>
+                    </div>
+                @endif
+
                 <!-- 1-Click Role Switcher Demo Buttons -->
                 <div class="role-switcher-card">
                     <div class="role-switcher-title">
