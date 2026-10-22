@@ -1,4 +1,9 @@
 export const apiBase = '/api/v1';
+export const pageRoutes = {
+    login: document.body.dataset.loginUrl,
+    loginStore: document.body.dataset.loginStoreUrl,
+    csrfCookie: document.body.dataset.csrfUrl,
+};
 export const endpoints = {
     login: '/auth/login',
     logout: '/auth/logout',
