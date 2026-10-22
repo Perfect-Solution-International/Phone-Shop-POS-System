@@ -265,8 +265,13 @@
                 </div>
                 <form action="{{ route('logout') }}" method="POST" style="margin: 0;">
                     @csrf
-                    <button type="submit" class="btn btn-outline" title="Sign out">
-                        Sign Out
+                    <button type="submit" class="btn btn-outline" title="Sign out" style="display: inline-flex; align-items: center; gap: 0.35rem; color: #dc2626; border-color: #fca5a5; background: #fef2f2;">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                            <polyline points="16 17 21 12 16 7"></polyline>
+                            <line x1="21" y1="12" x2="9" y2="12"></line>
+                        </svg>
+                        <span>Sign Out</span>
                     </button>
                 </form>
             </div>

@@ -39,7 +39,11 @@ test('superadmin can access dashboard and view platform metrics', function (): v
         ->get('/super-admin')
         ->assertOk()
         ->assertSee('Cellular Zone')
-        ->assertSee('SaaS Platform Overview');
+        ->assertSee('SaaS Platform Overview')
+        ->assertSee('saas-user-footer', false)
+        ->assertSee('saas-logout-btn', false)
+        ->assertSee('Sign out')
+        ->assertDontSee('saas-topbar-user', false);
 });
 
 test('superadmin can list and filter shops', function (): void {

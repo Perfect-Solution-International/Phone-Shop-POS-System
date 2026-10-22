@@ -53,7 +53,7 @@
             position: sticky;
             top: 0;
             height: 100vh;
-            overflow-y: auto;
+            overflow: hidden;
         }
 
         .shop-brand {
@@ -105,6 +105,7 @@
             flex-direction: column;
             gap: 0.25rem;
             flex: 1;
+            overflow-y: auto;
         }
 
         .shop-nav-header {
@@ -152,32 +153,88 @@
         }
 
         .shop-user-footer {
-            padding: 1rem;
+            flex-shrink: 0;
+            padding: 0.85rem 1rem;
             border-top: 1px solid rgba(255, 255, 255, 0.08);
-            background: rgba(0, 0, 0, 0.2);
+            background: rgba(0, 0, 0, 0.32);
             display: flex;
             align-items: center;
             justify-content: space-between;
+            gap: 0.65rem;
         }
 
         .shop-user-meta {
             display: flex;
-            flex-direction: column;
-            font-size: 0.8125rem;
+            align-items: center;
+            gap: 0.65rem;
             overflow: hidden;
+            min-width: 0;
+        }
+
+        .shop-user-avatar {
+            width: 34px;
+            height: 34px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, var(--brand-cyan-500) 0%, var(--brand-indigo-600) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+            font-size: 0.8125rem;
+            font-weight: 750;
+            flex-shrink: 0;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+        }
+
+        .shop-user-details {
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            min-width: 0;
         }
 
         .shop-user-name {
-            font-weight: 600;
+            font-size: 0.8125rem;
+            font-weight: 700;
             color: #f1f5f9;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+            line-height: 1.25;
         }
 
         .shop-user-role {
             font-size: 0.6875rem;
-            color: #94a3b8;
+            color: #38bdf8;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 600;
+            margin-top: 1px;
+        }
+
+        .shop-logout-btn {
+            background: rgba(239, 68, 68, 0.12);
+            border: 1px solid rgba(239, 68, 68, 0.28);
+            color: #fca5a5;
+            padding: 0.38rem 0.65rem;
+            border-radius: 7px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            transition: all 0.18s ease;
+            text-decoration: none;
+            flex-shrink: 0;
+        }
+
+        .shop-logout-btn:hover {
+            background: #ef4444;
+            color: #ffffff;
+            border-color: #ef4444;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 6px rgba(239, 68, 68, 0.35);
         }
 
         /* Main Workspace Container */
@@ -537,13 +594,23 @@
 
         <div class="shop-user-footer">
             <div class="shop-user-meta">
-                <span class="shop-user-name">{{ auth()->user()->name }}</span>
-                <span class="shop-user-role">{{ auth()->user()->roles->first()->name ?? 'Staff' }}</span>
+                <div class="shop-user-avatar">
+                    {{ strtoupper(substr(auth()->user()->name ?? 'U', 0, 1)) }}
+                </div>
+                <div class="shop-user-details">
+                    <span class="shop-user-name" title="{{ auth()->user()->name }}">{{ auth()->user()->name }}</span>
+                    <span class="shop-user-role">{{ auth()->user()->roles->first()->name ?? 'Staff' }}</span>
+                </div>
             </div>
             <form action="{{ route('logout') }}" method="POST" style="margin: 0;">
                 @csrf
-                <button type="submit" class="btn btn-sm btn-secondary" title="Sign out" style="padding: 0.3rem 0.5rem;">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                <button type="submit" class="shop-logout-btn" title="Sign out of Shop Panel">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                        <polyline points="16 17 21 12 16 7"></polyline>
+                        <line x1="21" y1="12" x2="9" y2="12"></line>
+                    </svg>
+                    <span>Sign out</span>
                 </button>
             </form>
         </div>

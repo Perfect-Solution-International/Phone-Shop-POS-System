@@ -25,6 +25,9 @@ test('shop staff can access shop dashboard view with metrics', function (): void
     $response->assertOk();
     $response->assertViewIs('shop.dashboard.index');
     $response->assertViewHas('metrics');
+    $response->assertSee('shop-user-footer', false);
+    $response->assertSee('shop-logout-btn', false);
+    $response->assertSee('Sign out');
 });
 
 test('shop cashier can access pos counter and complete sale with split tender', function (): void {
