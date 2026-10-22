@@ -16,7 +16,7 @@ Route::prefix('v1')->name('v1.')->group(function (): void {
         Route::get('auth/me', [AuthController::class, 'me'])->name('auth.me');
         Route::post('auth/logout', [AuthController::class, 'logout'])->name('auth.logout');
 
-        Route::middleware('shop')->group(function (): void {
+        Route::middleware(['shop', 'verified'])->group(function (): void {
             Route::apiResource('employees', EmployeeController::class);
             Route::apiResource('attendance', AttendanceController::class)->parameters(['attendance' => 'attendance']);
             Route::apiResource('leave', LeaveController::class)->parameters(['leave' => 'leave']);

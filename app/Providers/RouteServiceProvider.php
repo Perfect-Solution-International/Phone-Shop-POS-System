@@ -17,6 +17,9 @@ class RouteServiceProvider extends ServiceProvider
         RateLimiter::for('login', fn (Request $request) => Limit::perMinute(5)->by(
             Str::lower((string) $request->input('email')).'|'.$request->ip()
         ));
+        RateLimiter::for('verification', fn (Request $request) => Limit::perMinute(6)->by(
+            (string) ($request->user()?->id ?: $request->ip())
+        ));
 
         $this->routes(function (): void {
             Route::middleware('api')->prefix('api')->name('api.')->group(base_path('routes/api.php'));

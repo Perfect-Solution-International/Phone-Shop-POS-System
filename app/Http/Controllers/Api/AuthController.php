@@ -42,7 +42,7 @@ class AuthController extends Controller
         return app()->environment('local') && config('app.login_preview');
     }
 
-    public function browserLogin(LoginRequest $request): JsonResponse
+    public function browserLogin(LoginRequest $request): JsonResponse|RedirectResponse
     {
         if (! Auth::guard('web')->attempt($request->safe()->only(['email', 'password']), $request->boolean('remember'))) {
             throw ValidationException::withMessages(['email' => ['The provided credentials are incorrect.']]);
@@ -51,7 +51,33 @@ class AuthController extends Controller
         $request->session()->regenerate();
         $user = $request->user('web');
 
-        return response()->json(['user' => $this->profile($user), 'redirect' => $this->destination($user)]);
+        if ($request->wantsJson()) {
+            return response()->json(['user' => $this->profile($user), 'redirect' => $this->destination($user)]);
+        }
+
+        $destination = $this->safeDestination($request, $user);
+
+        return redirect()->to($destination);
+    }
+
+    private function safeDestination(Request $request, User $user): string
+    {
+        $default = $this->destination($user);
+        $intended = $request->session()->pull('url.intended');
+
+        if (! $intended || ! is_string($intended)) {
+            return $default;
+        }
+
+        $appHost = parse_url(config('app.url'), PHP_URL_HOST);
+        $intendedHost = parse_url($intended, PHP_URL_HOST);
+
+        // Discard external domains to prevent open redirects
+        if ($intendedHost !== null && strtolower($intendedHost) !== strtolower((string) $appHost)) {
+            return $default;
+        }
+
+        return $intended;
     }
 
     public function login(LoginRequest $request): JsonResponse
@@ -77,22 +103,32 @@ class AuthController extends Controller
         return response()->json(['user' => $this->profile($request->user())]);
     }
 
-    public function logout(Request $request): Response
+    public function logout(Request $request): Response|RedirectResponse
     {
-        $token = $request->user()->currentAccessToken();
+        $token = $request->user()?->currentAccessToken();
         if ($token instanceof PersonalAccessToken) {
             $token->delete();
-        } else {
-            Auth::guard('web')->logout();
-            $request->session()->invalidate();
-            $request->session()->regenerateToken();
+
+            return response()->noContent();
         }
 
-        return response()->noContent();
+        Auth::guard('web')->logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        if ($request->wantsJson()) {
+            return response()->noContent();
+        }
+
+        return redirect()->route('login')->with('status', 'You have been successfully signed out.');
     }
 
     private function destination(User $user): string
     {
+        if (! $user->hasVerifiedEmail()) {
+            return route('verification.notice');
+        }
+
         if ($user->shop_id !== null) {
             foreach (['hrm.view' => '', 'payroll.view' => 'hrm/payroll', 'settings.manage' => 'settings'] as $permission => $path) {
                 if ($user->can($permission)) {
