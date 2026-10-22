@@ -1,18 +1,17 @@
 const axios = require('axios');
 
-function createApiClient({ baseURL, getToken, onUnauthorized }) {
-    const client = axios.create({ baseURL, headers: { Accept: 'application/json' } });
-    client.interceptors.request.use((config) => {
-        const token = getToken();
-        if (token) {
-            config.headers.Authorization = 'Bearer ' + token;
-        }
-        return config;
+function createApiClient({ baseURL, onUnauthorized }) {
+    const client = axios.create({
+        baseURL,
+        headers: { Accept: 'application/json' },
+        withCredentials: true,
+        withXSRFToken: true,
+        timeout: 15000,
     });
     client.interceptors.response.use(
         (response) => response,
         (error) => {
-            if (error.response && error.response.status === 401) {
+            if (error.response && [401, 419].includes(error.response.status)) {
                 onUnauthorized();
             }
             return Promise.reject(error);
