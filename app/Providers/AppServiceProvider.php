@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Models\Platform\Shop;
+use App\Services\Tenancy\TenantContext;
 use Carbon\CarbonImmutable;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
@@ -14,6 +16,13 @@ class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
         \Laravel\Sanctum\Sanctum::ignoreMigrations();
+
+        // Register TenantContext as a singleton
+        $this->app->singleton(TenantContext::class, function () {
+            return new TenantContext();
+        });
+
+        $this->app->alias(TenantContext::class, 'tenant.context');
     }
 
     public function boot(): void

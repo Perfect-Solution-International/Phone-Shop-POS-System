@@ -65,7 +65,7 @@ class AuthController extends Controller
         $default = $this->destination($user);
         $intended = $request->session()->pull('url.intended');
 
-        if (! $intended || ! is_string($intended)) {
+        if (! $intended || ! is_string($intended) || str_contains($intended, '/email/verify')) {
             return $default;
         }
 
@@ -125,6 +125,14 @@ class AuthController extends Controller
 
     private function destination(User $user): string
     {
+        if ($user->hasRole('Super Administrator') || $user->can('superadmin.view')) {
+            return route('superadmin.dashboard');
+        }
+
+        if ($user->hasRole('Customer')) {
+            return route('customer.portal');
+        }
+
         if (! $user->hasVerifiedEmail()) {
             return route('verification.notice');
         }

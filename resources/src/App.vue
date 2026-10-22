@@ -8,6 +8,9 @@
             <b-navbar-toggle target="navigation" />
             <b-collapse id="navigation" is-nav>
                 <b-navbar-nav class="ml-auto">
+                    <b-nav-item href="/shop" class="mr-2 font-weight-bold text-info">
+                        ⚡ Shop POS & Counter
+                    </b-nav-item>
                     <b-nav-text class="mr-3">{{
                         user ? user.name : ""
                     }}</b-nav-text>
@@ -35,6 +38,9 @@
                     >
                         {{ item.label }}
                     </router-link>
+                    <a href="/shop" class="nav-link text-info font-weight-bold mt-2" style="border: 1px dashed rgba(56,189,248,0.4); border-radius: 6px;">
+                        🛒 Shop POS & Inventory
+                    </a>
                 </nav>
                 <small class="d-block mt-4 text-light">{{
                     user ? user.shop_name : ""

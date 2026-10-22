@@ -3,13 +3,14 @@
 namespace App\Models;
 
 use App\Support\Concerns\BelongsToShop;
+use App\Support\Concerns\BelongsToTenant;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Attendance extends Model
 {
-    use BelongsToShop, HasFactory;
+    use BelongsToShop, BelongsToTenant, HasFactory;
 
     protected $fillable = ['employee_id', 'work_date', 'clocked_in_at', 'clocked_out_at'];
 

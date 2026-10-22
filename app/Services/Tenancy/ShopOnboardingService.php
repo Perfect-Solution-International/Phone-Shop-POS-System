@@ -52,7 +52,21 @@ class ShopOnboardingService
                 app()->forgetInstance('shop.id');
             }
 
-            // 3. Create the owner user account strictly bound to this shop
+            // 3. Initialize 7-Day Free Trial Subscription
+            $defaultPlan = \App\Models\Platform\SubscriptionPlan::where('slug', 'starter')->first();
+            if ($defaultPlan) {
+                $now = now();
+                \App\Models\Platform\Subscription::create([
+                    'shop_id' => $shop->id,
+                    'plan_id' => $defaultPlan->id,
+                    'status' => 'trial',
+                    'trial_ends_at' => $now->copy()->addDays($defaultPlan->trial_days),
+                    'current_period_starts_at' => $now,
+                    'current_period_ends_at' => $now->copy()->addDays($defaultPlan->trial_days),
+                ]);
+            }
+
+            // 4. Create the owner user account strictly bound to this shop
             $user = new User([
                 'name' => trim($data['name']),
                 'email' => strtolower(trim($data['email'])),
@@ -64,7 +78,7 @@ class ShopOnboardingService
             $user->shop()->associate($shop);
             $user->save();
 
-            // 4. Grant shop administrator privileges
+            // 5. Grant shop administrator privileges
             $user->assignRole('Administrator');
 
             // 5. Fire Registered event for email verification notification

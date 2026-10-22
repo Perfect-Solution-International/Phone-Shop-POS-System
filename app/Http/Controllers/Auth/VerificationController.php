@@ -14,6 +14,10 @@ class VerificationController extends Controller
 {
     public function show(Request $request): View|RedirectResponse
     {
+        if ($request->user()?->hasRole('Super Administrator') || $request->user()?->can('superadmin.view')) {
+            return redirect()->route('superadmin.dashboard');
+        }
+
         if ($request->user()?->hasVerifiedEmail()) {
             return redirect()->route('app');
         }

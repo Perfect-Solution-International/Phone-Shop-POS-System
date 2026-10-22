@@ -35,7 +35,9 @@ class Kernel extends HttpKernel
         'auth' => \App\Http\Middleware\Authenticate::class,
         'can' => \Illuminate\Auth\Middleware\Authorize::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
-        'shop' => \App\Http\Middleware\ResolveShop::class,
+        'shop' => \App\Http\Middleware\ResolveTenantContext::class,
+        'tenant' => \App\Http\Middleware\ResolveTenantContext::class,
+        'superadmin' => \App\Http\Middleware\EnsureSuperAdmin::class,
         'signed' => \Illuminate\Routing\Middleware\ValidateSignature::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
     ];
@@ -44,6 +46,7 @@ class Kernel extends HttpKernel
         \Illuminate\Session\Middleware\StartSession::class,
         \Illuminate\View\Middleware\ShareErrorsFromSession::class,
         \Illuminate\Contracts\Auth\Middleware\AuthenticatesRequests::class,
+        \App\Http\Middleware\ResolveTenantContext::class,
         \App\Http\Middleware\ResolveShop::class,
         \Illuminate\Routing\Middleware\ThrottleRequests::class,
         \Illuminate\Routing\Middleware\SubstituteBindings::class,
