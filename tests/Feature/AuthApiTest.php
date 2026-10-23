@@ -55,9 +55,9 @@ test('repeated failed sign in attempts are rate limited', function (): void {
     $this->postJson('/api/v1/auth/login', ['email' => 'rate-limit@example.test', 'password' => 'incorrect'])->assertTooManyRequests();
 });
 
-test('public page and SPA deep links use their Blade shells', function (): void {
-    $this->get('/')->assertOk()->assertViewIs('home');
+test('guests see login and cannot open the protected SPA shell', function (): void {
+    $this->get('/')->assertRedirect(route('login'));
     $this->get('/login')->assertOk()->assertViewIs('auth.login');
-    $this->get('/app/hrm/attendance')->assertOk()->assertViewIs('layouts.master');
+    $this->get('/app/hrm/attendance')->assertRedirect(route('login'));
     $this->get('/api/v1/unknown')->assertNotFound();
 });

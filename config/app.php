@@ -13,7 +13,9 @@ return [
     |
     */
 
-    'name' => env('APP_NAME', 'Phone Shop POS SaaS'),
+    'name' => env('APP_NAME', 'SaaS Phone Shop POS System'),
+
+    'login_preview' => env('LOGIN_PREVIEW', true),
 
     /*
     |--------------------------------------------------------------------------

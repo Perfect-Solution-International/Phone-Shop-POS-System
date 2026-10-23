@@ -3,13 +3,14 @@
 namespace App\Models;
 
 use App\Support\Concerns\BelongsToShop;
+use App\Support\Concerns\BelongsToTenant;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Payroll extends Model
 {
-    use BelongsToShop, HasFactory;
+    use BelongsToShop, BelongsToTenant, HasFactory;
 
     protected $fillable = ['employee_id', 'period', 'basic_salary', 'allowances', 'deductions', 'status'];
 

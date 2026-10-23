@@ -1,13 +1,16 @@
 import { createApiClient } from './client';
-import { apiBase } from './routes';
+import { apiBase, pageRoutes } from './routes';
+
+try { localStorage.removeItem('enterprise.token'); } catch (error) { /* Old browser tokens are no longer used. */ }
+
+let redirecting = false;
 
 export default createApiClient({
     baseURL: apiBase,
-    getToken: () => localStorage.getItem('enterprise.token'),
     onUnauthorized: () => {
-        localStorage.removeItem('enterprise.token');
-        if (window.location.pathname !== '/login') {
-            window.location.replace('/login');
+        if (!redirecting && window.location.pathname !== pageRoutes.login) {
+            redirecting = true;
+            window.location.replace(pageRoutes.login);
         }
     },
 });

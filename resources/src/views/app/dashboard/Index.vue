@@ -6,7 +6,7 @@
             <b-col v-for="card in cards" :key="card.key" md="4" class="mb-3">
                 <b-card :title="card.label">
                     <b-skeleton v-if="loading" width="40%" height="2rem" />
-                    <strong v-else class="h2">{{ summary[card.key] || 0 }}</strong>
+                    <strong v-else class="h2">{{ preview ? '—' : summary[card.key] || 0 }}</strong>
                 </b-card>
             </b-col>
         </b-row>
@@ -29,7 +29,7 @@ export default {
     components: { 'v-chart': ECharts },
     metaInfo: { title: 'Overview' },
     data: () => ({
-        loading: true, error: '', summary: {},
+        loading: true, error: '', summary: {}, preview: document.body.dataset.loginPreview === 'true',
         cards: [{ key: 'employees', label: 'Employees' }, { key: 'present_today', label: 'Present today' }, { key: 'pending_leave', label: 'Pending leave' }],
     }),
     computed: {
@@ -44,6 +44,7 @@ export default {
     created() { this.load(); },
     methods: {
         async load() {
+            if (this.preview) { this.loading = false; return; }
             this.loading = true; this.error = '';
             try { this.summary = (await api.get(endpoints.dashboard)).data; }
             catch (error) { this.error = 'Unable to load the overview.'; }

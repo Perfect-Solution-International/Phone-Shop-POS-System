@@ -1,7 +1,9 @@
 <?php
 
+use Laravel\Sanctum\Sanctum;
+
 return [
-    'stateful' => [],
+    'stateful' => explode(',', env('SANCTUM_STATEFUL_DOMAINS', 'localhost,localhost:8000,localhost:5173,127.0.0.1,127.0.0.1:8000,127.0.0.1:5173,::1'.Sanctum::currentApplicationUrlWithPort())),
     'guard' => ['web'],
     'expiration' => 480,
     'token_prefix' => '',
