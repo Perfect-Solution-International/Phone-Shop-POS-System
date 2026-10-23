@@ -283,7 +283,7 @@
     </main>
 
     <footer class="footer">
-        {{ auth()->user()->shop->name ?? 'Phone Shop' }} Customer Care & Warranty Services • Powered by {{ config('app.name', 'Phone Shop POS SaaS') }}
+        {{ auth()->user()->shop->name ?? 'Phone Shop' }} Customer Care & Warranty Services • Powered by {{ config('app.name', 'SaaS Phone Shop POS System') }}
     </footer>
     @stack('scripts')
 </body>

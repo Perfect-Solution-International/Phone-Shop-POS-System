@@ -21,7 +21,7 @@ class PasswordResetController extends Controller
     public function create(): View
     {
         return view('auth.forgot-password', [
-            'applicationName' => config('app.name') === 'Laravel' ? 'Phone Shop POS SaaS' : config('app.name'),
+            'applicationName' => config('app.name') === 'Laravel' ? 'SaaS Phone Shop POS System' : config('app.name'),
         ]);
     }
 
@@ -44,7 +44,7 @@ class PasswordResetController extends Controller
         return view('auth.reset-password', [
             'token' => $token,
             'email' => $request->query('email', ''),
-            'applicationName' => config('app.name') === 'Laravel' ? 'Phone Shop POS SaaS' : config('app.name'),
+            'applicationName' => config('app.name') === 'Laravel' ? 'SaaS Phone Shop POS System' : config('app.name'),
         ]);
     }
 

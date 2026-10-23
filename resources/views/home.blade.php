@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="Premium multi-tenant phone shop operations, POS, inventory, and employee management platform.">
     <link rel="canonical" href="{{ route('home') }}">
-    <title>{{ config('app.name') === 'Laravel' ? 'Phone Shop POS SaaS' : config('app.name') }}</title>
+    <title>{{ config('app.name') === 'Laravel' ? 'SaaS Phone Shop POS System' : config('app.name') }}</title>
     <link rel="icon" href="{{ asset('favicon.ico') }}">
     <link rel="stylesheet" href="{{ mix('css/app.min.css') }}">
     <style>

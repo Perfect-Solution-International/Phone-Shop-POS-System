@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'Super Admin') — {{ config('app.name', 'Phone Shop POS SaaS') }} Platform</title>
+    <title>@yield('title', 'Super Admin') — {{ config('app.name', 'SaaS Phone Shop POS System') }} Platform</title>
     <link rel="icon" href="{{ asset('favicon.ico') }}">
 
     <style>
@@ -470,7 +470,7 @@
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
             </div>
             <div class="saas-brand-text">
-                <span class="saas-brand-title">{{ config('app.name', 'Phone Shop POS') }}</span>
+                <span class="saas-brand-title">{{ config('app.name') === 'Laravel' ? 'SaaS Phone Shop POS System' : config('app.name', 'SaaS Phone Shop POS System') }}</span>
                 <span class="saas-brand-subtitle">Super Admin Portal</span>
             </div>
         </div>

@@ -21,7 +21,7 @@ class RegisterController extends Controller
         }
 
         return view('auth.register', [
-            'applicationName' => config('app.name') === 'Laravel' ? 'Phone Shop POS SaaS' : config('app.name'),
+            'applicationName' => config('app.name') === 'Laravel' ? 'SaaS Phone Shop POS System' : config('app.name'),
         ]);
     }
 

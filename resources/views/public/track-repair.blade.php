@@ -313,7 +313,7 @@
         @endif
 
         <footer style="text-align: center; font-size: 0.8125rem; color: var(--text-muted); margin-top: 2rem;">
-            Powered by {{ config('app.name', 'Phone Shop POS SaaS') }} • Multi-Tenant Phone Retail Cloud Platform
+            Powered by {{ config('app.name', 'SaaS Phone Shop POS System') }} • Multi-Tenant Phone Retail Cloud Platform
         </footer>
     </div>
 </body>

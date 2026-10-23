@@ -43,6 +43,7 @@ test('superadmin can access dashboard and view platform metrics', function (): v
         ->assertSee('saas-user-footer', false)
         ->assertSee('saas-logout-btn', false)
         ->assertSee('Sign out')
+        ->assertSee('SaaS Phone Shop POS System')
         ->assertDontSee('saas-topbar-user', false);
 });
 
