@@ -15,6 +15,18 @@
         <span class="badge badge-info">Tenant Scoped</span>
     </div>
 
+    <div style="padding: 1rem 1.5rem; background: #f8fafc; border-bottom: 1px solid #e2e8f0; display: flex; gap: 0.75rem; flex-wrap: wrap;">
+        <a href="{{ route('shop.subscription.index') }}" class="btn btn-secondary btn-sm" style="display: inline-flex; align-items: center; gap: 0.4rem; color: #4338ca; background: #eef2ff; border-color: #c7d2fe; font-weight: 600;">
+            💳 Manage Subscription &amp; Billing
+        </a>
+        <a href="{{ route('shop.notifications.index') }}" class="btn btn-secondary btn-sm" style="display: inline-flex; align-items: center; gap: 0.4rem; color: #166534; background: #f0fdf4; border-color: #bbf7d0; font-weight: 600;">
+            💬 SMS Gateway &amp; Automated Alerts
+        </a>
+        <a href="{{ route('shop.labels.index') }}" class="btn btn-secondary btn-sm" style="display: inline-flex; align-items: center; gap: 0.4rem; color: #9a3412; background: #fff7ed; border-color: #fed7aa; font-weight: 600;">
+            🏷️ Barcode &amp; Thermal Sticker Printer
+        </a>
+    </div>
+
     <form action="{{ route('shop.settings.update') }}" method="POST">
         @csrf
         @method('PUT')

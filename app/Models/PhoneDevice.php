@@ -68,6 +68,16 @@ class PhoneDevice extends Model
         return $this->status === 'sold';
     }
 
+    public function getImei1Attribute(): ?string
+    {
+        return $this->attributes['imei_1'] ?? null;
+    }
+
+    public function getImei2Attribute(): ?string
+    {
+        return $this->attributes['imei_2'] ?? null;
+    }
+
     /**
      * Mark device as sold with timestamp and sale relation.
      */

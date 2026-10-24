@@ -25,7 +25,24 @@ class Shop extends Model
         'invoice_header_note',
         'invoice_footer_note',
         'warranty_terms',
+        'sms_enabled',
+        'sms_provider',
+        'sms_api_key',
+        'sms_sender_id',
+        'sms_on_repair_ready',
+        'sms_on_sale',
     ];
+
+    protected $casts = [
+        'sms_enabled' => 'boolean',
+        'sms_on_repair_ready' => 'boolean',
+        'sms_on_sale' => 'boolean',
+    ];
+
+    public function smsLogs(): HasMany
+    {
+        return $this->hasMany(\App\Models\SmsLog::class);
+    }
 
     public function outlets(): HasMany
     {

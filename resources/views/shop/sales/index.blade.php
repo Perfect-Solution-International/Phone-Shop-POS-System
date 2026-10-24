@@ -120,6 +120,16 @@
                     </td>
                     <td style="text-align: right; white-space: nowrap;">
                         <div style="display: inline-flex; align-items: center; gap: 0.35rem;">
+                            @if($sale->customer && $sale->customer->phone)
+                                @php
+                                    $rawPhone = preg_replace('/[^0-9]/', '', $sale->customer->phone);
+                                    $waPhone = str_starts_with($rawPhone, '0') ? '94' . substr($rawPhone, 1) : $rawPhone;
+                                    $waMsg = urlencode("Hello {$sale->customer->name}, thank you for your purchase! Invoice #{$sale->invoice_number}, Total Amount: LKR " . number_format($sale->total_amount, 2) . ". Thank you!");
+                                @endphp
+                                <a href="https://wa.me/{{ $waPhone }}?text={{ $waMsg }}" target="_blank" class="btn btn-sm" title="Send Receipt via WhatsApp" style="background: #25D366; color: #ffffff; padding: 0.35rem 0.55rem; font-size: 0.75rem; display: inline-flex; align-items: center; text-decoration: none; border-radius: 4px; font-weight: 700;">
+                                    💬 WA
+                                </a>
+                            @endif
                             <button type="button" 
                                     class="btn btn-secondary btn-sm" 
                                     onclick='viewInvoiceModal({{ $sale->id }})' 

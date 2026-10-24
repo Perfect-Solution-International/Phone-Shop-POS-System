@@ -108,6 +108,12 @@
                     </td>
                     <td style="text-align: right; white-space: nowrap;">
                         <div style="display: inline-flex; align-items: center; gap: 0.35rem;">
+                            <a href="{{ route('shop.labels.index', ['type' => 'product', 'id' => $product->id]) }}" 
+                               class="btn btn-secondary btn-sm" 
+                               title="Print Barcode Label" 
+                               style="padding: 0.3rem 0.55rem; font-size: 0.75rem; display: inline-flex; align-items: center; gap: 0.2rem; color: #4338ca; background: #eef2ff; border-color: #c7d2fe;">
+                                🏷️ Label
+                            </a>
                             <button type="button" 
                                     class="btn btn-secondary btn-sm" 
                                     onclick='openEditProductModal(@json($product))' 

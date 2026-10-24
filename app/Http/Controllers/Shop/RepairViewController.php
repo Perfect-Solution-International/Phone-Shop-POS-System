@@ -88,6 +88,14 @@ class RepairViewController extends Controller
 
         $repair->update($validated);
 
+        if ($validated['status'] === 'ready_for_collection') {
+            try {
+                app(\App\Services\SmsNotificationService::class)->sendRepairReadyAlert($repair);
+            } catch (\Throwable $e) {
+                // Silently log or ignore delivery error to prevent blocking repair workflow
+            }
+        }
+
         return redirect()->route('shop.repairs')->with('success', "Repair #{$repair->job_number} status updated to ".ucfirst(str_replace('_', ' ', $repair->status)));
     }
 

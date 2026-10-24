@@ -164,6 +164,20 @@ Route::prefix('shop')->name('shop.')->middleware(['auth', 'verified', 'shop'])->
     Route::get('/quotations', [\App\Http\Controllers\Shop\QuotationViewController::class, 'index'])->name('quotations.index');
     Route::post('/quotations', [\App\Http\Controllers\Shop\QuotationViewController::class, 'store'])->name('quotations.store');
     Route::post('/quotations/{quotation}/convert', [\App\Http\Controllers\Shop\QuotationViewController::class, 'convertToSale'])->name('quotations.convert');
+
+    // Medium Priority 1: Barcode & Thermal IMEI Label Generator (Section 8.4)
+    Route::get('/labels', [\App\Http\Controllers\Shop\BarcodeLabelController::class, 'index'])->name('labels.index');
+    Route::get('/labels/print', [\App\Http\Controllers\Shop\BarcodeLabelController::class, 'print'])->name('labels.print');
+
+    // Medium Priority 2: Customer SMS & WhatsApp Notifications (Section 20)
+    Route::get('/notifications', [\App\Http\Controllers\Shop\NotificationViewController::class, 'index'])->name('notifications.index');
+    Route::post('/notifications/send', [\App\Http\Controllers\Shop\NotificationViewController::class, 'sendCustomSms'])->name('notifications.send');
+    Route::post('/notifications/settings', [\App\Http\Controllers\Shop\NotificationViewController::class, 'updateSettings'])->name('notifications.settings');
+
+    // Medium Priority 3: Subscription & Online Card Payment Gateway (Section 5.1 & 18)
+    Route::get('/subscription', [\App\Http\Controllers\Shop\SubscriptionViewController::class, 'index'])->name('subscription.index');
+    Route::post('/subscription/checkout', [\App\Http\Controllers\Shop\SubscriptionViewController::class, 'checkout'])->name('subscription.checkout');
+    Route::post('/subscription/bank-transfer', [\App\Http\Controllers\Shop\SubscriptionViewController::class, 'bankTransfer'])->name('subscription.bank-transfer');
 });
 
 // SaaS Super Admin Panel
