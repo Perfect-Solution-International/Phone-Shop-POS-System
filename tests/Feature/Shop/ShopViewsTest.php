@@ -25,6 +25,8 @@ test('shop staff can access shop dashboard view with metrics', function (): void
     $response->assertOk();
     $response->assertViewIs('shop.dashboard.index');
     $response->assertViewHas('metrics');
+    $response->assertSee('Sales &amp; Sold Invoices', false);
+    $response->assertSee('Sold Phones (IMEI Archive)', false);
     $response->assertSee('shop-user-footer', false);
     $response->assertSee('shop-logout-btn', false);
     $response->assertSee('Sign out');
@@ -105,6 +107,142 @@ test('shop staff can register serialized phone with dual IMEI from web view', fu
         'shop_id' => $shop->id,
         'imei_1' => '356789012345671',
         'status' => 'in_stock',
+    ]);
+});
+
+test('shop staff can register phone device with supplier and view relationship on phones page', function (): void {
+    $shop = Shop::factory()->create();
+    $user = User::factory()->create(['shop_id' => $shop->id]);
+    $user->assignRole('Shop Manager');
+
+    app()->instance('shop.id', $shop->id);
+    $supplier = \App\Models\Supplier::create([
+        'shop_id' => $shop->id,
+        'name' => 'Metro Distributors',
+        'phone' => '0771234567',
+    ]);
+    app()->forgetInstance('shop.id');
+
+    $payload = [
+        'brand' => 'Samsung',
+        'model' => 'Galaxy S24',
+        'storage' => '256GB',
+        'ram' => '8GB',
+        'color' => 'Onyx Black',
+        'condition' => 'new',
+        'imei_1' => '359876543210987',
+        'imei_2' => '359876543210988',
+        'purchase_cost' => 220000.00,
+        'selling_price' => 265000.00,
+        'supplier_id' => $supplier->id,
+    ];
+
+    $response = $this->actingAs($user)->post('/shop/phones', $payload);
+    $response->assertRedirect('/shop/phones');
+
+    $indexRes = $this->actingAs($user)->get('/shop/phones');
+    $indexRes->assertOk();
+    $indexRes->assertSee('Metro Distributors');
+    $indexRes->assertSee('Galaxy S24');
+});
+
+test('shop staff can update phone device details and pricing', function (): void {
+    $shop = Shop::factory()->create();
+    $user = User::factory()->create(['shop_id' => $shop->id]);
+    $user->assignRole('Shop Manager');
+
+    app()->instance('shop.id', $shop->id);
+    $device = \App\Models\PhoneDevice::create([
+        'shop_id' => $shop->id,
+        'brand' => 'Apple',
+        'model' => 'iPhone 13',
+        'storage' => '128GB',
+        'ram' => '4GB',
+        'color' => 'Midnight Blue',
+        'condition' => 'used',
+        'imei_1' => '354455667788990',
+        'imei_2' => null,
+        'purchase_cost' => 140000.00,
+        'selling_price' => 172000.00,
+        'status' => 'in_stock',
+    ]);
+    app()->forgetInstance('shop.id');
+
+    $updatePayload = [
+        'brand' => 'Apple',
+        'model' => 'iPhone 13 Pro',
+        'storage' => '256GB',
+        'ram' => '6GB',
+        'color' => 'Graphite',
+        'condition' => 'refurbished',
+        'status' => 'in_stock',
+        'imei_1' => '354455667788990',
+        'imei_2' => '354455667788991',
+        'serial_number' => 'SN-IPHONE13P',
+        'purchase_cost' => 155000.00,
+        'selling_price' => 189000.00,
+        'notes' => 'Battery replaced 100% health',
+    ];
+
+    $response = $this->actingAs($user)->put("/shop/phones/{$device->id}", $updatePayload);
+    $response->assertRedirect('/shop/phones');
+
+    $device->refresh();
+    expect($device->model)->toBe('iPhone 13 Pro')
+        ->and($device->storage)->toBe('256GB')
+        ->and($device->condition)->toBe('refurbished')
+        ->and((float) $device->selling_price)->toBe(189000.00)
+        ->and($device->imei_2)->toBe('354455667788991');
+});
+
+test('shop staff can delete an unsold phone device', function (): void {
+    $shop = Shop::factory()->create();
+    $user = User::factory()->create(['shop_id' => $shop->id]);
+    $user->assignRole('Shop Manager');
+
+    app()->instance('shop.id', $shop->id);
+    $device = \App\Models\PhoneDevice::create([
+        'shop_id' => $shop->id,
+        'brand' => 'Xiaomi',
+        'model' => 'Redmi Note 13',
+        'imei_1' => '860123456789012',
+        'purchase_cost' => 50000.00,
+        'selling_price' => 62000.00,
+        'status' => 'in_stock',
+    ]);
+    app()->forgetInstance('shop.id');
+
+    $response = $this->actingAs($user)->delete("/shop/phones/{$device->id}");
+    $response->assertRedirect('/shop/phones');
+
+    $this->assertDatabaseMissing('phone_devices', [
+        'id' => $device->id,
+    ]);
+});
+
+test('shop staff cannot delete an already sold phone device', function (): void {
+    $shop = Shop::factory()->create();
+    $user = User::factory()->create(['shop_id' => $shop->id]);
+    $user->assignRole('Shop Manager');
+
+    app()->instance('shop.id', $shop->id);
+    $device = \App\Models\PhoneDevice::create([
+        'shop_id' => $shop->id,
+        'brand' => 'Apple',
+        'model' => 'iPhone 15 Pro Max',
+        'imei_1' => '358912345678901',
+        'purchase_cost' => 370000.00,
+        'selling_price' => 425000.00,
+        'status' => 'sold',
+        'sold_at' => now(),
+    ]);
+    app()->forgetInstance('shop.id');
+
+    $response = $this->actingAs($user)->delete("/shop/phones/{$device->id}");
+    $response->assertSessionHas('error');
+
+    $this->assertDatabaseHas('phone_devices', [
+        'id' => $device->id,
     ]);
 });
 
@@ -276,4 +414,84 @@ test('public customer repair tracking page is publicly accessible and displays r
     $response2 = $this->get('/track-repair?tracking_id=354321098765432');
     $response2->assertOk();
     $response2->assertSee('REP-PUB-TEST1');
+});
+
+test('shop staff can view sales directory and inspect completed sale details', function (): void {
+    $shop = Shop::factory()->create();
+    $user = User::factory()->create(['shop_id' => $shop->id]);
+    $user->assignRole('Shop Manager');
+
+    app()->instance('shop.id', $shop->id);
+    $customer = Customer::create([
+        'shop_id' => $shop->id,
+        'name' => 'Kasun Chamara',
+        'phone' => '0771234567',
+    ]);
+
+    $phone = PhoneDevice::create([
+        'shop_id' => $shop->id,
+        'brand' => 'Apple',
+        'model' => 'iPhone 15 Pro Max',
+        'imei_1' => '358912345678901',
+        'purchase_cost' => 370000.00,
+        'selling_price' => 425000.00,
+        'status' => 'sold',
+        'sold_at' => now(),
+    ]);
+
+    $sale = \App\Models\Sale::create([
+        'shop_id' => $shop->id,
+        'customer_id' => $customer->id,
+        'user_id' => $user->id,
+        'invoice_number' => 'INV-20261023-TEST1',
+        'sale_date' => now()->toDateString(),
+        'subtotal' => 425000.00,
+        'discount_amount' => 5000.00,
+        'total_amount' => 420000.00,
+        'paid_amount' => 420000.00,
+        'payment_method' => 'cash',
+        'status' => 'completed',
+    ]);
+
+    \App\Models\SaleItem::create([
+        'shop_id' => $shop->id,
+        'sale_id' => $sale->id,
+        'phone_device_id' => $phone->id,
+        'item_name' => 'iPhone 15 Pro Max',
+        'quantity' => 1,
+        'unit_price' => 425000.00,
+        'discount' => 5000.00,
+        'subtotal' => 420000.00,
+    ]);
+
+    \App\Models\SalePayment::create([
+        'shop_id' => $shop->id,
+        'sale_id' => $sale->id,
+        'payment_method' => 'cash',
+        'amount' => 420000.00,
+    ]);
+
+    $phone->update(['sale_id' => $sale->id]);
+    app()->forgetInstance('shop.id');
+
+    // 1. Visit sales list
+    $listResponse = $this->actingAs($user)->get('/shop/sales');
+    $listResponse->assertOk()->assertViewIs('shop.sales.index');
+    $listResponse->assertSee('INV-20261023-TEST1');
+    $listResponse->assertSee('Kasun Chamara');
+    $listResponse->assertSee('358912345678901');
+
+    // 2. Visit invoice show page
+    $showResponse = $this->actingAs($user)->get("/shop/sales/{$sale->id}");
+    $showResponse->assertOk()->assertViewIs('shop.sales.show');
+    $showResponse->assertSee('INV-20261023-TEST1');
+    $showResponse->assertSee('iPhone 15 Pro Max');
+    $showResponse->assertSee('358912345678901');
+    $showResponse->assertSee('420,000.00');
+
+    // 3. JSON endpoint for modal
+    $jsonResponse = $this->actingAs($user)->getJson("/shop/sales/{$sale->id}");
+    $jsonResponse->assertOk();
+    $jsonResponse->assertJsonPath('invoice_number', 'INV-20261023-TEST1');
+    $jsonResponse->assertJsonPath('items.0.phone_device.imei_1', '358912345678901');
 });

@@ -49,9 +49,18 @@ class ShopController extends Controller
     {
         $sub = $shop->subscription;
         if ($sub) {
+            $oldStatus = $sub->status;
             $newStatus = $sub->status === 'suspended' ? 'active' : 'suspended';
             $sub->update(['status' => $newStatus]);
             $msg = $newStatus === 'suspended' ? "Shop '{$shop->name}' has been suspended." : "Shop '{$shop->name}' has been reactivated.";
+
+            \App\Models\Platform\SystemActivity::log(
+                $newStatus === 'suspended' ? 'shop.suspended' : 'shop.reactivated',
+                $msg,
+                $shop->id,
+                auth()->id(),
+                ['previous_status' => $oldStatus, 'new_status' => $newStatus]
+            );
         } else {
             $msg = "No subscription found for this shop.";
         }

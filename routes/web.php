@@ -50,10 +50,14 @@ Route::prefix('shop')->name('shop.')->middleware(['auth', 'verified', 'shop'])->
     // POS Counter & Checkout (Section 7)
     Route::get('/pos', [\App\Http\Controllers\Shop\PosViewController::class, 'index'])->name('pos');
     Route::post('/pos/checkout', [\App\Http\Controllers\Shop\PosViewController::class, 'checkout'])->name('pos.checkout');
+    Route::get('/sales', [\App\Http\Controllers\Shop\SaleViewController::class, 'index'])->name('sales');
+    Route::get('/sales/{sale}', [\App\Http\Controllers\Shop\SaleViewController::class, 'show'])->name('sales.show');
 
     // Serialized Phone Inventory & Dual IMEI (Section 8)
     Route::get('/phones', [\App\Http\Controllers\Shop\PhoneViewController::class, 'index'])->name('phones');
     Route::post('/phones', [\App\Http\Controllers\Shop\PhoneViewController::class, 'store'])->name('phones.store');
+    Route::put('/phones/{phone}', [\App\Http\Controllers\Shop\PhoneViewController::class, 'update'])->name('phones.update');
+    Route::delete('/phones/{phone}', [\App\Http\Controllers\Shop\PhoneViewController::class, 'destroy'])->name('phones.destroy');
 
     // Phone Repairs & 8-Stage Pipeline (Section 12)
     Route::get('/repairs', [\App\Http\Controllers\Shop\RepairViewController::class, 'index'])->name('repairs');
@@ -69,14 +73,68 @@ Route::prefix('shop')->name('shop.')->middleware(['auth', 'verified', 'shop'])->
     // Spare Parts Inventory (Section 14)
     Route::get('/spare-parts', [\App\Http\Controllers\Shop\SparePartViewController::class, 'index'])->name('spare-parts');
     Route::post('/spare-parts', [\App\Http\Controllers\Shop\SparePartViewController::class, 'store'])->name('spare-parts.store');
+    Route::put('/spare-parts/{sparePart}', [\App\Http\Controllers\Shop\SparePartViewController::class, 'update'])->name('spare-parts.update');
+    Route::delete('/spare-parts/{sparePart}', [\App\Http\Controllers\Shop\SparePartViewController::class, 'destroy'])->name('spare-parts.destroy');
+    Route::delete('/spare-parts/{sparePart}/image', [\App\Http\Controllers\Shop\SparePartViewController::class, 'deleteImage'])->name('spare-parts.delete-image');
 
     // Products & Accessories (Section 9)
     Route::get('/products', [\App\Http\Controllers\Shop\ProductViewController::class, 'index'])->name('products');
     Route::post('/products', [\App\Http\Controllers\Shop\ProductViewController::class, 'store'])->name('products.store');
+    Route::put('/products/{product}', [\App\Http\Controllers\Shop\ProductViewController::class, 'update'])->name('products.update');
+    Route::delete('/products/{product}', [\App\Http\Controllers\Shop\ProductViewController::class, 'destroy'])->name('products.destroy');
+    Route::delete('/products/{product}/image', [\App\Http\Controllers\Shop\ProductViewController::class, 'deleteImage'])->name('products.delete-image');
+
+    // Categories & Brands Catalog Management
+    Route::post('/categories', [\App\Http\Controllers\Shop\CatalogController::class, 'storeCategory'])->name('categories.store');
+    Route::put('/categories/{category}', [\App\Http\Controllers\Shop\CatalogController::class, 'updateCategory'])->name('categories.update');
+    Route::delete('/categories/{category}', [\App\Http\Controllers\Shop\CatalogController::class, 'destroyCategory'])->name('categories.destroy');
+    Route::post('/brands', [\App\Http\Controllers\Shop\CatalogController::class, 'storeBrand'])->name('brands.store');
+    Route::put('/brands/{brand}', [\App\Http\Controllers\Shop\CatalogController::class, 'updateBrand'])->name('brands.update');
+    Route::delete('/brands/{brand}', [\App\Http\Controllers\Shop\CatalogController::class, 'destroyBrand'])->name('brands.destroy');
+    Route::get('/catalog/data', [\App\Http\Controllers\Shop\CatalogController::class, 'getCatalog'])->name('catalog.data');
+    Route::post('/catalog/seed-defaults', [\App\Http\Controllers\Shop\CatalogController::class, 'seedDefaults'])->name('catalog.seed-defaults');
+
+    // Outlets & Multi-Branch Management
+    Route::get('/outlets', [\App\Http\Controllers\Shop\OutletController::class, 'index'])->name('outlets.index');
+    Route::post('/outlets', [\App\Http\Controllers\Shop\OutletController::class, 'store'])->name('outlets.store');
+    Route::put('/outlets/{outlet}', [\App\Http\Controllers\Shop\OutletController::class, 'update'])->name('outlets.update');
+    Route::delete('/outlets/{outlet}', [\App\Http\Controllers\Shop\OutletController::class, 'destroy'])->name('outlets.destroy');
+    Route::post('/outlets/{outlet}/switch', [\App\Http\Controllers\Shop\OutletController::class, 'switchOutlet'])->name('outlets.switch');
+    Route::post('/outlets/{outlet}/toggle-main', [\App\Http\Controllers\Shop\OutletController::class, 'toggleMain'])->name('outlets.toggle-main');
 
     // Customer Directory (Section 15)
     Route::get('/customers', [\App\Http\Controllers\Shop\CustomerViewController::class, 'index'])->name('customers');
     Route::post('/customers', [\App\Http\Controllers\Shop\CustomerViewController::class, 'store'])->name('customers.store');
+
+    // Purchasing & Suppliers (Section 10)
+    Route::get('/suppliers', [\App\Http\Controllers\Shop\SupplierViewController::class, 'index'])->name('suppliers');
+    Route::post('/suppliers', [\App\Http\Controllers\Shop\SupplierViewController::class, 'store'])->name('suppliers.store');
+    Route::put('/suppliers/{supplier}', [\App\Http\Controllers\Shop\SupplierViewController::class, 'update'])->name('suppliers.update');
+    Route::delete('/suppliers/{supplier}', [\App\Http\Controllers\Shop\SupplierViewController::class, 'destroy'])->name('suppliers.destroy');
+
+    Route::get('/purchases', [\App\Http\Controllers\Shop\PurchaseViewController::class, 'index'])->name('purchases');
+    Route::post('/purchases', [\App\Http\Controllers\Shop\PurchaseViewController::class, 'store'])->name('purchases.store');
+
+    // Expenses & Daily Cashbook (Section 16)
+    Route::get('/expenses', [\App\Http\Controllers\Shop\ExpenseViewController::class, 'index'])->name('expenses');
+    Route::post('/expenses', [\App\Http\Controllers\Shop\ExpenseViewController::class, 'store'])->name('expenses.store');
+    Route::delete('/expenses/{expense}', [\App\Http\Controllers\Shop\ExpenseViewController::class, 'destroy'])->name('expenses.destroy');
+    Route::get('/cashbook', [\App\Http\Controllers\Shop\CashbookViewController::class, 'index'])->name('cashbook');
+
+    // Stock Movement Audit & Inventory (Section 11)
+    Route::get('/inventory', [\App\Http\Controllers\Shop\InventoryMovementViewController::class, 'index'])->name('inventory');
+    Route::post('/inventory/adjust', [\App\Http\Controllers\Shop\InventoryMovementViewController::class, 'adjust'])->name('inventory.adjust');
+
+    // Sales Returns & Refunds (Section 7.3)
+    Route::get('/sales-returns', [\App\Http\Controllers\Shop\SaleReturnViewController::class, 'index'])->name('sales.returns');
+    Route::post('/sales-returns', [\App\Http\Controllers\Shop\SaleReturnViewController::class, 'store'])->name('sales.returns.store');
+
+    // Shop Settings & Invoicing Defaults (Section 26)
+    Route::get('/settings', [\App\Http\Controllers\Shop\ShopSettingsController::class, 'index'])->name('settings');
+    Route::put('/settings', [\App\Http\Controllers\Shop\ShopSettingsController::class, 'update'])->name('settings.update');
+
+    // Reports & Analytics (Section 19)
+    Route::get('/reports', [\App\Http\Controllers\Shop\ShopReportViewController::class, 'index'])->name('reports');
 });
 
 // SaaS Super Admin Panel
@@ -87,6 +145,17 @@ Route::prefix('super-admin')->name('superadmin.')->middleware(['auth', 'superadm
     Route::get('/shops', [\App\Http\Controllers\SuperAdmin\ShopController::class, 'index'])->name('shops.index');
     Route::get('/shops/{shop}', [\App\Http\Controllers\SuperAdmin\ShopController::class, 'show'])->name('shops.show');
     Route::post('/shops/{shop}/toggle-suspension', [\App\Http\Controllers\SuperAdmin\ShopController::class, 'toggleSuspension'])->name('shops.toggle-suspension');
+    Route::post('/shops/{shop}/switch', function (\App\Models\Platform\Shop $shop) {
+        session(['superadmin_active_shop_id' => $shop->id]);
+        return redirect()->route('shop.dashboard')->with('success', "Switched workspace to store '{$shop->name}'. You now have full access to manage this store.");
+    })->name('shops.switch');
+
+    // Shop Owners Management
+    Route::get('/owners', [\App\Http\Controllers\SuperAdmin\OwnerController::class, 'index'])->name('owners.index');
+    Route::post('/owners', [\App\Http\Controllers\SuperAdmin\OwnerController::class, 'store'])->name('owners.store');
+    Route::put('/owners/{user}', [\App\Http\Controllers\SuperAdmin\OwnerController::class, 'update'])->name('owners.update');
+    Route::delete('/owners/{user}', [\App\Http\Controllers\SuperAdmin\OwnerController::class, 'destroy'])->name('owners.destroy');
+    Route::post('/owners/{user}/access', [\App\Http\Controllers\SuperAdmin\OwnerController::class, 'loginAs'])->name('owners.access');
 
     // Subscription Plans
     Route::get('/plans', [\App\Http\Controllers\SuperAdmin\PlanController::class, 'index'])->name('plans.index');
@@ -99,4 +168,5 @@ Route::prefix('super-admin')->name('superadmin.')->middleware(['auth', 'superadm
     Route::get('/payments/approvals', [\App\Http\Controllers\SuperAdmin\PaymentController::class, 'approvals'])->name('payments.approvals');
     Route::post('/payments/{payment}/approve', [\App\Http\Controllers\SuperAdmin\PaymentController::class, 'approve'])->name('payments.approve');
     Route::post('/payments/{payment}/reject', [\App\Http\Controllers\SuperAdmin\PaymentController::class, 'reject'])->name('payments.reject');
+    Route::post('/payments/{payment}/refund', [\App\Http\Controllers\SuperAdmin\PaymentController::class, 'refund'])->name('payments.refund');
 });

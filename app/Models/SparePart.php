@@ -12,10 +12,12 @@ class SparePart extends Model
     use BelongsToTenant, HasFactory;
 
     protected $fillable = [
+        'shop_id',
         'name',
         'part_number',
         'compatible_models',
         'quality_type',
+        'image_path',
         'cost_price',
         'selling_price',
         'stock_quantity',
@@ -28,6 +30,18 @@ class SparePart extends Model
         'stock_quantity' => 'integer',
         'alert_quantity' => 'integer',
     ];
+
+    protected $appends = [
+        'image_url',
+    ];
+
+    public function getImageUrlAttribute(): ?string
+    {
+        if (! empty($this->image_path)) {
+            return asset('storage/' . $this->image_path);
+        }
+        return null;
+    }
 
     public function repairPartsUsed(): HasMany
     {

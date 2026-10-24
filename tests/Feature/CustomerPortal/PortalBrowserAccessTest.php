@@ -50,11 +50,21 @@ test('admin logged in can open portal page directly in another tab without being
     $response->assertSee('Customer Care Portal');
 });
 
-test('admin logged in can open shop panel directly in another tab without being redirected to admin dashboard', function (): void {
+test('super admin can access phone shop management portal with platform access', function (): void {
     $shop = Shop::factory()->create();
     $superadmin = User::factory()->create(['shop_id' => null]);
     $superadmin->assignRole('Super Administrator');
     $this->actingAs($superadmin, 'web');
+
+    $response = $this->get('/shop');
+    $response->assertOk();
+});
+
+test('registered shop owner can access phone shop management portal', function (): void {
+    $shop = Shop::factory()->create();
+    $owner = User::factory()->create(['shop_id' => $shop->id]);
+    $owner->assignRole('Shop Owner');
+    $this->actingAs($owner, 'web');
 
     $response = $this->get('/shop');
     $response->assertOk();

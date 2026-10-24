@@ -130,6 +130,24 @@
     }
 </style>
 
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.75rem;">
+    <div style="display: flex; gap: 0.5rem; align-items: center;">
+        <span style="font-size: 0.875rem; color: var(--text-muted);">
+            Active Branch: <strong style="color: var(--text-heading);">{{ session('active_outlet_name', auth()->user()->shop->mainOutlet->name ?? 'Main Branch') }}</strong>
+        </span>
+    </div>
+    <div style="display: flex; gap: 0.5rem; align-items: center;">
+        <button type="button" class="btn btn-secondary btn-sm" onclick="openModal('recentSalesModal')" style="display: inline-flex; align-items: center; gap: 0.35rem;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+            Recent Sales ({{ count($recentSales) }})
+        </button>
+        <a href="{{ route('shop.sales') }}" class="btn btn-secondary btn-sm" style="display: inline-flex; align-items: center; gap: 0.35rem;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+            Sales &amp; Invoices
+        </a>
+    </div>
+</div>
+
 <div class="pos-layout" id="posApp">
     <!-- Left: Catalog & Search -->
     <div class="pos-catalog">
@@ -191,6 +209,9 @@
                      data-barcode="{{ $product->barcode }}"
                      data-category="{{ $product->category->name ?? 'General' }}"
                      onclick="addProductToCart({{ $product->id }}, '{{ addslashes($product->name) }}', {{ $product->selling_price }}, {{ $product->stock_quantity }})">
+                    @if($product->image_url)
+                        <img src="{{ $product->image_url }}" alt="{{ $product->name }}" style="width: 100%; height: 75px; object-fit: cover; border-radius: 6px; margin-bottom: 0.5rem; border: 1px solid var(--surface-border);">
+                    @endif
                     <div>
                         <div style="font-size: 0.75rem; color: #4f46e5; font-weight: 700; text-transform: uppercase;">{{ $product->category->name ?? 'Accessory' }}</div>
                         <div style="font-weight: 700; font-size: 0.875rem; margin-top: 0.2rem;">{{ $product->name }}</div>
@@ -259,7 +280,7 @@
                     <input type="number" id="payCash" class="form-control" placeholder="0.00" oninput="updatePaymentRemaining()">
                 </div>
                 <div>
-                    <label style="font-size: 0.7rem; color: #1e40af; font-weight: 600;">Card Terminal</label>
+                    <label style="font-size: 0.7rem; color: #1e40af; font-weight: 600;">Card</label>
                     <input type="number" id="payCard" class="form-control" placeholder="0.00" oninput="updatePaymentRemaining()">
                 </div>
                 <div>
@@ -281,7 +302,7 @@
 
 <!-- Receipt Modal -->
 <div class="modal-backdrop" id="receiptModal">
-    <div class="modal-box" style="max-width: 420px; font-family: monospace;">
+    <div class="modal-box" style="max-width: 460px; font-family: monospace;">
         <div class="modal-header">
             <h3>Invoice Receipt</h3>
             <button class="modal-close" onclick="closeModal('receiptModal')">&times;</button>
@@ -290,8 +311,82 @@
             <!-- Dynamic Receipt populated by JS -->
         </div>
         <div style="padding: 1rem 1.5rem; border-top: 1px solid var(--surface-border); display: flex; gap: 0.5rem;">
-            <button class="btn btn-primary" style="flex: 1;" onclick="window.print()">Print Receipt</button>
+            <a href="#" id="receiptFullViewBtn" target="_blank" class="btn btn-secondary" style="font-size: 0.8125rem;">View Full Invoice</a>
+            <button class="btn btn-primary" style="flex: 1;" onclick="printPosReceipt()">Print Receipt</button>
             <button class="btn btn-secondary" onclick="closeModal('receiptModal')">Done</button>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Sales Modal -->
+<div class="modal-backdrop" id="recentSalesModal">
+    <div class="modal-box" style="max-width: 720px;">
+        <div class="modal-header">
+            <h3>Recent Sales &amp; Invoices</h3>
+            <button class="modal-close" onclick="closeModal('recentSalesModal')">&times;</button>
+        </div>
+        <div class="modal-body" style="padding: 0;">
+            <div class="table-responsive" style="max-height: 440px; overflow-y: auto;">
+                <table class="data-table" style="margin: 0;">
+                    <thead>
+                        <tr>
+                            <th>Invoice #</th>
+                            <th>Time</th>
+                            <th>Items &amp; IMEI</th>
+                            <th>Total</th>
+                            <th style="text-align: right;">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($recentSales as $sale)
+                        <tr>
+                            <td>
+                                <strong style="color: #4f46e5; font-family: monospace; font-size: 0.875rem;">{{ $sale->invoice_number }}</strong>
+                                <div style="font-size: 0.72rem; color: var(--text-muted);">
+                                    {{ $sale->customer->name ?? 'Walk-in Customer' }}
+                                </div>
+                            </td>
+                            <td style="font-size: 0.75rem; color: var(--text-muted); white-space: nowrap;">
+                                {{ \Carbon\Carbon::parse($sale->created_at)->format('h:i A') }}
+                            </td>
+                            <td>
+                                <div style="font-size: 0.8125rem; max-width: 280px;">
+                                    @foreach($sale->items as $it)
+                                        <div style="margin-bottom: 2px;">
+                                            <span>{{ $it->item_name }}</span>
+                                            @if($it->phoneDevice)
+                                                <span class="badge badge-info" style="font-size: 0.65rem; font-family: monospace; padding: 0.05rem 0.3rem;">
+                                                    IMEI: {{ $it->phoneDevice->imei_1 }}
+                                                </span>
+                                            @endif
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </td>
+                            <td>
+                                <strong style="color: #166534; font-size: 0.875rem;">LKR {{ number_format($sale->total_amount, 2) }}</strong>
+                                <div style="font-size: 0.7rem; color: #64748b; text-transform: uppercase;">{{ $sale->payment_method }}</div>
+                            </td>
+                            <td style="text-align: right; white-space: nowrap;">
+                                <a href="{{ route('shop.sales.show', $sale) }}" target="_blank" class="btn btn-secondary btn-sm" style="padding: 0.25rem 0.55rem; font-size: 0.75rem;">
+                                    Details / Print
+                                </a>
+                            </td>
+                        </tr>
+                        @empty
+                        <tr>
+                            <td colspan="5" style="text-align: center; color: var(--text-muted); padding: 2.5rem;">
+                                No recent sales transactions found today.
+                            </td>
+                        </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div style="padding: 1rem 1.5rem; border-top: 1px solid var(--surface-border); display: flex; justify-content: space-between; align-items: center;">
+            <a href="{{ route('shop.sales') }}" class="btn btn-secondary btn-sm">View Full Sales Directory</a>
+            <button type="button" class="btn btn-primary btn-sm" onclick="closeModal('recentSalesModal')">Close</button>
         </div>
     </div>
 </div>
@@ -517,34 +612,92 @@
 
     function showReceipt(sale) {
         const rc = document.getElementById('receiptContent');
+        const items = sale.items || [];
+        const payments = sale.payments || [];
+
+        const itemsHtml = items.map(item => `
+            <div style="display:flex; justify-content:space-between; margin-bottom: 0.35rem; font-size: 0.8125rem;">
+                <div style="padding-right: 0.5rem;">
+                    <strong>${item.item_name || (item.product ? item.product.name : 'Item')}</strong> x${item.quantity}
+                    ${item.phone_device ? `<div style="font-size: 0.7rem; color: #0284c7; font-family: monospace;">IMEI: ${item.phone_device.imei_1}</div>` : ''}
+                </div>
+                <div style="font-weight: 700;">LKR ${parseFloat(item.subtotal || (item.quantity * item.unit_price)).toFixed(2)}</div>
+            </div>
+        `).join('');
+
+        const paymentsHtml = payments.map(p => `
+            <div style="display:flex; justify-content:space-between; font-size: 0.75rem; color: #475569;">
+                <span>${p.payment_method.toUpperCase().replace('_', ' ')}:</span>
+                <span>LKR ${parseFloat(p.amount).toFixed(2)}</span>
+            </div>
+        `).join('');
+
         rc.innerHTML = `
-            <div style="text-align: center; margin-bottom: 1rem; border-bottom: 1px dashed #cbd5e1; padding-bottom: 0.75rem;">
-                <h4 style="margin: 0; font-size: 1.1rem; font-weight: 700;">{{ auth()->user()->shop->name ?? 'Phone Shop' }}</h4>
-                <div style="font-size: 0.75rem; color: #64748b;">Official POS Tax Invoice</div>
-                <div style="font-size: 0.75rem; margin-top: 0.25rem;">Invoice: <strong>${sale.invoice_number}</strong></div>
-                <div style="font-size: 0.75rem;">Date: ${sale.sale_date}</div>
-            </div>
-            <div style="margin-bottom: 1rem;">
-                ${sale.items.map(item => `
-                    <div style="display:flex; justify-content:space-between; margin-bottom: 0.25rem;">
-                        <span>${item.product_name} x${item.quantity}</span>
-                        <span>LKR ${parseFloat(item.subtotal).toFixed(2)}</span>
+            <div id="posReceiptPrintArea">
+                <div style="text-align: center; margin-bottom: 0.75rem; border-bottom: 1px dashed #cbd5e1; padding-bottom: 0.75rem;">
+                    <h4 style="margin: 0; font-size: 1.15rem; font-weight: 800;">{{ auth()->user()->shop->name ?? 'Phone Shop' }}</h4>
+                    <div style="font-size: 0.75rem; color: #64748b;">Official POS Tax Invoice &amp; Receipt</div>
+                    <div style="font-size: 0.8125rem; font-weight: 700; color: #4f46e5; margin-top: 0.35rem; font-family: monospace;">Invoice: ${sale.invoice_number}</div>
+                    <div style="font-size: 0.75rem; color: #64748b;">Date: ${sale.sale_date} | Cashier: ${sale.cashier ? sale.cashier.name : '{{ auth()->user()->name }}'}</div>
+                    ${sale.customer ? `<div style="font-size: 0.75rem; color: #0f172a; margin-top: 0.2rem;">Customer: <strong>${sale.customer.name}</strong> (${sale.customer.phone})</div>` : '<div style="font-size: 0.75rem; color: #64748b; font-style: italic;">Walk-in Customer</div>'}
+                </div>
+                <div style="margin-bottom: 0.75rem;">
+                    ${itemsHtml}
+                </div>
+                <div style="border-top: 1px dashed #cbd5e1; padding-top: 0.5rem; margin-bottom: 0.75rem;">
+                    <div style="display:flex; justify-content:space-between; font-size: 0.8125rem;">
+                        <span style="color: #64748b;">Subtotal:</span>
+                        <span>LKR ${parseFloat(sale.subtotal).toFixed(2)}</span>
                     </div>
-                    ${item.imei ? `<div style="font-size: 0.7rem; color: #64748b;">IMEI: ${item.imei}</div>` : ''}
-                `).join('')}
-            </div>
-            <div style="border-top: 1px dashed #cbd5e1; padding-top: 0.5rem; margin-bottom: 0.75rem;">
-                <div style="display:flex; justify-content:space-between; font-weight:700;">
-                    <span>Grand Total:</span>
-                    <span>LKR ${parseFloat(sale.total_amount).toFixed(2)}</span>
+                    ${sale.discount_amount > 0 ? `
+                        <div style="display:flex; justify-content:space-between; font-size: 0.8125rem; color: #b91c1c;">
+                            <span>Discount:</span>
+                            <span>-LKR ${parseFloat(sale.discount_amount).toFixed(2)}</span>
+                        </div>
+                    ` : ''}
+                    <div style="display:flex; justify-content:space-between; font-weight:800; font-size: 1.1rem; color: #0f172a; border-top: 1px solid #e2e8f0; padding-top: 0.35rem; margin-top: 0.35rem;">
+                        <span>Grand Total:</span>
+                        <span style="color: #166534;">LKR ${parseFloat(sale.total_amount).toFixed(2)}</span>
+                    </div>
+                </div>
+                <div style="background: #f8fafc; border-radius: 6px; padding: 0.5rem 0.75rem; margin-bottom: 0.75rem;">
+                    ${paymentsHtml}
+                </div>
+                <div style="font-size: 0.72rem; color: #64748b; text-align: center; margin-top: 0.75rem;">
+                    Thank you for your purchase!<br>
+                    Official Warranty applies per serial/IMEI record.
                 </div>
             </div>
-            <div style="font-size: 0.75rem; color: #64748b; text-align: center; margin-top: 1rem;">
-                Thank you for your purchase!<br>
-                Items covered under official warranty terms where applicable.
-            </div>
         `;
+        document.getElementById('receiptFullViewBtn').href = `/shop/sales/${sale.id}`;
         openModal('receiptModal');
+    }
+
+    function printPosReceipt() {
+        const printContent = document.getElementById('posReceiptPrintArea');
+        if (!printContent) return;
+
+        const printWindow = window.open('', '', 'width=450,height=600');
+        printWindow.document.write(`
+            <html>
+                <head>
+                    <title>Receipt</title>
+                    <style>
+                        body { font-family: monospace; margin: 15px; font-size: 12px; }
+                        @media print { body { margin: 0; } }
+                    </style>
+                </head>
+                <body>
+                    ${printContent.innerHTML}
+                </body>
+            </html>
+        `);
+        printWindow.document.close();
+        printWindow.focus();
+        setTimeout(() => {
+            printWindow.print();
+            printWindow.close();
+        }, 300);
     }
 </script>
 @endpush

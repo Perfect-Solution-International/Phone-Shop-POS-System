@@ -16,20 +16,43 @@ class SubscriptionPayment extends Model
         'plan_id',
         'subscription_id',
         'amount',
+        'discount_amount',
+        'refunded_amount',
         'payment_method',
+        'billing_cycle',
         'status',
         'transaction_id',
         'reference_number',
         'receipt_url',
         'rejection_reason',
+        'refund_reason',
         'verified_at',
         'verified_by',
+        'refunded_at',
     ];
 
     protected $casts = [
         'amount' => 'decimal:2',
+        'discount_amount' => 'decimal:2',
+        'refunded_amount' => 'decimal:2',
         'verified_at' => 'datetime',
+        'refunded_at' => 'datetime',
     ];
+
+    public function isFullyRefunded(): bool
+    {
+        return $this->status === 'refunded' || ($this->refunded_amount > 0 && $this->refunded_amount >= $this->amount);
+    }
+
+    public function isPartiallyRefunded(): bool
+    {
+        return $this->refunded_amount > 0 && $this->refunded_amount < $this->amount;
+    }
+
+    public function netAmount(): float
+    {
+        return max(0.0, (float) $this->amount - (float) $this->refunded_amount);
+    }
 
     public function shop(): BelongsTo
     {

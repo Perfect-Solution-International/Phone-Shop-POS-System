@@ -71,6 +71,10 @@
                         </td>
                         <td>
                             <div style="display: flex; gap: 0.4rem;">
+                                <form method="POST" action="{{ route('superadmin.shops.switch', $shop->id) }}" style="display: inline; margin: 0;">
+                                    @csrf
+                                    <button type="submit" class="btn-action btn-primary" title="Access shop portal as Super Admin" style="font-size: 0.775rem;">Access Shop</button>
+                                </form>
                                 <a href="{{ route('superadmin.shops.show', $shop->id) }}" class="btn-action btn-outline">Details</a>
                                 <form method="POST" action="{{ route('superadmin.shops.toggle-suspension', $shop->id) }}" style="display: inline;" onsubmit="return confirm('Change access state for this shop?');">
                                     @csrf

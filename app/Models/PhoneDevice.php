@@ -13,6 +13,7 @@ class PhoneDevice extends Model
 
     protected $fillable = [
         'product_id',
+        'supplier_id',
         'brand',
         'model',
         'storage',
@@ -39,6 +40,11 @@ class PhoneDevice extends Model
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class);
+    }
+
+    public function supplier(): BelongsTo
+    {
+        return $this->belongsTo(Supplier::class);
     }
 
     public function sale(): BelongsTo

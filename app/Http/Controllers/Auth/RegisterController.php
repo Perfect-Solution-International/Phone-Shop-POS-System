@@ -14,14 +14,18 @@ use Illuminate\Support\Facades\Auth;
 
 class RegisterController extends Controller
 {
-    public function showRegistrationForm(Request $request): View|RedirectResponse
+    public function showRegistrationForm(Request $request): View
     {
-        if ($request->user()) {
-            return redirect()->route('app');
+        $currentUser = $request->user();
+        $currentDestination = null;
+        if ($currentUser) {
+            $currentDestination = app(\App\Http\Controllers\Api\AuthController::class)->destination($currentUser);
         }
 
         return view('auth.register', [
             'applicationName' => config('app.name') === 'Laravel' ? 'SaaS Phone Shop POS System' : config('app.name'),
+            'currentUser' => $currentUser,
+            'currentDestination' => $currentDestination,
         ]);
     }
 

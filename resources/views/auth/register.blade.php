@@ -101,7 +101,7 @@
          */
         .register-shell {
             width: 100%;
-            max-width: 540px;
+            max-width: 580px;
             margin: 0 auto;
             position: relative;
             z-index: 1;
@@ -309,6 +309,38 @@
         .form-input:focus + .input-icon-prefix,
         .input-wrapper:focus-within .input-icon-prefix {
             color: var(--brand-indigo-600);
+        }
+
+        select.form-input {
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748b' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            background-size: 16px 16px;
+            cursor: pointer;
+            padding-right: 2.5rem;
+        }
+
+        .trial-feature-pill {
+            background: linear-gradient(135deg, #eef2ff 0%, #f5f3ff 100%);
+            border: 1px solid #c7d2fe;
+            border-radius: 9999px;
+            padding: 0.55rem 1rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            font-size: 0.8125rem;
+            color: #3730a3;
+            width: 100%;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+
+        .trial-feature-pill svg {
+            color: #f59e0b;
+            flex-shrink: 0;
         }
 
         .form-input.is-invalid {
@@ -720,6 +752,33 @@
                 <p class="card-subtitle">Create your store account &amp; POS sales counter</p>
             </header>
 
+            @if (isset($currentUser) && $currentUser)
+                <div style="background: #eef2ff; border: 1.5px solid #c7d2fe; border-radius: 12px; padding: 0.85rem 1rem; margin-bottom: 1.25rem; font-size: 0.8125rem;">
+                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; flex-wrap: wrap;">
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                            <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #10b981;"></span>
+                            <span style="color: #4338ca; font-weight: 600;">Signed in as:</span>
+                            <strong style="color: #1e1b4b;">{{ $currentUser->name }} ({{ $currentUser->email }})</strong>
+                        </div>
+                        <div style="display: flex; gap: 0.75rem; align-items: center;">
+                            @if (isset($currentDestination) && $currentDestination)
+                                <a href="{{ $currentDestination }}" style="color: #4f46e5; font-weight: 700; text-decoration: none; display: inline-flex; align-items: center; gap: 0.25rem;">
+                                    Open Dashboard &rarr;
+                                </a>
+                            @endif
+                            <a href="{{ route('logout') }}" style="color: #ef4444; font-weight: 600; text-decoration: underline;">Sign out</a>
+                        </div>
+                    </div>
+                </div>
+            @endif
+
+            <div class="trial-feature-pill">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                </svg>
+                <span><strong>7-Day Free Trial</strong> included with full POS &amp; Inventory access</span>
+            </div>
+
             @if (session('status'))
                 <div class="alert-box alert-box-success" role="status">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -894,6 +953,153 @@
                     @enderror
                 </div>
 
+                <!-- Business Address -->
+                <div class="form-group">
+                    <label for="business_address" class="form-label">
+                        <span>Business Address</span>
+                    </label>
+                    <div class="input-wrapper">
+                        <span class="input-icon-prefix" aria-hidden="true">
+                            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                                <circle cx="12" cy="10" r="3"></circle>
+                            </svg>
+                        </span>
+                        <input
+                            id="business_address"
+                            name="business_address"
+                            type="text"
+                            class="form-input @error('business_address') is-invalid @enderror"
+                            value="{{ old('business_address') }}"
+                            autocomplete="street-address"
+                            placeholder="e.g. No. 142 Galle Road, Colombo 03"
+                            aria-describedby="@error('business_address') business_address_error @enderror"
+                            @error('business_address') aria-invalid="true" @enderror
+                        >
+                    </div>
+                    @error('business_address')
+                        <p id="business_address_error" class="field-error" role="alert">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                            <span>{{ $message }}</span>
+                        </p>
+                    @enderror
+                </div>
+
+                <!-- 2-Column Row: Country & Timezone -->
+                <div class="form-grid">
+                    <!-- Country -->
+                    <div class="form-group">
+                        <label for="country" class="form-label">
+                            <span>Country</span>
+                        </label>
+                        <div class="input-wrapper">
+                            <span class="input-icon-prefix" aria-hidden="true">
+                                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <line x1="2" y1="12" x2="22" y2="12"></line>
+                                    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                                </svg>
+                            </span>
+                            <select
+                                id="country"
+                                name="country"
+                                class="form-input @error('country') is-invalid @enderror"
+                                aria-describedby="@error('country') country_error @enderror"
+                                @error('country') aria-invalid="true" @enderror
+                            >
+                                <option value="Sri Lanka" {{ old('country', 'Sri Lanka') === 'Sri Lanka' ? 'selected' : '' }}>Sri Lanka</option>
+                                <option value="India" {{ old('country') === 'India' ? 'selected' : '' }}>India</option>
+                                <option value="United Arab Emirates" {{ old('country') === 'United Arab Emirates' ? 'selected' : '' }}>United Arab Emirates</option>
+                                <option value="Singapore" {{ old('country') === 'Singapore' ? 'selected' : '' }}>Singapore</option>
+                                <option value="United Kingdom" {{ old('country') === 'United Kingdom' ? 'selected' : '' }}>United Kingdom</option>
+                                <option value="Australia" {{ old('country') === 'Australia' ? 'selected' : '' }}>Australia</option>
+                                <option value="United States" {{ old('country') === 'United States' ? 'selected' : '' }}>United States</option>
+                                <option value="Canada" {{ old('country') === 'Canada' ? 'selected' : '' }}>Canada</option>
+                                <option value="Malaysia" {{ old('country') === 'Malaysia' ? 'selected' : '' }}>Malaysia</option>
+                                <option value="Maldives" {{ old('country') === 'Maldives' ? 'selected' : '' }}>Maldives</option>
+                            </select>
+                        </div>
+                        @error('country')
+                            <p id="country_error" class="field-error" role="alert">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                                <span>{{ $message }}</span>
+                            </p>
+                        @enderror
+                    </div>
+
+                    <!-- Timezone -->
+                    <div class="form-group">
+                        <label for="timezone" class="form-label">
+                            <span>Timezone</span>
+                        </label>
+                        <div class="input-wrapper">
+                            <span class="input-icon-prefix" aria-hidden="true">
+                                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <polyline points="12 6 12 12 16 14"></polyline>
+                                </svg>
+                            </span>
+                            <select
+                                id="timezone"
+                                name="timezone"
+                                class="form-input @error('timezone') is-invalid @enderror"
+                                aria-describedby="@error('timezone') timezone_error @enderror"
+                                @error('timezone') aria-invalid="true" @enderror
+                            >
+                                <option value="Asia/Colombo" {{ old('timezone', 'Asia/Colombo') === 'Asia/Colombo' ? 'selected' : '' }}>Asia/Colombo (+05:30)</option>
+                                <option value="Asia/Kolkata" {{ old('timezone') === 'Asia/Kolkata' ? 'selected' : '' }}>Asia/Kolkata (+05:30)</option>
+                                <option value="Asia/Dubai" {{ old('timezone') === 'Asia/Dubai' ? 'selected' : '' }}>Asia/Dubai (+04:00)</option>
+                                <option value="Asia/Singapore" {{ old('timezone') === 'Asia/Singapore' ? 'selected' : '' }}>Asia/Singapore (+08:00)</option>
+                                <option value="UTC" {{ old('timezone') === 'UTC' ? 'selected' : '' }}>UTC (GMT+00:00)</option>
+                                <option value="Europe/London" {{ old('timezone') === 'Europe/London' ? 'selected' : '' }}>Europe/London (GMT+00/01)</option>
+                                <option value="America/New_York" {{ old('timezone') === 'America/New_York' ? 'selected' : '' }}>America/New_York (EST)</option>
+                                <option value="Australia/Sydney" {{ old('timezone') === 'Australia/Sydney' ? 'selected' : '' }}>Australia/Sydney (AEST)</option>
+                            </select>
+                        </div>
+                        @error('timezone')
+                            <p id="timezone_error" class="field-error" role="alert">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                                <span>{{ $message }}</span>
+                            </p>
+                        @enderror
+                    </div>
+                </div>
+
+                <!-- Business Registration Number (Optional) -->
+                <div class="form-group">
+                    <label for="business_reg_number" class="form-label">
+                        <span>Business Registration Details <span style="font-weight: normal; color: #64748b;">(Optional)</span></span>
+                    </label>
+                    <div class="input-wrapper">
+                        <span class="input-icon-prefix" aria-hidden="true">
+                            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 2 2h12a2 2 0 0 2-2V8z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                                <line x1="16" y1="13" x2="8" y2="13"></line>
+                                <line x1="16" y1="17" x2="8" y2="17"></line>
+                                <polyline points="10 9 9 9 8 9"></polyline>
+                            </svg>
+                        </span>
+                        <input
+                            id="business_reg_number"
+                            name="business_reg_number"
+                            type="text"
+                            class="form-input @error('business_reg_number') is-invalid @enderror"
+                            value="{{ old('business_reg_number') }}"
+                            placeholder="e.g. PV-123456 or TIN 10928374 (if registered)"
+                            aria-describedby="business_reg_help @error('business_reg_number') business_reg_error @enderror"
+                            @error('business_reg_number') aria-invalid="true" @enderror
+                        >
+                    </div>
+                    <p id="business_reg_help" class="field-help">Optional: Business registration number or tax ID for official receipts and invoices.</p>
+                    @error('business_reg_number')
+                        <p id="business_reg_error" class="field-error" role="alert">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                            <span>{{ $message }}</span>
+                        </p>
+                    @enderror
+                </div>
+
                 <!-- Master Password -->
                 <div class="form-group">
                     <label for="password" class="form-label">
@@ -1022,7 +1228,7 @@
                         <circle cx="12" cy="12" r="10" stroke-opacity="0.25"></circle>
                         <path d="M12 2a10 10 0 0 1 10 10" stroke-linecap="round"></path>
                     </svg>
-                    <span id="submitBtnText">Create Account</span>
+                    <span id="submitBtnText">Register Shop &amp; Start Free Trial</span>
                     <svg id="submitArrow" class="btn-arrow-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                         <line x1="5" y1="12" x2="19" y2="12"></line>
                         <polyline points="12 5 19 12 12 19"></polyline>
