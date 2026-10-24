@@ -43,6 +43,7 @@ class Product extends Model
         'barcode',
         'sku',
         'selling_price',
+        'quantity',
     ];
 
     protected static function booted(): void
@@ -86,6 +87,16 @@ class Product extends Model
     public function isLowStock(): bool
     {
         return $this->stock_quantity <= $this->alert_quantity;
+    }
+
+    public function getQuantityAttribute(): int
+    {
+        return (int) ($this->attributes['stock_quantity'] ?? 0);
+    }
+
+    public function setQuantityAttribute($value): void
+    {
+        $this->attributes['stock_quantity'] = $value;
     }
 
     public function getSellingPriceAttribute(): float

@@ -12,6 +12,7 @@ class PhoneDevice extends Model
     use BelongsToTenant, HasFactory;
 
     protected $fillable = [
+        'outlet_id',
         'product_id',
         'supplier_id',
         'brand',
@@ -36,6 +37,11 @@ class PhoneDevice extends Model
         'selling_price' => 'decimal:2',
         'sold_at' => 'datetime',
     ];
+
+    public function outlet(): BelongsTo
+    {
+        return $this->belongsTo(Outlet::class);
+    }
 
     public function product(): BelongsTo
     {

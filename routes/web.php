@@ -135,6 +135,35 @@ Route::prefix('shop')->name('shop.')->middleware(['auth', 'verified', 'shop'])->
 
     // Reports & Analytics (Section 19)
     Route::get('/reports', [\App\Http\Controllers\Shop\ShopReportViewController::class, 'index'])->name('reports');
+
+    // Staff HRM & Payroll
+    Route::get('/staff', [\App\Http\Controllers\Shop\StaffViewController::class, 'index'])->name('staff');
+    Route::post('/staff/employees', [\App\Http\Controllers\Shop\StaffViewController::class, 'storeEmployee'])->name('staff.employees.store');
+    Route::put('/staff/employees/{employee}', [\App\Http\Controllers\Shop\StaffViewController::class, 'updateEmployee'])->name('staff.employees.update');
+    Route::delete('/staff/employees/{employee}', [\App\Http\Controllers\Shop\StaffViewController::class, 'destroyEmployee'])->name('staff.employees.destroy');
+    Route::post('/staff/attendance', [\App\Http\Controllers\Shop\StaffViewController::class, 'clockAttendance'])->name('staff.attendance.clock');
+    Route::post('/staff/leaves', [\App\Http\Controllers\Shop\StaffViewController::class, 'storeLeave'])->name('staff.leaves.store');
+    Route::patch('/staff/leaves/{leave}/status', [\App\Http\Controllers\Shop\StaffViewController::class, 'updateLeaveStatus'])->name('staff.leaves.status');
+    Route::post('/staff/payroll', [\App\Http\Controllers\Shop\StaffViewController::class, 'storePayroll'])->name('staff.payroll.store');
+    Route::post('/staff/payroll/auto-generate', [\App\Http\Controllers\Shop\StaffViewController::class, 'autoGeneratePayroll'])->name('staff.payroll.auto');
+    Route::put('/staff/payroll/{payroll}', [\App\Http\Controllers\Shop\StaffViewController::class, 'updatePayroll'])->name('staff.payroll.update');
+    Route::delete('/staff/payroll/{payroll}', [\App\Http\Controllers\Shop\StaffViewController::class, 'destroyPayroll'])->name('staff.payroll.destroy');
+    Route::patch('/staff/payroll/{payroll}/paid', [\App\Http\Controllers\Shop\StaffViewController::class, 'markPayrollPaid'])->name('staff.payroll.paid');
+
+    // High Priority: Used Phone Buying & Trade-Ins (Section 8.3)
+    Route::get('/trade-ins', [\App\Http\Controllers\Shop\TradeInViewController::class, 'index'])->name('trade-ins.index');
+    Route::post('/trade-ins', [\App\Http\Controllers\Shop\TradeInViewController::class, 'store'])->name('trade-ins.store');
+
+    // High Priority: Branch-to-Branch Stock Transfers (Section 17)
+    Route::get('/transfers', [\App\Http\Controllers\Shop\StockTransferViewController::class, 'index'])->name('transfers.index');
+    Route::post('/transfers', [\App\Http\Controllers\Shop\StockTransferViewController::class, 'store'])->name('transfers.store');
+    Route::patch('/transfers/{transfer}/receive', [\App\Http\Controllers\Shop\StockTransferViewController::class, 'receive'])->name('transfers.receive');
+    Route::patch('/transfers/{transfer}/cancel', [\App\Http\Controllers\Shop\StockTransferViewController::class, 'cancel'])->name('transfers.cancel');
+
+    // High Priority: Quotations & Proforma Invoices (Section 7.1)
+    Route::get('/quotations', [\App\Http\Controllers\Shop\QuotationViewController::class, 'index'])->name('quotations.index');
+    Route::post('/quotations', [\App\Http\Controllers\Shop\QuotationViewController::class, 'store'])->name('quotations.store');
+    Route::post('/quotations/{quotation}/convert', [\App\Http\Controllers\Shop\QuotationViewController::class, 'convertToSale'])->name('quotations.convert');
 });
 
 // SaaS Super Admin Panel
