@@ -299,6 +299,118 @@ class FullOperationsSuiteTest extends TestCase
         $this->assertEquals('returned', $sale->status);
     }
 
+    public function test_returned_defective_and_sellable_device_handling(): void
+    {
+        [$shop, $owner] = $this->createShopEnvironment();
+
+        // 1. Create serialized phones: One will be returned as defective, one as sellable
+        $defectivePhone = PhoneDevice::create([
+            'shop_id' => $shop->id,
+            'brand' => 'Apple',
+            'model' => 'iPhone 13',
+            'condition' => 'used',
+            'imei_1' => '358888000111222',
+            'purchase_cost' => 120000.00,
+            'selling_price' => 150000.00,
+            'status' => 'sold',
+        ]);
+
+        $sellablePhone = PhoneDevice::create([
+            'shop_id' => $shop->id,
+            'brand' => 'Google',
+            'model' => 'Pixel 7',
+            'condition' => 'new',
+            'imei_1' => '357777000333444',
+            'purchase_cost' => 140000.00,
+            'selling_price' => 175000.00,
+            'status' => 'sold',
+        ]);
+
+        $sale = Sale::create([
+            'shop_id' => $shop->id,
+            'user_id' => $owner->id,
+            'invoice_number' => 'INV-TEST-DEVICE-RET-01',
+            'sale_date' => now()->toDateString(),
+            'subtotal' => 325000.00,
+            'total_amount' => 325000.00,
+            'paid_amount' => 325000.00,
+            'payment_method' => 'card',
+            'status' => 'completed',
+        ]);
+
+        $defectiveItem = SaleItem::create([
+            'shop_id' => $shop->id,
+            'sale_id' => $sale->id,
+            'phone_device_id' => $defectivePhone->id,
+            'item_name' => 'iPhone 13',
+            'quantity' => 1,
+            'unit_price' => 150000.00,
+            'subtotal' => 150000.00,
+        ]);
+
+        $sellableItem = SaleItem::create([
+            'shop_id' => $shop->id,
+            'sale_id' => $sale->id,
+            'phone_device_id' => $sellablePhone->id,
+            'item_name' => 'Pixel 7',
+            'quantity' => 1,
+            'unit_price' => 175000.00,
+            'subtotal' => 175000.00,
+        ]);
+
+        // Process Return: defectiveItem returned as defective, sellableItem returned as resalable
+        $response = $this->actingAs($owner)->post('/shop/sales-returns', [
+            'sale_id' => $sale->id,
+            'return_date' => now()->toDateString(),
+            'reason' => 'Screen defect on iPhone, customer changed mind on Pixel',
+            'items' => [
+                [
+                    'sale_item_id' => $defectiveItem->id,
+                    'quantity' => 1,
+                    'refund_amount' => 150000.00,
+                    'restock' => 0,
+                    'condition' => 'defective',
+                ],
+                [
+                    'sale_item_id' => $sellableItem->id,
+                    'quantity' => 1,
+                    'refund_amount' => 175000.00,
+                    'restock' => 1,
+                    'condition' => 'resalable',
+                ],
+            ],
+        ]);
+
+        $response->assertRedirect(route('shop.sales.returns'));
+
+        // Defective device status transitions to 'defective'
+        $defectivePhone->refresh();
+        $this->assertEquals('defective', $defectivePhone->status);
+        $this->assertNull($defectivePhone->sold_at);
+        $this->assertNull($defectivePhone->sale_id);
+
+        // Sellable device status transitions back to 'in_stock'
+        $sellablePhone->refresh();
+        $this->assertEquals('in_stock', $sellablePhone->status);
+        $this->assertNull($sellablePhone->sold_at);
+        $this->assertNull($sellablePhone->sale_id);
+
+        // Stock movement ledger tracks both device returns
+        $this->assertDatabaseHas('stock_movements', [
+            'shop_id' => $shop->id,
+            'phone_device_id' => $defectivePhone->id,
+            'type' => 'return',
+            'quantity' => 1,
+        ]);
+
+        $this->assertDatabaseHas('stock_movements', [
+            'shop_id' => $shop->id,
+            'phone_device_id' => $sellablePhone->id,
+            'type' => 'return',
+            'quantity' => 1,
+        ]);
+    }
+
     public function test_shop_settings_profile_update(): void
     {
         [$shop, $owner] = $this->createShopEnvironment();
