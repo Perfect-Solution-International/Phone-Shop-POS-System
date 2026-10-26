@@ -125,6 +125,9 @@ Route::prefix('shop')->name('shop.')->middleware(['auth', 'verified', 'shop'])->
     // Stock Movement Audit & Inventory (Section 11)
     Route::get('/inventory', [\App\Http\Controllers\Shop\InventoryMovementViewController::class, 'index'])->name('inventory');
     Route::post('/inventory/adjust', [\App\Http\Controllers\Shop\InventoryMovementViewController::class, 'adjust'])->name('inventory.adjust');
+    Route::get('/inventory/grns', [\App\Http\Controllers\Shop\GrnViewController::class, 'index'])->name('inventory.grns');
+    Route::post('/inventory/grns', [\App\Http\Controllers\Shop\GrnViewController::class, 'store'])->name('inventory.grns.store');
+    Route::get('/inventory/grns/{grn}', [\App\Http\Controllers\Shop\GrnViewController::class, 'show'])->name('inventory.grns.show');
 
     // Sales Returns & Refunds (Section 7.3)
     Route::get('/sales-returns', [\App\Http\Controllers\Shop\SaleReturnViewController::class, 'index'])->name('sales.returns');
