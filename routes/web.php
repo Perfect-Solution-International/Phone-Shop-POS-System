@@ -69,6 +69,7 @@ Route::prefix('shop')->name('shop.')->middleware(['auth', 'verified', 'shop'])->
     Route::get('/warranties', [\App\Http\Controllers\Shop\WarrantyViewController::class, 'index'])->name('warranties');
     Route::post('/warranties', [\App\Http\Controllers\Shop\WarrantyViewController::class, 'store'])->name('warranties.store');
     Route::post('/warranties/{warranty}/claim', [\App\Http\Controllers\Shop\WarrantyViewController::class, 'claim'])->name('warranties.claim');
+    Route::post('/warranties/claims/{claim}/review', [\App\Http\Controllers\Shop\WarrantyViewController::class, 'reviewClaim'])->name('warranties.claims.review');
 
     // Spare Parts Inventory (Section 14)
     Route::get('/spare-parts', [\App\Http\Controllers\Shop\SparePartViewController::class, 'index'])->name('spare-parts');
@@ -178,6 +179,11 @@ Route::prefix('shop')->name('shop.')->middleware(['auth', 'verified', 'shop'])->
     Route::get('/subscription', [\App\Http\Controllers\Shop\SubscriptionViewController::class, 'index'])->name('subscription.index');
     Route::post('/subscription/checkout', [\App\Http\Controllers\Shop\SubscriptionViewController::class, 'checkout'])->name('subscription.checkout');
     Route::post('/subscription/bank-transfer', [\App\Http\Controllers\Shop\SubscriptionViewController::class, 'bankTransfer'])->name('subscription.bank-transfer');
+    Route::post('/subscription/gateway/initiate', [\App\Http\Controllers\Payment\GatewayCallbackController::class, 'initiate'])->name('subscription.gateway.initiate');
+    Route::get('/subscription/gateway/sandbox-checkout', [\App\Http\Controllers\Payment\GatewayCallbackController::class, 'sandboxCheckout'])->name('subscription.gateway.sandbox-checkout');
+    Route::post('/subscription/gateway/simulate-action', [\App\Http\Controllers\Payment\GatewayCallbackController::class, 'simulateSandboxAction'])->name('subscription.gateway.simulate-action');
+    Route::get('/subscription/gateway/return', [\App\Http\Controllers\Payment\GatewayCallbackController::class, 'handleReturn'])->name('subscription.gateway.return');
+    Route::get('/subscription/gateway/cancel', [\App\Http\Controllers\Payment\GatewayCallbackController::class, 'handleCancel'])->name('subscription.gateway.cancel');
 });
 
 // SaaS Super Admin Panel

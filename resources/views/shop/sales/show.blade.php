@@ -15,6 +15,22 @@
         box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
     }
 
+    @media (max-width: 640px) {
+        .invoice-card {
+            padding: 1.25rem 0.85rem;
+        }
+        .invoice-header-row {
+            flex-direction: column !important;
+            gap: 1rem;
+        }
+        .invoice-header-row > div {
+            text-align: left !important;
+        }
+        .invoice-totals-box {
+            width: 100% !important;
+        }
+    }
+
     @media print {
         body {
             background: #ffffff !important;
@@ -52,7 +68,7 @@
 
 <div class="invoice-card">
     <!-- Header -->
-    <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #e2e8f0; padding-bottom: 1.5rem; margin-bottom: 1.75rem;">
+    <div class="invoice-header-row" style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #e2e8f0; padding-bottom: 1.5rem; margin-bottom: 1.75rem;">
         <div>
             <h2 style="margin: 0; font-size: 1.5rem; font-weight: 800; color: #0f172a;">{{ auth()->user()->shop->name ?? 'Phone Shop' }}</h2>
             <div style="font-size: 0.8125rem; color: #64748b; margin-top: 0.25rem;">
@@ -97,45 +113,47 @@
     </div>
 
     <!-- Line Items Table -->
-    <table style="width: 100%; border-collapse: collapse; margin-bottom: 1.5rem;">
-        <thead>
-            <tr style="border-bottom: 2px solid #cbd5e1; text-align: left; font-size: 0.75rem; text-transform: uppercase; color: #64748b;">
-                <th style="padding: 0.75rem 0.5rem;">#</th>
-                <th style="padding: 0.75rem 0.5rem;">Item Description &amp; Serial/IMEI</th>
-                <th style="padding: 0.75rem 0.5rem; text-align: center;">Qty</th>
-                <th style="padding: 0.75rem 0.5rem; text-align: right;">Unit Price (LKR)</th>
-                <th style="padding: 0.75rem 0.5rem; text-align: right;">Amount (LKR)</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach($sale->items as $index => $item)
-            <tr style="border-bottom: 1px solid #f1f5f9; font-size: 0.875rem;">
-                <td style="padding: 0.75rem 0.5rem; color: #64748b;">{{ $index + 1 }}</td>
-                <td style="padding: 0.75rem 0.5rem;">
-                    <strong style="color: #0f172a;">{{ $item->item_name }}</strong>
-                    @if($item->phoneDevice)
-                        <div style="font-family: monospace; font-size: 0.75rem; color: #0284c7; margin-top: 3px;">
-                            IMEI 1: {{ $item->phoneDevice->imei_1 }}
-                            @if($item->phoneDevice->imei_2)
-                                | IMEI 2: {{ $item->phoneDevice->imei_2 }}
-                            @endif
-                            @if($item->phoneDevice->serial_number)
-                                | S/N: {{ $item->phoneDevice->serial_number }}
-                            @endif
-                        </div>
-                    @endif
-                </td>
-                <td style="padding: 0.75rem 0.5rem; text-align: center; color: #475569;">{{ $item->quantity }}</td>
-                <td style="padding: 0.75rem 0.5rem; text-align: right; color: #475569;">{{ number_format($item->unit_price, 2) }}</td>
-                <td style="padding: 0.75rem 0.5rem; text-align: right; font-weight: 700; color: #0f172a;">{{ number_format($item->subtotal, 2) }}</td>
-            </tr>
-            @endforeach
-        </tbody>
-    </table>
+    <div class="table-responsive">
+        <table style="width: 100%; border-collapse: collapse; margin-bottom: 1.5rem;">
+            <thead>
+                <tr style="border-bottom: 2px solid #cbd5e1; text-align: left; font-size: 0.75rem; text-transform: uppercase; color: #64748b;">
+                    <th style="padding: 0.75rem 0.5rem;">#</th>
+                    <th style="padding: 0.75rem 0.5rem;">Item Description &amp; Serial/IMEI</th>
+                    <th style="padding: 0.75rem 0.5rem; text-align: center;">Qty</th>
+                    <th style="padding: 0.75rem 0.5rem; text-align: right;">Unit Price (LKR)</th>
+                    <th style="padding: 0.75rem 0.5rem; text-align: right;">Amount (LKR)</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($sale->items as $index => $item)
+                <tr style="border-bottom: 1px solid #f1f5f9; font-size: 0.875rem;">
+                    <td style="padding: 0.75rem 0.5rem; color: #64748b;">{{ $index + 1 }}</td>
+                    <td style="padding: 0.75rem 0.5rem;">
+                        <strong style="color: #0f172a;">{{ $item->item_name }}</strong>
+                        @if($item->phoneDevice)
+                            <div style="font-family: monospace; font-size: 0.75rem; color: #0284c7; margin-top: 3px;">
+                                IMEI 1: {{ $item->phoneDevice->imei_1 }}
+                                @if($item->phoneDevice->imei_2)
+                                    | IMEI 2: {{ $item->phoneDevice->imei_2 }}
+                                @endif
+                                @if($item->phoneDevice->serial_number)
+                                    | S/N: {{ $item->phoneDevice->serial_number }}
+                                @endif
+                            </div>
+                        @endif
+                    </td>
+                    <td style="padding: 0.75rem 0.5rem; text-align: center; color: #475569;">{{ $item->quantity }}</td>
+                    <td style="padding: 0.75rem 0.5rem; text-align: right; color: #475569;">{{ number_format($item->unit_price, 2) }}</td>
+                    <td style="padding: 0.75rem 0.5rem; text-align: right; font-weight: 700; color: #0f172a;">{{ number_format($item->subtotal, 2) }}</td>
+                </tr>
+                @endforeach
+            </tbody>
+        </table>
+    </div>
 
     <!-- Totals Calculation -->
     <div style="display: flex; justify-content: flex-end; margin-bottom: 2rem;">
-        <div style="width: 320px;">
+        <div class="invoice-totals-box" style="width: 320px;">
             <div style="display: flex; justify-content: space-between; font-size: 0.875rem; color: #475569; margin-bottom: 0.4rem;">
                 <span>Subtotal:</span>
                 <span style="font-weight: 600;">LKR {{ number_format($sale->subtotal, 2) }}</span>

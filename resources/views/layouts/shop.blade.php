@@ -583,14 +583,189 @@
         .alert-success { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
         .alert-danger { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
 
-        @media (max-width: 900px) {
-            body { flex-direction: column; }
-            .shop-sidebar { width: 100%; height: auto; position: static; }
-            .form-row { grid-template-columns: 1fr; }
+        /* Mobile Off-Canvas Sidebar & Overlay */
+        .shop-sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(6, 9, 19, 0.65);
+            backdrop-filter: blur(2px);
+            z-index: 1040;
+            opacity: 0;
+            transition: opacity 0.25s ease;
+        }
+
+        .shop-sidebar-overlay.active {
+            display: block;
+            opacity: 1;
+        }
+
+        .mobile-sidebar-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--text-heading);
+            padding: 0.35rem;
+            border-radius: 6px;
+            cursor: pointer;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .mobile-sidebar-toggle:hover {
+            background: #f1f5f9;
+        }
+
+        .sidebar-close-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: #94a3b8;
+            font-size: 1.5rem;
+            cursor: pointer;
+            margin-left: auto;
+            line-height: 1;
+            padding: 0.2rem 0.45rem;
+            border-radius: 4px;
+        }
+
+        .sidebar-close-btn:hover {
+            color: #ffffff;
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        /* Responsive Breakpoints */
+        @media (max-width: 992px) {
+            body {
+                position: relative;
+                overflow-x: hidden;
+            }
+
+            .mobile-sidebar-toggle {
+                display: inline-flex;
+            }
+
+            .sidebar-close-btn {
+                display: block;
+            }
+
+            .shop-sidebar {
+                position: fixed;
+                top: 0;
+                left: 0;
+                bottom: 0;
+                width: 280px;
+                max-width: 85vw;
+                height: 100vh;
+                z-index: 1050;
+                transform: translateX(-100%);
+                transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+                box-shadow: none;
+            }
+
+            .shop-sidebar.open {
+                transform: translateX(0);
+                box-shadow: 12px 0 35px -5px rgba(0, 0, 0, 0.5);
+            }
+
+            .shop-workspace {
+                width: 100%;
+                min-width: 0;
+            }
+
+            .shop-topbar {
+                height: 56px;
+                padding: 0 1rem;
+                gap: 0.5rem;
+            }
+
+            .shop-content {
+                padding: 1rem;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 0.75rem;
+            }
+
+            /* Responsive 2-column grids */
+            .grid-2col, [style*="grid-template-columns: 1fr 1fr"], [style*="grid-template-columns: 1fr 380px"], [style*="grid-template-columns: 360px 1fr"] {
+                grid-template-columns: 1fr !important;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .shop-topbar-title {
+                font-size: 0.95rem;
+            }
+
+            .shop-plan-pill {
+                display: none;
+            }
+
+            .topbar-action-text {
+                display: none;
+            }
+
+            .card-header {
+                flex-direction: column;
+                align-items: stretch !important;
+                gap: 0.75rem;
+            }
+
+            .card-header form {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .card-header form input,
+            .card-header form select {
+                max-width: 100% !important;
+                width: 100% !important;
+            }
+
+            .modal-box {
+                width: 95vw !important;
+                max-width: 95vw !important;
+                margin: 0.5rem auto !important;
+                max-height: 92vh;
+            }
+
+            .modal-header, .modal-body, .modal-footer {
+                padding: 0.85rem 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .shop-topbar {
+                padding: 0 0.65rem;
+            }
+
+            .shop-content {
+                padding: 0.65rem;
+            }
+
+            .card {
+                border-radius: 8px;
+            }
+
+            .table th, .table td {
+                padding: 0.5rem 0.65rem;
+                font-size: 0.8rem;
+            }
+
+            .btn {
+                padding: 0.45rem 0.75rem;
+                font-size: 0.8rem;
+            }
         }
     </style>
 </head>
 <body>
+    <!-- Mobile Off-Canvas Backdrop -->
+    <div class="shop-sidebar-overlay" id="shopSidebarOverlay" onclick="closeShopSidebar()"></div>
+
     <!-- Sidebar -->
     <aside class="shop-sidebar">
         <div class="shop-brand">
@@ -604,6 +779,7 @@
                 <span class="shop-brand-title">{{ auth()->user()->shop->name ?? 'Phone Shop' }}</span>
                 <span class="shop-brand-subtitle">Branch: {{ session('active_outlet_name', auth()->user()->shop->mainOutlet->name ?? 'Main Branch') }}</span>
             </div>
+            <button type="button" class="sidebar-close-btn" onclick="closeShopSidebar()" aria-label="Close navigation">&times;</button>
         </div>
 
         <nav class="shop-nav">
@@ -758,33 +934,41 @@
     <!-- Main Workspace -->
     <div class="shop-workspace">
         <header class="shop-topbar">
-            <div class="shop-topbar-title">
-                @yield('page-title', 'Overview')
-                <span class="shop-plan-pill">
-                    {{ auth()->user()->shop->activeSubscription->plan->name ?? 'Free Trial' }}
-                </span>
-                @if(auth()->user()->hasRole('Super Administrator') || auth()->user()->can('superadmin.view'))
-                    <span class="badge" style="background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); color: #ffffff; padding: 0.25rem 0.65rem; border-radius: 9999px; font-size: 0.72rem; font-weight: 700; display: inline-flex; align-items: center; gap: 0.35rem; box-shadow: 0 2px 4px rgba(79, 70, 229, 0.3);">
-                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
-                        Super Admin Mode
+            <div style="display: flex; align-items: center; gap: 0.65rem; min-width: 0; flex: 1;">
+                <button type="button" class="mobile-sidebar-toggle" onclick="openShopSidebar()" aria-label="Toggle navigation menu">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
+                </button>
+                <div class="shop-topbar-title" style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+                    <span>@yield('page-title', 'Overview')</span>
+                    <span class="shop-plan-pill">
+                        {{ auth()->user()->shop->activeSubscription->plan->name ?? 'Free Trial' }}
                     </span>
-                @endif
+                    @if(auth()->user()->hasRole('Super Administrator') || auth()->user()->can('superadmin.view'))
+                        <span class="badge" style="background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); color: #ffffff; padding: 0.2rem 0.55rem; border-radius: 9999px; font-size: 0.7rem; font-weight: 700; display: inline-flex; align-items: center; gap: 0.3rem;">
+                            Super Admin Mode
+                        </span>
+                    @endif
+                </div>
             </div>
 
-            <div style="display: flex; align-items: center; gap: 0.75rem;">
+            <div style="display: flex; align-items: center; gap: 0.5rem; flex-shrink: 0;">
                 @if(auth()->user()->hasRole('Super Administrator') || auth()->user()->can('superadmin.view'))
                     <a href="{{ route('superadmin.dashboard') }}" class="btn btn-sm" style="background: #1e1b4b; color: #c7d2fe; border: 1px solid #4f46e5; font-size: 0.78rem; display: inline-flex; align-items: center; gap: 0.35rem;" title="Return to Platform Super Admin">
                         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-                        SaaS Super Admin
+                        <span class="topbar-action-text">SaaS Super Admin</span>
                     </a>
                 @endif
                 <a href="{{ route('shop.outlets.index') }}" class="btn btn-sm btn-secondary" style="border-radius: 9999px; font-size: 0.78rem; display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.35rem 0.75rem;" title="Manage Outlets & Switch Branch">
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
-                    <span>Branch: <strong>{{ session('active_outlet_name', auth()->user()->shop->mainOutlet->name ?? 'Main Branch') }}</strong></span>
+                    <span><strong>{{ session('active_outlet_name', auth()->user()->shop->mainOutlet->name ?? 'Main') }}</strong></span>
                 </a>
-                <a href="{{ route('public.repair-track') }}" target="_blank" class="btn btn-sm btn-secondary" title="Open Customer Repair Tracking Portal">
+                <a href="{{ route('public.repair-track') }}" target="_blank" class="btn btn-sm btn-secondary" title="Open Customer Repair Tracking Portal" style="display: inline-flex; align-items: center; gap: 0.35rem;">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                    Customer Tracking Portal
+                    <span class="topbar-action-text">Track Portal</span>
                 </a>
             </div>
         </header>
@@ -808,8 +992,22 @@
         </main>
     </div>
 
-    <!-- Modal helper script -->
+    <!-- Modal helper & Mobile Navigation script -->
     <script>
+        function openShopSidebar() {
+            var sidebar = document.querySelector('.shop-sidebar');
+            var overlay = document.getElementById('shopSidebarOverlay');
+            if (sidebar) sidebar.classList.add('open');
+            if (overlay) overlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+        function closeShopSidebar() {
+            var sidebar = document.querySelector('.shop-sidebar');
+            var overlay = document.getElementById('shopSidebarOverlay');
+            if (sidebar) sidebar.classList.remove('open');
+            if (overlay) overlay.classList.remove('active');
+            document.body.style.overflow = '';
+        }
         function openModal(id) {
             const el = document.getElementById(id);
             if (el) el.classList.add('open');
@@ -822,6 +1020,16 @@
             if (e.target.classList.contains('modal-backdrop')) {
                 e.target.classList.remove('open');
             }
+        });
+        document.addEventListener('DOMContentLoaded', function() {
+            var navLinks = document.querySelectorAll('.shop-nav-item');
+            navLinks.forEach(function(link) {
+                link.addEventListener('click', function() {
+                    if (window.innerWidth <= 992) {
+                        closeShopSidebar();
+                    }
+                });
+            });
         });
     </script>
     @stack('scripts')

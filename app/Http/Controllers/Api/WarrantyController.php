@@ -127,5 +127,25 @@ class WarrantyController extends Controller
 
         return response()->json($claim, 201);
     }
+
+    /**
+     * Review and update a warranty claim decision.
+     */
+    public function reviewClaim(Request $request, WarrantyClaim $claim): JsonResponse
+    {
+        $validated = $request->validate([
+            'status' => 'required|string|in:pending,inspecting,approved,rejected,settled',
+            'settlement_type' => 'nullable|string|in:repair,replacement,refund',
+            'action_notes' => 'nullable|string|max:1500',
+        ]);
+
+        $claim->update($validated);
+
+        if ($validated['status'] === 'settled' && in_array($validated['settlement_type'], ['replacement', 'refund'], true)) {
+            $claim->warranty->update(['status' => 'settled']);
+        }
+
+        return response()->json($claim->fresh());
+    }
 }
 

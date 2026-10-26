@@ -4,6 +4,27 @@
 @section('page-title', 'Thermal Barcode & IMEI Label Generator')
 
 @section('content')
+<style>
+    .labels-layout-grid {
+        display: grid;
+        grid-template-columns: 1fr 380px;
+        gap: 1.5rem;
+        align-items: start;
+    }
+    @media (max-width: 992px) {
+        .labels-layout-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+    @media (max-width: 640px) {
+        .inventory-type-selector {
+            flex-direction: column !important;
+        }
+        .template-selector {
+            grid-template-columns: 1fr !important;
+        }
+    }
+</style>
 <div style="display: flex; flex-direction: column; gap: 1.5rem;">
     <!-- Header Banner -->
     <div class="card" style="background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%); color: white; padding: 1.25rem 1.5rem; border: none; border-radius: 12px;">
@@ -29,7 +50,7 @@
     </div>
 
     <!-- Main Grid: Configuration Form & Live Preview -->
-    <div style="display: grid; grid-template-columns: 1fr 380px; gap: 1.5rem; align-items: start;">
+    <div class="labels-layout-grid">
         <!-- Left: Label Setup Form -->
         <div class="card" style="padding: 1.5rem; border-radius: 12px;">
             <h4 style="font-size: 1rem; font-weight: 700; margin-bottom: 1.25rem; color: #1e293b; display: flex; align-items: center; gap: 0.5rem;">
@@ -42,7 +63,7 @@
                     <label style="display: block; font-size: 0.825rem; font-weight: 600; color: #475569; margin-bottom: 0.4rem;">
                         Inventory Category
                     </label>
-                    <div style="display: flex; gap: 0.75rem;">
+                    <div class="inventory-type-selector" style="display: flex; gap: 0.75rem;">
                         <label style="flex: 1; border: 2px solid {{ $selectedType === 'phone' ? 'var(--brand-indigo-600)' : '#e2e8f0' }}; background: {{ $selectedType === 'phone' ? '#eef2ff' : '#f8fafc' }}; padding: 0.75rem 1rem; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 0.5rem;">
                             <input type="radio" name="type" value="phone" {{ $selectedType === 'phone' ? 'checked' : '' }} onchange="document.getElementById('labelForm').submit();">
                             <div>
@@ -89,7 +110,7 @@
                     <label style="display: block; font-size: 0.825rem; font-weight: 600; color: #475569; margin-bottom: 0.4rem;">
                         Printer Label Format / Dimensions
                     </label>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.6rem;">
+                    <div class="template-selector" style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.6rem;">
                         <label style="border: 1px solid {{ $template === 'thermal_50x30' ? 'var(--brand-indigo-600)' : '#cbd5e1' }}; background: {{ $template === 'thermal_50x30' ? '#eef2ff' : '#ffffff' }}; padding: 0.6rem; border-radius: 6px; cursor: pointer; text-align: center;">
                             <input type="radio" name="template" value="thermal_50x30" {{ $template === 'thermal_50x30' ? 'checked' : '' }} onchange="document.getElementById('labelForm').submit();">
                             <div style="font-weight: 700; font-size: 0.82rem; margin-top: 0.2rem;">50 x 30 mm</div>

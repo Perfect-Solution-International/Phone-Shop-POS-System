@@ -128,6 +128,48 @@
             height: auto;
         }
     }
+
+    @media (max-width: 768px) {
+        .pos-catalog-header {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 0.65rem;
+            padding: 0.85rem;
+        }
+
+        .pos-catalog-header select {
+            max-width: 100% !important;
+            width: 100% !important;
+        }
+
+        .pos-tab {
+            padding: 0.65rem 0.85rem;
+            font-size: 0.8125rem;
+            text-align: center;
+            flex: 1;
+        }
+    }
+
+    @media (max-width: 640px) {
+        .split-row {
+            grid-template-columns: 1fr;
+            gap: 0.6rem;
+        }
+
+        .pos-cart-summary {
+            padding: 0.85rem;
+        }
+
+        .pos-items-grid {
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            padding: 0.75rem;
+            gap: 0.5rem;
+        }
+
+        .pos-item-card {
+            padding: 0.65rem;
+        }
+    }
 </style>
 
 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.75rem;">

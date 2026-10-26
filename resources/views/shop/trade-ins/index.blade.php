@@ -4,6 +4,13 @@
 @section('page-title', 'Used Phone Buying & Trade-Ins')
 
 @section('content')
+<style>
+    @media (max-width: 640px) {
+        .tradein-checklist-grid {
+            grid-template-columns: 1fr !important;
+        }
+    }
+</style>
 <!-- Metric Cards -->
 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
     <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.25rem 1.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
@@ -230,7 +237,7 @@
                             <input type="text" name="battery_health" class="form-control" placeholder="e.g. 87%">
                         </div>
                     </div>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-top: 0.5rem;">
+                    <div class="tradein-checklist-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-top: 0.5rem;">
                         <label style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.8125rem; cursor: pointer;">
                             <input type="checkbox" name="cameras_working" value="1" checked>
                             <span>Front &amp; Rear Cameras Functional</span>

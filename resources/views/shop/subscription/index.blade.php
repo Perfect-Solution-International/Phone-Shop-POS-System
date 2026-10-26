@@ -118,13 +118,23 @@
                         </ul>
                     </div>
 
-                    <div style="display: flex; gap: 0.5rem;">
-                        <button type="button" class="btn btn-primary" onclick="selectPlanForCheckout({{ $plan->id }}, '{{ addslashes($plan->name) }}', {{ $plan->monthly_price }}, {{ $plan->annual_price }})" style="flex: 1; justify-content: center; font-size: 0.85rem; padding: 0.6rem;">
-                            Pay by Card
-                        </button>
-                        <button type="button" class="btn btn-secondary" onclick="selectPlanForBank({{ $plan->id }}, '{{ addslashes($plan->name) }}', {{ $plan->monthly_price }}, {{ $plan->annual_price }})" style="font-size: 0.85rem; padding: 0.6rem;">
-                            Bank Slip
-                        </button>
+                    <div style="display: flex; flex-direction: column; gap: 0.4rem;">
+                        <div style="display: flex; gap: 0.4rem;">
+                            <button type="button" class="btn btn-primary" onclick="selectPlanForCheckout({{ $plan->id }}, '{{ addslashes($plan->name) }}', {{ $plan->monthly_price }}, {{ $plan->annual_price }})" style="flex: 1; justify-content: center; font-size: 0.8rem; padding: 0.55rem;">
+                                Pay by Card
+                            </button>
+                            <button type="button" class="btn btn-secondary" onclick="selectPlanForBank({{ $plan->id }}, '{{ addslashes($plan->name) }}', {{ $plan->monthly_price }}, {{ $plan->annual_price }})" style="font-size: 0.8rem; padding: 0.55rem;">
+                                Bank Slip
+                            </button>
+                        </div>
+                        <form method="POST" action="{{ route('shop.subscription.gateway.initiate') }}" style="margin: 0;">
+                            @csrf
+                            <input type="hidden" name="plan_id" value="{{ $plan->id }}">
+                            <input type="hidden" name="billing_cycle" value="monthly">
+                            <button type="submit" class="btn btn-info" style="width: 100%; justify-content: center; font-size: 0.78rem; padding: 0.45rem; background: #6366f1; border-color: #6366f1; color: white;">
+                                ⚡ Payment Gateway (Sandbox)
+                            </button>
+                        </form>
                     </div>
                 </div>
             @endforeach

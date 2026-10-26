@@ -69,6 +69,26 @@
     @media (max-width: 992px) {
         .panels-2col { grid-template-columns: 1fr; }
     }
+
+    @media (max-width: 640px) {
+        .metrics-grid {
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
+            margin-bottom: 1.25rem;
+        }
+        .metric-card {
+            padding: 0.9rem;
+        }
+        .metric-value {
+            font-size: 1.25rem;
+        }
+    }
+
+    @media (max-width: 420px) {
+        .metrics-grid {
+            grid-template-columns: 1fr;
+        }
+    }
 </style>
 
 <!-- Metrics Row -->

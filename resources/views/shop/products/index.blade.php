@@ -55,10 +55,12 @@
                                 <div style="position: relative; display: inline-block; flex-shrink: 0;">
                                     <img src="{{ $product->image_url }}" 
                                          alt="{{ $product->name }}" 
+                                         data-title="{{ $product->name }}"
+                                         data-delete-url="{{ route('shop.products.delete-image', $product) }}"
                                          style="width: 64px; height: 64px; min-width: 64px; object-fit: cover; border-radius: 10px; border: 1.5px solid var(--surface-border); box-shadow: 0 1px 3px rgba(0,0,0,0.08); cursor: pointer;" 
-                                         onclick="openImageLightbox('{{ $product->image_url }}', '{{ addslashes($product->name) }}', '{{ route('shop.products.delete-image', $product) }}')" 
+                                         onclick="handleProductLightboxClick(this)" 
                                          title="Click to view full image">
-                                    <form method="POST" action="{{ route('shop.products.delete-image', $product) }}" onsubmit="return confirm('Delete photo for \'{{ addslashes($product->name) }}\'?');" style="margin: 0; position: absolute; top: -5px; right: -5px;">
+                                    <form method="POST" action="{{ route('shop.products.delete-image', $product) }}" data-confirm="Delete photo for {{ $product->name }}?" onsubmit="return confirm(this.getAttribute('data-confirm'));" style="margin: 0; position: absolute; top: -5px; right: -5px;">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" title="Delete image" style="width: 20px; height: 20px; border-radius: 50%; background: #dc2626; color: #ffffff; border: 2px solid #ffffff; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 13px; line-height: 1; padding: 0; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">&times;</button>
@@ -872,6 +874,10 @@
         document.getElementById('editProductRemoveImage').value = '0';
         document.getElementById('editProductExistingImageWrap').style.display = 'flex';
         document.getElementById('editProductImageRemovedNotice').style.display = 'none';
+    }
+
+    function handleProductLightboxClick(el) {
+        openImageLightbox(el.src, el.getAttribute('data-title'), el.getAttribute('data-delete-url'));
     }
 
     // Lightbox viewer
