@@ -12,7 +12,20 @@ class Payroll extends Model
 {
     use BelongsToShop, BelongsToTenant, HasFactory;
 
-    protected $fillable = ['employee_id', 'period', 'basic_salary', 'allowances', 'deductions', 'status'];
+    protected $fillable = [
+        'shop_id',
+        'employee_id',
+        'period',
+        'basic_salary',
+        'allowances',
+        'deductions',
+        'net_salary',
+        'status',
+        'generation_type',
+        'payment_method',
+        'paid_at',
+        'note',
+    ];
 
     protected $casts = [
         'period' => 'date:Y-m-d',
@@ -20,6 +33,7 @@ class Payroll extends Model
         'allowances' => 'decimal:2',
         'deductions' => 'decimal:2',
         'net_salary' => 'decimal:2',
+        'paid_at' => 'datetime',
     ];
 
     protected static function booted(): void

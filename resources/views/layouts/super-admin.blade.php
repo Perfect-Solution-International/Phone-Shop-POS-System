@@ -485,6 +485,10 @@
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>
                 <span>Registered Shops</span>
             </a>
+            <a href="{{ route('superadmin.owners.index') }}" class="saas-nav-link {{ request()->routeIs('superadmin.owners.*') ? 'active' : '' }}">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                <span>Shop Owners</span>
+            </a>
             <a href="{{ route('superadmin.plans.index') }}" class="saas-nav-link {{ request()->routeIs('superadmin.plans.*') ? 'active' : '' }}">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
                 <span>Subscription Plans</span>
@@ -506,19 +510,8 @@
                 <span>All Payments</span>
             </a>
 
-            <div class="saas-nav-header">Workspaces</div>
-            <a href="{{ route('shop.dashboard') }}" class="saas-nav-link" target="_blank">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
-                <span>Phone Shop Management</span>
-            </a>
-            <a href="{{ route('customer.portal') }}" class="saas-nav-link" target="_blank">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-                <span>Customer Care Portal</span>
-            </a>
-            <a href="{{ route('app') }}" class="saas-nav-link" target="_blank">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 3 21 3 21 9"></polyline><polyline points="9 21 3 21 3 15"></polyline><line x1="21" y1="3" x2="14" y2="10"></line><line x1="3" y1="21" x2="10" y2="14"></line></svg>
-                <span>Staff HRM Workspace</span>
-            </a>
+
+
         </nav>
 
         <!-- Sidebar User Profile & Sign Out Footer -->
@@ -557,10 +550,6 @@
                     <span class="status-dot-pulse"></span>
                     <span>System Operational</span>
                 </span>
-                <a href="{{ route('shop.dashboard') }}" class="saas-topbar-link" target="_blank" title="Inspect Live Shop Workspace">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
-                    <span>Inspect Shop</span>
-                </a>
             </div>
         </header>
 
@@ -575,6 +564,8 @@
             @yield('content')
         </main>
     </div>
+
+    @stack('scripts')
 </body>
 </html>
 

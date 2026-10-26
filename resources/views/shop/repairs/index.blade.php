@@ -148,7 +148,17 @@
                         @endif
                     </td>
                     <td>
-                        <div style="display: flex; gap: 0.35rem;">
+                        <div style="display: flex; gap: 0.35rem; align-items: center;">
+                            @if($repair->customer && $repair->customer->phone)
+                                @php
+                                    $rawPhone = preg_replace('/[^0-9]/', '', $repair->customer->phone);
+                                    $waPhone = str_starts_with($rawPhone, '0') ? '94' . substr($rawPhone, 1) : $rawPhone;
+                                    $waMsg = urlencode("Hello {$repair->customer->name}, update regarding repair #{$repair->job_number} ({$repair->device_model}): Status is " . ucwords(str_replace('_', ' ', $repair->status)) . ". Total Amount: LKR " . number_format($repair->final_cost ?? $repair->estimated_cost, 2) . ". Thank you!");
+                                @endphp
+                                <a href="https://wa.me/{{ $waPhone }}?text={{ $waMsg }}" target="_blank" class="btn btn-sm" title="Notify Customer via WhatsApp" style="background: #25D366; color: #ffffff; padding: 0.25rem 0.5rem; font-size: 0.75rem; display: inline-flex; align-items: center; text-decoration: none; border-radius: 4px; font-weight: 700;">
+                                    💬 WA
+                                </a>
+                            @endif
                             <button class="btn btn-sm btn-secondary" onclick="openStatusModal({{ $repair->id }}, '{{ $repair->job_number }}', '{{ $repair->status }}', '{{ $repair->final_cost ?? $repair->estimated_cost }}')">
                                 Status
                             </button>

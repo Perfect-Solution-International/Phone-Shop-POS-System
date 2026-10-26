@@ -125,7 +125,7 @@ class AuthController extends Controller
         return redirect()->route('login')->with('status', 'You have been successfully signed out.');
     }
 
-    private function destination(User $user): string
+    public function destination(User $user): string
     {
         if ($user->hasRole('Super Administrator') || $user->can('superadmin.view')) {
             return route('superadmin.dashboard');

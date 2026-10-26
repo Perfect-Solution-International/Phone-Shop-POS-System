@@ -342,6 +342,76 @@
             overflow: hidden;
         }
 
+        /* Global Metrics Grid & Modern Stat Cards */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+            gap: 1.25rem;
+            margin-bottom: 1.75rem;
+        }
+
+        .stat-card {
+            background: #ffffff;
+            border: 1px solid var(--surface-border);
+            border-radius: 14px;
+            padding: 1.35rem 1.4rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+            transition: all 0.2s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.07);
+            border-color: #cbd5e1;
+        }
+
+        .stat-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 0.75rem;
+        }
+
+        .stat-card-title {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .stat-card-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .stat-card-value {
+            font-size: 1.625rem;
+            font-weight: 800;
+            color: var(--text-heading);
+            line-height: 1.2;
+            letter-spacing: -0.02em;
+            margin-bottom: 0.35rem;
+        }
+
+        .stat-card-change {
+            font-size: 0.75rem;
+            color: #64748b;
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+        }
+
         .card-header {
             padding: 1.15rem 1.5rem;
             border-bottom: 1px solid var(--surface-border);
@@ -532,7 +602,7 @@
             </div>
             <div class="shop-brand-text">
                 <span class="shop-brand-title">{{ auth()->user()->shop->name ?? 'Phone Shop' }}</span>
-                <span class="shop-brand-subtitle">Branch: Main Outlet</span>
+                <span class="shop-brand-subtitle">Branch: {{ session('active_outlet_name', auth()->user()->shop->mainOutlet->name ?? 'Main Branch') }}</span>
             </div>
         </div>
 
@@ -547,19 +617,56 @@
                 POS Counter
                 <span class="shop-nav-badge" style="background:#06b6d4; color:#fff;">Live</span>
             </a>
+            <a href="{{ route('shop.sales') }}" class="shop-nav-item {{ request()->routeIs('shop.sales') || request()->routeIs('shop.sales.show') ? 'active' : '' }}">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                Sales &amp; Sold Invoices
+            </a>
+            <a href="{{ route('shop.sales.returns') }}" class="shop-nav-item {{ request()->routeIs('shop.sales.returns*') ? 'active' : '' }}">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg>
+                Sales Returns &amp; Refunds
+            </a>
+            <a href="{{ route('shop.quotations.index') }}" class="shop-nav-item {{ request()->routeIs('shop.quotations*') ? 'active' : '' }}">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+                Quotations &amp; Estimates
+            </a>
 
-            <span class="shop-nav-header">Phone Inventory</span>
-            <a href="{{ route('shop.phones') }}" class="shop-nav-item {{ request()->routeIs('shop.phones*') ? 'active' : '' }}">
+            <span class="shop-nav-header">Phone Inventory &amp; Stock</span>
+            <a href="{{ route('shop.phones') }}" class="shop-nav-item {{ request()->routeIs('shop.phones*') && request('status') !== 'sold' ? 'active' : '' }}">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
                 Dual IMEI Phones
             </a>
+            <a href="{{ route('shop.trade-ins.index') }}" class="shop-nav-item {{ request()->routeIs('shop.trade-ins*') ? 'active' : '' }}">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 3h5v5"></path><path d="M4 20L21 3"></path><path d="M21 16v5h-5"></path><path d="M15 15l6 6"></path><path d="M4 4l5 5"></path></svg>
+                Used Phone Trade-Ins
+            </a>
+            <a href="{{ route('shop.labels.index') }}" class="shop-nav-item {{ request()->routeIs('shop.labels*') ? 'active' : '' }}">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="9" x2="20" y2="9"></line><line x1="4" y1="15" x2="20" y2="15"></line><line x1="10" y1="3" x2="8" y2="21"></line><line x1="16" y1="3" x2="14" y2="21"></line></svg>
+                Barcode &amp; IMEI Labels
+            </a>
+            <a href="{{ route('shop.phones', ['status' => 'sold']) }}" class="shop-nav-item {{ request()->routeIs('shop.phones*') && request('status') === 'sold' ? 'active' : '' }}">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"></path><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
+                Sold Phones (IMEI Archive)
+                <span class="shop-nav-badge" style="background:#10b981; color:#fff;">Sold</span>
+            </a>
             <a href="{{ route('shop.products') }}" class="shop-nav-item {{ request()->routeIs('shop.products*') ? 'active' : '' }}">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>
-                Products & Accessories
+                Products &amp; Accessories
             </a>
             <a href="{{ route('shop.spare-parts') }}" class="shop-nav-item {{ request()->routeIs('shop.spare-parts*') ? 'active' : '' }}">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>
                 Spare Parts Stock
+            </a>
+            <a href="{{ route('shop.inventory') }}" class="shop-nav-item {{ request()->routeIs('shop.inventory*') ? 'active' : '' }}">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+                Stock Movements &amp; Audit
+            </a>
+            <a href="{{ route('shop.purchases') }}" class="shop-nav-item {{ request()->routeIs('shop.purchases*') ? 'active' : '' }}">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+                Inbound Purchases
+            </a>
+            <a href="{{ route('shop.suppliers') }}" class="shop-nav-item {{ request()->routeIs('shop.suppliers*') ? 'active' : '' }}">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>
+                Suppliers &amp; Vendors
             </a>
 
             <span class="shop-nav-header">Service & Warranties</span>
@@ -569,20 +676,52 @@
             </a>
             <a href="{{ route('shop.warranties') }}" class="shop-nav-item {{ request()->routeIs('shop.warranties*') ? 'active' : '' }}">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-                Warranty & Claims
+                Warranty &amp; Claims
+            </a>
+            <a href="{{ route('shop.notifications.index') }}" class="shop-nav-item {{ request()->routeIs('shop.notifications*') ? 'active' : '' }}">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                SMS &amp; WhatsApp Alerts
+            </a>
+
+            <span class="shop-nav-header">Finance &amp; Cashbook</span>
+            <a href="{{ route('shop.expenses') }}" class="shop-nav-item {{ request()->routeIs('shop.expenses*') ? 'active' : '' }}">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line></svg>
+                Operating Expenses
+            </a>
+            <a href="{{ route('shop.cashbook') }}" class="shop-nav-item {{ request()->routeIs('shop.cashbook*') ? 'active' : '' }}">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                Daily Cashbook &amp; Drawer
+            </a>
+            <a href="{{ route('shop.reports') }}" class="shop-nav-item {{ request()->routeIs('shop.reports*') ? 'active' : '' }}">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+                Reports &amp; Analytics
             </a>
 
             <span class="shop-nav-header">Directory & Administration</span>
             <a href="{{ route('shop.customers') }}" class="shop-nav-item {{ request()->routeIs('shop.customers*') ? 'active' : '' }}">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-                Customers & Credit
+                Customers &amp; Credit
             </a>
-            @can('hrm.view')
-            <a href="{{ route('app') }}" class="shop-nav-item">
+            <a href="{{ route('shop.outlets.index') }}" class="shop-nav-item {{ request()->routeIs('shop.outlets*') ? 'active' : '' }}">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                Outlets &amp; Branches
+            </a>
+            <a href="{{ route('shop.transfers.index') }}" class="shop-nav-item {{ request()->routeIs('shop.transfers*') ? 'active' : '' }}">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="17 1 21 5 17 9"></polyline><path d="M3 11V9a4 4 0 0 1 4-4h14"></path><polyline points="7 23 3 19 7 15"></polyline><path d="M21 13v2a4 4 0 0 1-4 4H3"></path></svg>
+                Branch Stock Transfers
+            </a>
+            <a href="{{ route('shop.settings') }}" class="shop-nav-item {{ request()->routeIs('shop.settings*') ? 'active' : '' }}">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                Shop Settings
+            </a>
+            <a href="{{ route('shop.subscription.index') }}" class="shop-nav-item {{ request()->routeIs('shop.subscription*') ? 'active' : '' }}">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
+                Subscription &amp; Billing
+            </a>
+            <a href="{{ route('shop.staff') }}" class="shop-nav-item {{ request()->routeIs('shop.staff*') ? 'active' : '' }}">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
-                Staff HRM & Payroll
+                Staff HRM &amp; Payroll
             </a>
-            @endcan
 
             @if(auth()->user()->hasRole('Super Administrator') || auth()->user()->can('superadmin.view'))
             <a href="{{ route('superadmin.dashboard') }}" class="shop-nav-item" style="color: #a5b4fc; margin-top: 1rem; border: 1px dashed rgba(165,180,252,0.3);">
@@ -624,12 +763,24 @@
                 <span class="shop-plan-pill">
                     {{ auth()->user()->shop->activeSubscription->plan->name ?? 'Free Trial' }}
                 </span>
+                @if(auth()->user()->hasRole('Super Administrator') || auth()->user()->can('superadmin.view'))
+                    <span class="badge" style="background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); color: #ffffff; padding: 0.25rem 0.65rem; border-radius: 9999px; font-size: 0.72rem; font-weight: 700; display: inline-flex; align-items: center; gap: 0.35rem; box-shadow: 0 2px 4px rgba(79, 70, 229, 0.3);">
+                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                        Super Admin Mode
+                    </span>
+                @endif
             </div>
 
-            <div style="display: flex; align-items: center; gap: 1rem;">
-                <a href="{{ route('shop.pos') }}" class="btn btn-sm btn-primary">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                    New POS Sale
+            <div style="display: flex; align-items: center; gap: 0.75rem;">
+                @if(auth()->user()->hasRole('Super Administrator') || auth()->user()->can('superadmin.view'))
+                    <a href="{{ route('superadmin.dashboard') }}" class="btn btn-sm" style="background: #1e1b4b; color: #c7d2fe; border: 1px solid #4f46e5; font-size: 0.78rem; display: inline-flex; align-items: center; gap: 0.35rem;" title="Return to Platform Super Admin">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                        SaaS Super Admin
+                    </a>
+                @endif
+                <a href="{{ route('shop.outlets.index') }}" class="btn btn-sm btn-secondary" style="border-radius: 9999px; font-size: 0.78rem; display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.35rem 0.75rem;" title="Manage Outlets & Switch Branch">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                    <span>Branch: <strong>{{ session('active_outlet_name', auth()->user()->shop->mainOutlet->name ?? 'Main Branch') }}</strong></span>
                 </a>
                 <a href="{{ route('public.repair-track') }}" target="_blank" class="btn btn-sm btn-secondary" title="Open Customer Repair Tracking Portal">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>

@@ -94,13 +94,26 @@
                         @endif
                     </td>
                     <td>
-                        @if($w->isValid())
-                            <button type="button" class="btn btn-sm btn-secondary" onclick="openClaimModal({{ $w->id }}, '{{ $w->warranty_number }}', '{{ $w->imei }}')">
-                                File Claim
-                            </button>
-                        @else
-                            <span style="font-size: 0.75rem; color: var(--text-muted);">Expired</span>
-                        @endif
+                        <div style="display: flex; gap: 0.35rem; align-items: center;">
+                            @if($w->customer && $w->customer->phone)
+                                @php
+                                    $rawPhone = preg_replace('/[^0-9]/', '', $w->customer->phone);
+                                    $waPhone = str_starts_with($rawPhone, '0') ? '94' . substr($rawPhone, 1) : $rawPhone;
+                                    $waEndDate = $w->ends_on ? $w->ends_on->format('Y-m-d') : 'Active';
+                                    $waMsg = urlencode("Hello {$w->customer->name}, your warranty certificate #{$w->warranty_number} (IMEI/Serial: {$w->imei}) is valid until {$waEndDate}. Thank you!");
+                                @endphp
+                                <a href="https://wa.me/{{ $waPhone }}?text={{ $waMsg }}" target="_blank" class="btn btn-sm" title="Send Warranty Details via WhatsApp" style="background: #25D366; color: #ffffff; padding: 0.25rem 0.5rem; font-size: 0.75rem; display: inline-flex; align-items: center; text-decoration: none; border-radius: 4px; font-weight: 700;">
+                                    💬 WA
+                                </a>
+                            @endif
+                            @if($w->isValid())
+                                <button type="button" class="btn btn-sm btn-secondary" onclick="openClaimModal({{ $w->id }}, '{{ $w->warranty_number }}', '{{ $w->imei }}')">
+                                    File Claim
+                                </button>
+                            @else
+                                <span style="font-size: 0.75rem; color: var(--text-muted);">Expired</span>
+                            @endif
+                        </div>
                     </td>
                 </tr>
                 @empty

@@ -39,6 +39,11 @@ class RepairJob extends Model
         'delivered_at' => 'datetime',
     ];
 
+    public function shop(): BelongsTo
+    {
+        return $this->belongsTo(\App\Models\Platform\Shop::class, 'shop_id');
+    }
+
     public function customer(): BelongsTo
     {
         return $this->belongsTo(Customer::class);

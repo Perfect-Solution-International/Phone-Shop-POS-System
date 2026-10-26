@@ -14,7 +14,7 @@ class PhoneViewController extends Controller
 {
     public function index(Request $request): View
     {
-        $query = PhoneDevice::with(['supplier']);
+        $query = PhoneDevice::with(['supplier', 'sale']);
 
         if ($search = $request->input('search')) {
             $query->where(function ($q) use ($search): void {
@@ -63,6 +63,55 @@ class PhoneViewController extends Controller
         PhoneDevice::create($validated);
 
         return redirect()->route('shop.phones')->with('success', 'Phone device registered successfully with Dual IMEI!');
+    }
+
+    public function update(Request $request, PhoneDevice $phone): RedirectResponse
+    {
+        $shopId = auth()->user()->shop_id;
+
+        $validated = $request->validate([
+            'brand' => 'required|string|max:100',
+            'model' => 'required|string|max:100',
+            'storage' => 'nullable|string|max:50',
+            'ram' => 'nullable|string|max:50',
+            'color' => 'nullable|string|max:50',
+            'condition' => 'required|string|in:new,used,refurbished',
+            'status' => 'required|string|in:in_stock,reserved,sold,defective,returned,in_transfer',
+            'imei_1' => 'required|string|max:50|unique:phone_devices,imei_1,' . $phone->id . ',id,shop_id,' . $shopId,
+            'imei_2' => 'nullable|string|max:50|unique:phone_devices,imei_2,' . $phone->id . ',id,shop_id,' . $shopId,
+            'serial_number' => 'nullable|string|max:100',
+            'purchase_cost' => 'required|numeric|min:0',
+            'selling_price' => 'required|numeric|min:0',
+            'supplier_id' => 'nullable|exists:suppliers,id',
+            'notes' => 'nullable|string|max:500',
+        ]);
+
+        if ($validated['status'] === 'sold' && ! $phone->sold_at) {
+            $validated['sold_at'] = now();
+        } elseif ($validated['status'] !== 'sold' && $phone->status === 'sold') {
+            $validated['sold_at'] = null;
+            $validated['sale_id'] = null;
+        }
+
+        $phone->update($validated);
+
+        return redirect()->route('shop.phones')->with('success', "Device {$phone->brand} {$phone->model} updated successfully!");
+    }
+
+    public function destroy(PhoneDevice $phone): RedirectResponse
+    {
+        if ($phone->isSold() || $phone->sale_id) {
+            return back()->with('error', 'Cannot delete a phone device that has already been sold. Mark it as returned or defective instead.');
+        }
+
+        if (\App\Models\Warranty::where('phone_device_id', $phone->id)->exists()) {
+            return back()->with('error', 'Cannot delete this device because it has warranty certificates issued.');
+        }
+
+        $deviceName = "{$phone->brand} {$phone->model} (IMEI: {$phone->imei_1})";
+        $phone->delete();
+
+        return redirect()->route('shop.phones')->with('success', "Device {$deviceName} removed from inventory successfully.");
     }
 }
 

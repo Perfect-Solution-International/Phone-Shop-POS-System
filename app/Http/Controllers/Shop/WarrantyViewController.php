@@ -33,7 +33,7 @@ class WarrantyViewController extends Controller
 
         $warranties = $query->latest()->paginate(15)->withQueryString();
         $customers = Customer::latest()->limit(100)->get();
-        $products = Product::where('status', 'active')->limit(50)->get();
+        $products = Product::where('is_active', true)->limit(50)->get();
 
         return view('shop.warranties.index', compact('warranties', 'customers', 'products'));
     }

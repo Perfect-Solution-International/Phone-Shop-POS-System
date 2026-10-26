@@ -11,7 +11,7 @@ class Brand extends Model
 {
     use BelongsToTenant, HasFactory;
 
-    protected $fillable = ['name', 'slug'];
+    protected $fillable = ['shop_id', 'name', 'slug'];
 
     public function products(): HasMany
     {

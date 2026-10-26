@@ -19,7 +19,7 @@ class PosViewController extends Controller
     public function index(Request $request): View
     {
         $categories = Category::all();
-        $products = Product::where('status', 'active')
+        $products = Product::where('is_active', true)
             ->where('stock_quantity', '>', 0)
             ->latest()
             ->limit(50)
@@ -32,9 +32,9 @@ class PosViewController extends Controller
 
         $customers = Customer::latest()->limit(100)->get();
 
-        $recentSales = Sale::with(['customer', 'cashier'])
+        $recentSales = Sale::with(['customer', 'cashier', 'items.phoneDevice', 'payments'])
             ->latest()
-            ->limit(10)
+            ->limit(15)
             ->get();
 
         return view('shop.pos.index', compact('categories', 'products', 'phones', 'customers', 'recentSales'));
@@ -78,7 +78,7 @@ class PosViewController extends Controller
             if ($request->wantsJson()) {
                 return response()->json([
                     'success' => true,
-                    'sale' => $sale->load(['items', 'payments', 'customer']),
+                    'sale' => $sale->load(['items.phoneDevice', 'items.product', 'payments', 'customer', 'cashier']),
                     'message' => 'Sale completed successfully! Invoice #'.$sale->invoice_number,
                 ], 201);
             }

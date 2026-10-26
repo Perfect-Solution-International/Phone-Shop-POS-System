@@ -13,7 +13,7 @@ beforeEach(function (): void {
     $this->seed(DatabaseSeeder::class);
 });
 
-test('registration screen can be rendered with shop onboarding, mobile number, and password strength elements', function (): void {
+test('registration screen can be rendered with shop onboarding, business details, and password strength elements', function (): void {
     $response = $this->get('/register');
 
     $response->assertOk();
@@ -22,18 +22,26 @@ test('registration screen can be rendered with shop onboarding, mobile number, a
     $response->assertSee('Owner Full Name');
     $response->assertSee('Mobile Number');
     $response->assertSee('Owner Email Address');
+    $response->assertSee('Business Address');
+    $response->assertSee('Country');
+    $response->assertSee('Timezone');
+    $response->assertSee('Business Registration Details');
     $response->assertSee('Password');
     $response->assertSee('Confirm Password');
     $response->assertSee('Password Strength:');
     $response->assertSee('Terms of Service');
+    $response->assertSee('7-Day Free Trial');
 });
 
-test('authenticated users visiting register are redirected to app', function (): void {
-    $user = User::factory()->create();
+test('authenticated users visiting register can view registration screen with active session indicator', function (): void {
+    $user = User::factory()->create(['name' => 'Existing Admin']);
 
     $this->actingAs($user, 'web')
         ->get('/register')
-        ->assertRedirect(route('app'));
+        ->assertOk()
+        ->assertSee('Register Shop Workspace')
+        ->assertSee('Signed in as:')
+        ->assertSee('Existing Admin');
 });
 
 test('new shop owner can register and creates exactly one independent shop workspace', function (): void {
@@ -44,6 +52,10 @@ test('new shop owner can register and creates exactly one independent shop works
         'name' => 'Kamal Silva',
         'phone' => '+94 77 123 4567',
         'email' => 'kamal@example.test',
+        'business_address' => '142 Galle Road, Colombo 03',
+        'country' => 'Sri Lanka',
+        'timezone' => 'Asia/Colombo',
+        'business_reg_number' => 'PV-87654',
         'password' => 'StrongSecret123!',
         'password_confirmation' => 'StrongSecret123!',
         'terms' => '1',
@@ -54,9 +66,12 @@ test('new shop owner can register and creates exactly one independent shop works
     $response->assertRedirect(route('verification.notice'));
     $this->assertAuthenticated('web');
 
-    // Exactly 1 shop created
+    // Exactly 1 shop created with business details
     $shop = Shop::where('name', 'Metro Cellular')->first();
     expect($shop)->not->toBeNull();
+    expect($shop->address)->toBe('142 Galle Road, Colombo 03');
+    expect($shop->country)->toBe('Sri Lanka');
+    expect($shop->business_reg_number)->toBe('PV-87654');
 
     // Exactly 1 owner account created with shop association and phone saved
     $user = User::where('email', 'kamal@example.test')->first();
@@ -68,7 +83,20 @@ test('new shop owner can register and creates exactly one independent shop works
     // Exactly 1 default setting initialized for the shop (verified via DB query)
     $this->assertDatabaseHas('settings', [
         'shop_id' => $shop->id,
+        'timezone' => 'Asia/Colombo',
         'currency' => 'LKR',
+    ]);
+
+    // 7-day trial subscription initialized
+    $this->assertDatabaseHas('subscriptions', [
+        'shop_id' => $shop->id,
+        'status' => 'trial',
+    ]);
+
+    // System activity logged
+    $this->assertDatabaseHas('system_activities', [
+        'shop_id' => $shop->id,
+        'action' => 'shop.registered',
     ]);
 
     // Verification event fired
@@ -283,3 +311,33 @@ test('repeated registration requests with the same email cannot create duplicate
     expect(User::count())->toBe($userCount);
     expect(Shop::where('name', 'Duplicate Attempt Shop')->exists())->toBeFalse();
 });
+
+test('newly registered shop and owner immediately appear in super admin dashboard metrics and recent registrations', function (): void {
+    Event::fake([Registered::class]);
+
+    $superAdmin = User::factory()->create();
+    $superAdmin->assignRole('Super Administrator');
+
+    // Register a new shop
+    $this->post('/register', [
+        'shop_name' => 'Colombo Apex Mobile',
+        'name' => 'Dinesh Fonseka',
+        'phone' => '+94 77 999 8888',
+        'email' => 'dinesh@apexmobile.lk',
+        'business_address' => '55 Duplication Rd, Colombo 04',
+        'country' => 'Sri Lanka',
+        'timezone' => 'Asia/Colombo',
+        'business_reg_number' => 'PV-998877',
+        'password' => 'SecurePass123!@#',
+        'password_confirmation' => 'SecurePass123!@#',
+        'terms' => '1',
+    ])->assertRedirect(route('verification.notice'));
+
+    // Check Super Admin Dashboard
+    $dashResponse = $this->actingAs($superAdmin, 'web')->get(route('superadmin.dashboard'));
+    $dashResponse->assertOk();
+    $dashResponse->assertSee('Colombo Apex Mobile');
+    $dashResponse->assertSee('Dinesh Fonseka');
+    $dashResponse->assertSee('Trial');
+});
+

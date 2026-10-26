@@ -81,16 +81,8 @@ class DatabaseSeeder extends Seeder
             Permission::findOrCreate($permission, 'web');
         }
 
-        // Super Administrator (Company Level)
-        Role::findOrCreate('Super Administrator', 'web')->syncPermissions([
-            'superadmin.view',
-            'superadmin.manage',
-            'plans.manage',
-            'subscriptions.manage',
-            'payments.verify',
-            'settings.manage',
-            'audit.view',
-        ]);
+        // Super Administrator (Company Level - Full Universal Privileges)
+        Role::findOrCreate('Super Administrator', 'web')->syncPermissions($permissions);
 
         // Shop Administrator / Owner (All Shop Permissions)
         $shopPermissions = array_diff($permissions, [
