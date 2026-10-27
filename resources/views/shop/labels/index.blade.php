@@ -30,8 +30,9 @@
     <div class="card" style="background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%); color: white; padding: 1.25rem 1.5rem; border: none; border-radius: 12px;">
         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
             <div>
-                <h3 style="font-size: 1.25rem; font-weight: 700; margin: 0 0 0.25rem 0; color: white;">
-                    🏷️ Barcode &amp; Thermal Sticker Printer
+                <h3 style="font-size: 1.25rem; font-weight: 700; margin: 0 0 0.25rem 0; color: white; display: flex; align-items: center; gap: 0.5rem;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>
+                    Barcode &amp; Thermal Sticker Printer
                 </h3>
                 <p style="margin: 0; font-size: 0.85rem; opacity: 0.9;">
                     Generate instant Code128 barcode &amp; IMEI labels for thermal printers (Xprinter, Zebra, TSC) and standard sticker sheets.

@@ -20,7 +20,7 @@
             </div>
             <button type="button" class="btn btn-primary" onclick="openNewReturnModal()">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg>
-                + Process Sales Return
+                Process Sales Return
             </button>
         </div>
     </div>

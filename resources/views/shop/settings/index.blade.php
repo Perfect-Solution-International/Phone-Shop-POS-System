@@ -16,14 +16,25 @@
     </div>
 
     <div style="padding: 1rem 1.5rem; background: #f8fafc; border-bottom: 1px solid #e2e8f0; display: flex; gap: 0.75rem; flex-wrap: wrap;">
-        <a href="{{ route('shop.subscription.index') }}" class="btn btn-secondary btn-sm" style="display: inline-flex; align-items: center; gap: 0.4rem; color: #4338ca; background: #eef2ff; border-color: #c7d2fe; font-weight: 600;">
-            💳 Manage Subscription &amp; Billing
+        <a href="{{ route('shop.subscription.index') }}" class="btn btn-secondary btn-sm" style="display: inline-flex; align-items: center; gap: 0.45rem; color: #4338ca; background: #eef2ff; border-color: #c7d2fe; font-weight: 600; border-radius: 8px;">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+                <line x1="1" y1="10" x2="23" y2="10"></line>
+            </svg>
+            <span>Manage Subscription &amp; Billing</span>
         </a>
-        <a href="{{ route('shop.notifications.index') }}" class="btn btn-secondary btn-sm" style="display: inline-flex; align-items: center; gap: 0.4rem; color: #166534; background: #f0fdf4; border-color: #bbf7d0; font-weight: 600;">
-            💬 SMS Gateway &amp; Automated Alerts
+        <a href="{{ route('shop.notifications.index') }}" class="btn btn-secondary btn-sm" style="display: inline-flex; align-items: center; gap: 0.45rem; color: #166534; background: #f0fdf4; border-color: #bbf7d0; font-weight: 600; border-radius: 8px;">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+            </svg>
+            <span>SMS Gateway &amp; Automated Alerts</span>
         </a>
-        <a href="{{ route('shop.labels.index') }}" class="btn btn-secondary btn-sm" style="display: inline-flex; align-items: center; gap: 0.4rem; color: #9a3412; background: #fff7ed; border-color: #fed7aa; font-weight: 600;">
-            🏷️ Barcode &amp; Thermal Sticker Printer
+        <a href="{{ route('shop.labels.index') }}" class="btn btn-secondary btn-sm" style="display: inline-flex; align-items: center; gap: 0.45rem; color: #9a3412; background: #fff7ed; border-color: #fed7aa; font-weight: 600; border-radius: 8px;">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
+                <line x1="7" y1="7" x2="7.01" y2="7"></line>
+            </svg>
+            <span>Barcode &amp; Thermal Sticker Printer</span>
         </a>
     </div>
 

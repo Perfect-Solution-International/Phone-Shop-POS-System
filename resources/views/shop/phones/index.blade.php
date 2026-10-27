@@ -110,7 +110,8 @@
                                class="btn btn-secondary btn-sm" 
                                title="Print IMEI Barcode Label" 
                                style="padding: 0.3rem 0.55rem; font-size: 0.75rem; display: inline-flex; align-items: center; gap: 0.2rem; color: #4338ca; background: #eef2ff; border-color: #c7d2fe;">
-                                🏷️ Label
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>
+                                Label
                             </a>
                             <button type="button" 
                                     class="btn btn-secondary btn-sm" 

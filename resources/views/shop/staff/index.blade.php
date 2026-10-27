@@ -33,7 +33,7 @@
     <div style="display: flex; align-items: center; justify-content: flex-end;">
         <button type="button" class="btn btn-primary" onclick="openAddEmployeeModal()" style="width: 100%; height: 100%; max-height: 52px;">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-            + Register Staff Member
+            Register Staff Member
         </button>
     </div>
 </div>
@@ -160,7 +160,7 @@
 
         <button type="button" class="btn btn-primary" onclick="openModal('attendanceModal')">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-            + Clock Attendance Entry
+            Clock Attendance Entry
         </button>
     </div>
 
@@ -233,7 +233,7 @@
         <strong style="color: #0f172a; font-size: 1rem;">Leave Requests &amp; Approvals</strong>
         <button type="button" class="btn btn-primary" onclick="openModal('leaveModal')">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-            + Apply for Staff Leave
+            Apply for Staff Leave
         </button>
     </div>
 
@@ -359,7 +359,7 @@
             <!-- Manual Generate Button -->
             <button type="button" class="btn btn-secondary" onclick="openManualPayrollModal()" style="font-weight: 700; border: 1px solid #cbd5e1; background: #ffffff; display: inline-flex; align-items: center; gap: 0.4rem;">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                + Manual Payslip
+                Manual Payslip
             </button>
         </div>
     </div>

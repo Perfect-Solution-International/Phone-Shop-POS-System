@@ -33,7 +33,7 @@
     <div style="display: flex; align-items: center; justify-content: flex-end;">
         <button type="button" class="btn btn-primary" onclick="openModal('transferModal')" style="width: 100%; height: 100%; max-height: 52px; font-weight: 700;">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="17 1 21 5 17 9"></polyline><path d="M3 11V9a4 4 0 0 1 4-4h14"></path><polyline points="7 23 3 19 7 15"></polyline><path d="M21 13v2a4 4 0 0 1-4 4H3"></path></svg>
-            + Dispatch Branch Transfer
+            Dispatch Branch Transfer
         </button>
     </div>
 </div>

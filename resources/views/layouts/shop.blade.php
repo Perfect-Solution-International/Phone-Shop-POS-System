@@ -1140,10 +1140,6 @@
             </div>
 
             <div class="shop-topbar-actions">
-                <a href="{{ route('shop.pos') }}" class="btn btn-sm btn-primary" style="display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.38rem 0.75rem; border-radius: 9999px; font-size: 0.78rem; box-shadow: 0 2px 8px rgba(79, 70, 229, 0.35);" title="Open POS Terminal Counter">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M2 9h20"></path><rect x="2" y="4" width="20" height="16" rx="2"></rect><path d="M6 16h4"></path><path d="M14 16h4"></path></svg>
-                    <span class="topbar-action-text"><strong>POS Counter</strong></span>
-                </a>
                 @if(auth()->user()->hasRole('Super Administrator') || auth()->user()->can('superadmin.view'))
                     <a href="{{ route('superadmin.dashboard') }}" class="btn btn-sm" style="background: #1e1b4b; color: #c7d2fe; border: 1px solid #4f46e5; font-size: 0.78rem; display: inline-flex; align-items: center; gap: 0.35rem;" title="Return to Platform Super Admin">
                         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
