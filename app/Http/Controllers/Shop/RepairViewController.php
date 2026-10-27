@@ -95,6 +95,14 @@ class RepairViewController extends Controller
             } catch (\Throwable $e) {
                 // Silently log or ignore delivery error to prevent blocking repair workflow
             }
+
+            try {
+                if ($repair->customer && $repair->customer->email) {
+                    \Illuminate\Support\Facades\Mail::to($repair->customer->email)->queue(new \App\Mail\RepairPickupReadyMail($repair));
+                }
+            } catch (\Throwable $e) {
+                // Silently ignore mail failure to ensure repair workflow completes
+            }
         }
 
         return redirect()->route('shop.repairs')->with('success', "Repair #{$repair->job_number} status updated to ".ucfirst(str_replace('_', ' ', $repair->status)));

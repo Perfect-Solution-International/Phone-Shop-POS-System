@@ -244,13 +244,16 @@
         }
 
         .saas-topbar {
-            height: 54px;
+            min-height: 56px;
+            height: auto;
             background: #ffffff;
             border-bottom: 1px solid var(--surface-border);
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 0 1.5rem;
+            flex-wrap: wrap;
+            gap: 0.5rem 1rem;
+            padding: 0.65rem clamp(0.75rem, 1.5vw, 1.5rem);
             position: sticky;
             top: 0;
             z-index: 10;
@@ -553,7 +556,7 @@
             background: rgba(255, 255, 255, 0.12);
         }
 
-        @media (max-width: 992px) {
+        @media (max-width: 1080px) {
             body {
                 position: relative;
                 overflow-x: hidden;
@@ -592,8 +595,9 @@
             }
 
             .saas-topbar {
-                height: 54px;
-                padding: 0 1rem;
+                min-height: 54px;
+                height: auto;
+                padding: 0.55rem 1rem;
                 gap: 0.5rem;
             }
 
@@ -770,7 +774,7 @@
         document.addEventListener('DOMContentLoaded', function() {
             document.querySelectorAll('.saas-nav-link').forEach(function(link) {
                 link.addEventListener('click', function() {
-                    if (window.innerWidth <= 992) {
+                    if (window.innerWidth <= 1080) {
                         closeSaasSidebar();
                     }
                 });

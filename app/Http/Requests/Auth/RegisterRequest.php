@@ -23,7 +23,7 @@ class RegisterRequest extends FormRequest
             'country' => ['nullable', 'string', 'max:100'],
             'timezone' => ['nullable', 'string', 'max:100'],
             'business_reg_number' => ['nullable', 'string', 'max:100'],
-            'password' => ['required', 'string', 'confirmed', Password::min(12)->mixedCase()->numbers()],
+            'password' => ['required', 'string', 'confirmed', Password::min(8)->mixedCase()->numbers()],
             'password_confirmation' => ['required', 'string'],
             'terms' => ['accepted'],
         ];

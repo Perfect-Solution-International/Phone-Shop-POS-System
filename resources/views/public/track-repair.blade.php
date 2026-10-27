@@ -303,6 +303,22 @@
                     @endif
                 </div>
 
+                @if($job->status === 'waiting_for_approval')
+                    <div style="background: #eff6ff; border: 1.5px solid #bfdbfe; border-radius: 10px; padding: 1.25rem; margin-top: 1.5rem; text-align: center;">
+                        <h4 style="color: #1e40af; font-weight: 800; font-size: 1.05rem; margin-bottom: 0.35rem;">⚠️ Repair Estimate Awaiting Your Approval</h4>
+                        <p style="font-size: 0.875rem; color: #334155; margin-bottom: 0.75rem;">
+                            Our technicians have completed diagnostic testing. Estimated repair cost: <strong style="color: #1e3a8a; font-size: 1.1rem;">LKR {{ number_format($job->estimated_cost, 2) }}</strong>
+                        </p>
+                        <form method="POST" action="{{ route('public.repair-track.approve') }}" style="display: inline-block;">
+                            @csrf
+                            <input type="hidden" name="tracking_id" value="{{ $job->job_number }}">
+                            <button type="submit" style="background: #2563eb; color: #ffffff; border: none; padding: 0.65rem 1.4rem; font-weight: 700; border-radius: 8px; cursor: pointer; font-size: 0.9375rem; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);">
+                                ✓ Approve Estimate &amp; Proceed With Repair
+                            </button>
+                        </form>
+                    </div>
+                @endif
+
                 @if($job->status === 'ready_for_collection')
                     <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 1rem; margin-top: 1.5rem; text-align: center;">
                         <strong style="color: #166534;">🎉 Your device has passed quality tests and is ready for collection!</strong>

@@ -758,10 +758,10 @@
             @forelse ($recent_activities as $act)
                 @php
                     $badgeClass = match ($act->action) {
-                        'payment.approved', 'subscription.activated' => 'status-active',
-                        'shop.registered', 'subscription.trial_started' => 'status-trial',
-                        'payment.rejected', 'shop.suspended' => 'status-rejected',
-                        'payment.refunded' => 'status-pending',
+                        'payment.approved', 'subscription.activated', 'system.backup_created', 'system.restore_smoke_test' => 'status-active',
+                        'shop.registered', 'subscription.trial_started', 'system.backup_pruned' => 'status-trial',
+                        'payment.rejected', 'shop.suspended', 'subscription.trial_expired', 'subscription.expired' => 'status-rejected',
+                        'payment.refunded', 'subscription.trial_expired_grace', 'subscription.renewal_overdue_grace', 'subscription.renewal_notice' => 'status-pending',
                         default => 'status-trial'
                     };
                 @endphp
@@ -771,6 +771,8 @@
                             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="2" y="5" width="20" height="14" rx="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line></svg>
                         @elseif (str_contains($act->action, 'shop'))
                             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>
+                        @elseif (str_contains($act->action, 'backup') || str_contains($act->action, 'restore'))
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg>
                         @else
                             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
                         @endif

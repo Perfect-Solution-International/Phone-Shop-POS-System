@@ -111,7 +111,45 @@ class RepairController extends Controller
 
         $repair->update($validated);
 
+        if ($validated['status'] === 'ready_for_collection') {
+            try {
+                app(\App\Services\SmsNotificationService::class)->sendRepairReadyAlert($repair);
+            } catch (\Throwable $e) {
+            }
+
+            try {
+                if ($repair->customer && $repair->customer->email) {
+                    \Illuminate\Support\Facades\Mail::to($repair->customer->email)->queue(new \App\Mail\RepairPickupReadyMail($repair));
+                }
+            } catch (\Throwable $e) {
+            }
+        }
+
         return response()->json($repair->fresh());
+    }
+
+    public function approveEstimate(Request $request, RepairJob $repair): JsonResponse
+    {
+        $user = $request->user();
+        if ($user && ! $user->can('repairs.manage')) {
+            $customer = \App\Models\Customer::where('email', $user->email)->first();
+            abort_unless($customer && $repair->customer_id === $customer->id, 403, 'Unauthorized access to this repair job.');
+        }
+
+        $validated = $request->validate([
+            'notes' => 'nullable|string|max:500',
+        ]);
+
+        $repair->update([
+            'status' => 'in_repair',
+            'technician_notes' => trim(($repair->technician_notes ? $repair->technician_notes . "\n" : '') . '[Customer Approved Estimate on ' . now()->toDayDateTimeString() . (! empty($validated['notes']) ? ': ' . $validated['notes'] : '') . ']'),
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Repair estimate approved successfully. Technicians will proceed with repairs.',
+            'repair' => $repair->fresh(['customer', 'technician']),
+        ]);
     }
 
     /**

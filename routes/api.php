@@ -45,6 +45,7 @@ Route::prefix('v1')->name('v1.')->group(function (): void {
             // Phone Repairs & Service Management (Section 12)
             Route::patch('repairs/{repair}/status', [\App\Http\Controllers\Api\RepairController::class, 'updateStatus'])->name('repairs.status');
             Route::post('repairs/{repair}/parts', [\App\Http\Controllers\Api\RepairController::class, 'addPart'])->name('repairs.parts');
+            Route::post('repairs/{repair}/approve-estimate', [\App\Http\Controllers\Api\RepairController::class, 'approveEstimate'])->name('repairs.approve_estimate');
             Route::apiResource('repairs', \App\Http\Controllers\Api\RepairController::class);
 
             // Spare Parts Management (Section 14)

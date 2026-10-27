@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [AuthController::class, 'entry'])->name('home');
 Route::get('/up', fn () => response()->json(['status' => 'ok']))->name('health');
 Route::get('/track-repair', [\App\Http\Controllers\PublicRepairTrackingController::class, 'show'])->name('public.repair-track');
+Route::post('/track-repair/approve', [\App\Http\Controllers\PublicRepairTrackingController::class, 'approveEstimate'])->name('public.repair-track.approve');
 
 // Authentication (Login / Logout)
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
@@ -39,6 +40,8 @@ Route::view('/app/{path?}', 'layouts.master')->middleware(['auth', 'verified'])-
 Route::prefix('portal')->name('customer.')->middleware(['auth', 'verified', 'shop'])->group(function (): void {
     Route::get('/', [\App\Http\Controllers\CustomerPortal\PortalController::class, 'index'])->name('portal');
     Route::get('/repairs/{repair}', [\App\Http\Controllers\CustomerPortal\PortalController::class, 'repair'])->name('repairs.show');
+    Route::post('/repairs/{repair}/estimate/approve', [\App\Http\Controllers\CustomerPortal\PortalController::class, 'approveEstimate'])->name('repairs.estimate.approve');
+    Route::post('/repairs/{repair}/estimate/decline', [\App\Http\Controllers\CustomerPortal\PortalController::class, 'declineEstimate'])->name('repairs.estimate.decline');
     Route::get('/invoices/{sale}', [\App\Http\Controllers\CustomerPortal\PortalController::class, 'invoice'])->name('invoices.show');
 });
 

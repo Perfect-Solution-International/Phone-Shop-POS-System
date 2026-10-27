@@ -201,6 +201,15 @@
                         </span>
                         @if($r->status === 'ready_for_collection')
                             <div style="font-size: 0.7rem; color: #166534; font-weight: 700; margin-top: 4px;">Ready for Pickup!</div>
+                        @elseif($r->status === 'waiting_for_approval')
+                            <div style="margin-top: 6px;">
+                                <form method="POST" action="{{ route('customer.repairs.estimate.approve', $r->id) }}" style="display:inline-block;">
+                                    @csrf
+                                    <button type="submit" class="btn btn-sm btn-primary" style="padding: 0.2rem 0.55rem; font-size: 0.72rem; font-weight: 700;">
+                                        ✓ Approve Estimate
+                                    </button>
+                                </form>
+                            </div>
                         @endif
                     </td>
                     <td>

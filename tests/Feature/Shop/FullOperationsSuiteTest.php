@@ -175,11 +175,63 @@ class FullOperationsSuiteTest extends TestCase
             'category' => 'electricity',
         ]);
 
-        // 2. View Cashbook
+        // 2. Add cash sale payment and repair advance to verify reconciliation calculations
+        app()->instance('shop.id', $shop->id);
+
+        $customer = Customer::create([
+            'shop_id' => $shop->id,
+            'name' => 'Cash Customer',
+            'phone' => '0770001122',
+        ]);
+
+        $sale = Sale::create([
+            'shop_id' => $shop->id,
+            'customer_id' => $customer->id,
+            'user_id' => $owner->id,
+            'invoice_number' => 'INV-CASH-TEST',
+            'sale_date' => now()->toDateString(),
+            'subtotal' => 25000.00,
+            'total_amount' => 25000.00,
+            'paid_amount' => 25000.00,
+            'payment_method' => 'cash',
+            'status' => 'completed',
+        ]);
+
+        SalePayment::create([
+            'sale_id' => $sale->id,
+            'payment_method' => 'cash',
+            'amount' => 25000.00,
+        ]);
+
+        RepairJob::create([
+            'shop_id' => $shop->id,
+            'customer_id' => $customer->id,
+            'job_number' => 'REP-CASH-TEST',
+            'brand' => 'Apple',
+            'model' => 'iPhone 12',
+            'fault_description' => 'Port service',
+            'estimated_cost' => 10000.00,
+            'advance_amount' => 5000.00,
+            'status' => 'received',
+        ]);
+
+        app()->forgetInstance('shop.id');
+
+        // 3. View Cashbook and verify reconciliation calculations:
+        // Cash In = Sales (25,000) + Repairs (5,000) = 30,000
+        // Cash Out = Expenses (18,500) = 18,500
+        // Net Balance = 30,000 - 18,500 = 11,500
         $cashbookRes = $this->actingAs($owner)->get('/shop/cashbook?date=' . now()->toDateString());
         $cashbookRes->assertOk()->assertViewIs('shop.cashbook.index');
+        $cashbookRes->assertViewHas('totalCashIn', 30000.00);
+        $cashbookRes->assertViewHas('totalSalesCashIn', 25000.00);
+        $cashbookRes->assertViewHas('totalRepairCashIn', 5000.00);
+        $cashbookRes->assertViewHas('totalCashExpenses', 18500.00);
+        $cashbookRes->assertViewHas('totalCashOut', 18500.00);
+        $cashbookRes->assertViewHas('netCashBalance', 11500.00);
         $cashbookRes->assertSee('CEB Store Bill');
         $cashbookRes->assertSee('18,500.00');
+        $cashbookRes->assertSee('11,500.00');
     }
 
     public function test_inventory_movements_and_manual_adjustment(): void

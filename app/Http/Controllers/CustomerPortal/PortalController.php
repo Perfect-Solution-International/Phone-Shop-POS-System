@@ -80,5 +80,40 @@ class PortalController extends Controller
 
         return view('customer-portal.invoices.show', compact('sale', 'customer'));
     }
+
+    public function approveEstimate(Request $request, RepairJob $repair): \Illuminate\Http\RedirectResponse
+    {
+        $user = $request->user();
+        $customer = Customer::where('email', $user->email)->first();
+
+        abort_unless($customer && $repair->customer_id === $customer->id, 403, 'Unauthorized access to this repair job.');
+
+        $notes = $request->input('notes');
+        $approvalNote = '[Customer Approved Estimate on ' . now()->toDayDateTimeString() . ($notes ? ': ' . $notes : '') . ']';
+
+        $repair->update([
+            'status' => 'in_repair',
+            'technician_notes' => trim(($repair->technician_notes ? $repair->technician_notes . "\n" : '') . $approvalNote),
+        ]);
+
+        return back()->with('success', "Estimate for repair #{$repair->job_number} has been approved. Our technicians will begin repair work immediately!");
+    }
+
+    public function declineEstimate(Request $request, RepairJob $repair): \Illuminate\Http\RedirectResponse
+    {
+        $user = $request->user();
+        $customer = Customer::where('email', $user->email)->first();
+
+        abort_unless($customer && $repair->customer_id === $customer->id, 403, 'Unauthorized access to this repair job.');
+
+        $reason = $request->input('reason', 'Customer declined estimate');
+        $declineNote = '[Customer Declined Estimate on ' . now()->toDayDateTimeString() . ': ' . $reason . ']';
+
+        $repair->update([
+            'technician_notes' => trim(($repair->technician_notes ? $repair->technician_notes . "\n" : '') . $declineNote),
+        ]);
+
+        return back()->with('info', 'Repair estimate response recorded. Our workshop representative will contact you shortly.');
+    }
 }
 
