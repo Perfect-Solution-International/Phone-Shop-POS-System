@@ -3,15 +3,29 @@
 namespace App\Models;
 
 use App\Support\Concerns\BelongsToShop;
+use App\Support\Concerns\BelongsToTenant;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Payroll extends Model
 {
-    use BelongsToShop, HasFactory;
+    use BelongsToShop, BelongsToTenant, HasFactory;
 
-    protected $fillable = ['employee_id', 'period', 'basic_salary', 'allowances', 'deductions', 'status'];
+    protected $fillable = [
+        'shop_id',
+        'employee_id',
+        'period',
+        'basic_salary',
+        'allowances',
+        'deductions',
+        'net_salary',
+        'status',
+        'generation_type',
+        'payment_method',
+        'paid_at',
+        'note',
+    ];
 
     protected $casts = [
         'period' => 'date:Y-m-d',
@@ -19,6 +33,7 @@ class Payroll extends Model
         'allowances' => 'decimal:2',
         'deductions' => 'decimal:2',
         'net_salary' => 'decimal:2',
+        'paid_at' => 'datetime',
     ];
 
     protected static function booted(): void
