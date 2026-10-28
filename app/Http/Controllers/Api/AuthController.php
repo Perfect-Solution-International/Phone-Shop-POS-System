@@ -67,7 +67,7 @@ class AuthController extends Controller
         $default = $this->destination($user);
         $intended = $request->session()->pull('url.intended');
 
-        if (! $intended || ! is_string($intended) || str_contains($intended, '/email/verify')) {
+        if (! $intended || ! is_string($intended) || str_contains($intended, '/email/verify') || str_contains($intended, '/login') || rtrim($intended, '/') === rtrim(url('/'), '/')) {
             return $default;
         }
 
@@ -77,6 +77,21 @@ class AuthController extends Controller
         // Discard external domains to prevent open redirects
         if ($intendedHost !== null && strtolower($intendedHost) !== strtolower((string) $appHost)) {
             return $default;
+        }
+
+        // Enforce strict workspace boundaries based on user role
+        if ($user->hasRole('Super Administrator') || $user->can('superadmin.view')) {
+            if (! str_contains($intended, '/super-admin')) {
+                return $default;
+            }
+        } elseif ($user->hasRole('Customer') || $user->can('customer.portal')) {
+            if (! str_contains($intended, '/portal')) {
+                return $default;
+            }
+        } elseif ($user->shop_id !== null) {
+            if (! str_contains($intended, '/shop') && ! str_contains($intended, '/app')) {
+                return $default;
+            }
         }
 
         return $intended;

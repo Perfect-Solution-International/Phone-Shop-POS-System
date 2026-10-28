@@ -70,6 +70,7 @@ test('reset password screen can be rendered with valid token', function (): void
     $response->assertOk();
     $response->assertSee('Set New Password');
     $response->assertSee('Confirm New Password');
+    $response->assertSee('8+ characters');
     $response->assertSee($user->email);
 });
 
@@ -164,3 +165,18 @@ test('password complexity rules are enforced during password reset', function (s
     'no-numbers' => 'NoNumbersPassword!',
     'no-mixed-case' => 'alllowercasepassword123',
 ]);
+
+test('password can be reset with 8-character valid password', function (): void {
+    $user = User::factory()->create(['password' => Hash::make('OldPass123!')]);
+    $token = Password::createToken($user);
+
+    $response = $this->post('/reset-password', [
+        'token' => $token,
+        'email' => $user->email,
+        'password' => 'NewPass1',
+        'password_confirmation' => 'NewPass1',
+    ]);
+
+    $response->assertRedirect(route('login'));
+    expect(Hash::check('NewPass1', $user->fresh()->password))->toBeTrue();
+});

@@ -156,14 +156,18 @@
                                     $waMsg = urlencode("Hello {$repair->customer->name}, update regarding repair #{$repair->job_number} ({$repair->device_model}): Status is " . ucwords(str_replace('_', ' ', $repair->status)) . ". Total Amount: LKR " . number_format($repair->final_cost ?? $repair->estimated_cost, 2) . ". Thank you!");
                                 @endphp
                                 <a href="https://wa.me/{{ $waPhone }}?text={{ $waMsg }}" target="_blank" class="btn btn-sm" title="Notify Customer via WhatsApp" style="background: #25D366; color: #ffffff; padding: 0.25rem 0.5rem; font-size: 0.75rem; display: inline-flex; align-items: center; text-decoration: none; border-radius: 4px; font-weight: 700;">
-                                    💬 WA
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 0.2rem;"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+                                    WA
                                 </a>
                             @endif
-                            <button class="btn btn-sm btn-secondary" onclick="openStatusModal({{ $repair->id }}, '{{ $repair->job_number }}', '{{ $repair->status }}', '{{ $repair->final_cost ?? $repair->estimated_cost }}')">
+                            <button class="btn btn-sm btn-secondary" onclick="openStatusModal({{ $repair->id }}, '{{ $repair->job_number }}', '{{ $repair->status }}', '{{ $repair->final_cost ?? $repair->estimated_cost }}', '{{ $repair->technician_id }}')">
                                 Status
                             </button>
                             <button class="btn btn-sm btn-secondary" onclick="openPartsModal({{ $repair->id }}, '{{ $repair->job_number }}')">
                                 + Part
+                            </button>
+                            <button class="btn btn-sm btn-secondary" onclick='openJobCardModal(@json($repair->load("customer", "technician")))' title="Print Repair Job Card Ticket">
+                                🖨️ Job Card
                             </button>
                         </div>
                     </td>
@@ -303,6 +307,16 @@
                 </div>
 
                 <div class="form-group">
+                    <label>Assign / Reassign Technician</label>
+                    <select name="technician_id" id="selTechnician" class="form-control">
+                        <option value="">-- Unassigned --</option>
+                        @foreach($technicians as $tech)
+                            <option value="{{ $tech->id }}">{{ $tech->name }} ({{ $tech->email }})</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="form-group">
                     <label>Technician Service Notes</label>
                     <textarea name="technician_notes" class="form-control" rows="3" placeholder="Action taken, diagnostic findings, replaced components..."></textarea>
                 </div>
@@ -357,12 +371,147 @@
     </div>
 </div>
 
+<!-- Modal: Printable Repair Job Card -->
+<div class="modal-backdrop" id="jobCardModal">
+    <div class="modal-box" style="max-width: 750px; padding: 0;">
+        <div class="modal-header no-print" style="padding: 1rem 1.5rem; border-bottom: 1px solid var(--surface-border);">
+            <h3>Repair Job Card & Intake Ticket</h3>
+            <button type="button" class="modal-close" onclick="closeModal('jobCardModal')">&times;</button>
+        </div>
+        <div class="modal-body" id="jobCardPrintArea" style="padding: 1.75rem;">
+            <!-- Printable Job Sheet Box -->
+            <div style="border: 2px solid #0f172a; padding: 1.5rem; border-radius: 8px; background: #ffffff;">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px dashed #94a3b8; padding-bottom: 1rem; margin-bottom: 1rem;">
+                    <div>
+                        <h2 style="margin: 0; font-size: 1.35rem; font-weight: 800; color: #0f172a;">{{ auth()->user()->shop->name ?? 'Phone Shop' }}</h2>
+                        <div style="font-size: 0.8rem; color: #475569; margin-top: 0.2rem;">
+                            Branch: {{ session('active_outlet_name', auth()->user()->shop->mainOutlet->name ?? 'Main Branch') }}<br>
+                            Phone: {{ auth()->user()->shop->phone ?? 'Shop Counter' }}
+                        </div>
+                    </div>
+                    <div style="text-align: right;">
+                        <span style="display: inline-block; background: #0f172a; color: #ffffff; padding: 0.25rem 0.65rem; border-radius: 4px; font-weight: 800; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em;">
+                            WORKSHOP JOB CARD
+                        </span>
+                        <div id="jcJobNumber" style="font-size: 1.25rem; font-weight: 800; color: #4f46e5; font-family: monospace; margin-top: 0.35rem;"></div>
+                        <div id="jcDate" style="font-size: 0.75rem; color: #64748b;"></div>
+                    </div>
+                </div>
+
+                <!-- Customer & Device Grid -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; background: #f8fafc; padding: 0.85rem 1rem; border-radius: 6px; border: 1px solid #e2e8f0;">
+                    <div>
+                        <div style="font-size: 0.72rem; text-transform: uppercase; color: #64748b; font-weight: 700;">Customer Info</div>
+                        <div id="jcCustomerName" style="font-weight: 700; font-size: 0.95rem; color: #0f172a; margin-top: 2px;"></div>
+                        <div id="jcCustomerPhone" style="font-size: 0.825rem; color: #334155;"></div>
+                    </div>
+                    <div>
+                        <div style="font-size: 0.72rem; text-transform: uppercase; color: #64748b; font-weight: 700;">Device Details</div>
+                        <div id="jcDevice" style="font-weight: 700; font-size: 0.95rem; color: #0f172a; margin-top: 2px;"></div>
+                        <div id="jcImei" style="font-size: 0.825rem; font-family: monospace; color: #334155;"></div>
+                        <div id="jcTech" style="font-size: 0.75rem; color: #0284c7; margin-top: 2px;"></div>
+                    </div>
+                </div>
+
+                <!-- Fault & Notes -->
+                <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                    <div style="border: 1px solid #e2e8f0; border-radius: 6px; padding: 0.75rem;">
+                        <div style="font-size: 0.72rem; text-transform: uppercase; color: #64748b; font-weight: 700;">Reported Fault / Symptoms</div>
+                        <div id="jcFault" style="font-size: 0.85rem; color: #0f172a; margin-top: 4px; white-space: pre-wrap;"></div>
+                    </div>
+                    <div style="border: 1px solid #e2e8f0; border-radius: 6px; padding: 0.75rem;">
+                        <div style="font-size: 0.72rem; text-transform: uppercase; color: #64748b; font-weight: 700;">Intake Condition & Accessories</div>
+                        <div style="font-size: 0.8rem; margin-top: 4px;">
+                            <strong>Condition:</strong> <span id="jcCondition"></span><br>
+                            <strong>Accessories:</strong> <span id="jcAccessories"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Billing & Estimates -->
+                <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #e2e8f0; border-bottom: 1px solid #e2e8f0; padding: 0.75rem 0.5rem; margin-bottom: 1rem;">
+                    <div>
+                        <span style="font-size: 0.75rem; color: #64748b;">Est. Completion:</span>
+                        <strong id="jcEstDate" style="font-size: 0.85rem; color: #0f172a; margin-left: 0.25rem;"></strong>
+                    </div>
+                    <div style="display: flex; gap: 1.5rem; text-align: right;">
+                        <div>
+                            <div style="font-size: 0.7rem; color: #64748b; text-transform: uppercase;">Estimated Cost</div>
+                            <div id="jcEstCost" style="font-weight: 700; font-size: 0.9rem; color: #0f172a;"></div>
+                        </div>
+                        <div>
+                            <div style="font-size: 0.7rem; color: #64748b; text-transform: uppercase;">Advance Paid</div>
+                            <div id="jcAdvance" style="font-weight: 700; font-size: 0.9rem; color: #166534;"></div>
+                        </div>
+                        <div>
+                            <div style="font-size: 0.7rem; color: #64748b; text-transform: uppercase;">Balance Due</div>
+                            <div id="jcBalance" style="font-weight: 800; font-size: 0.95rem; color: #dc2626;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Signatures & Notice -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 1.5rem; padding-top: 0.5rem;">
+                    <div style="border-top: 1px dashed #94a3b8; padding-top: 0.4rem; font-size: 0.75rem; color: #64748b; text-align: center;">
+                        Customer Signature &amp; Acceptance
+                    </div>
+                    <div style="border-top: 1px dashed #94a3b8; padding-top: 0.4rem; font-size: 0.75rem; color: #64748b; text-align: center;">
+                        Authorized Workshop Intake Signature
+                    </div>
+                </div>
+                <div style="font-size: 0.68rem; color: #94a3b8; text-align: center; margin-top: 1rem; border-top: 1px dotted #cbd5e1; padding-top: 0.5rem;">
+                    Track online anytime at: <span id="jcTrackUrl" style="color: #4f46e5; font-family: monospace;"></span> | Presentation of this ticket required for device collection.
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer no-print" style="padding: 1rem 1.5rem; border-top: 1px solid var(--surface-border); display: flex; justify-content: flex-end; gap: 0.75rem;">
+            <button type="button" class="btn btn-secondary" onclick="closeModal('jobCardModal')">Close</button>
+            <button type="button" class="btn btn-primary" onclick="printJobCard()">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline-block; vertical-align: middle; margin-right: 4px;"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+                Print Job Card
+            </button>
+        </div>
+    </div>
+</div>
+
+<style>
+    @media print {
+        body * {
+            visibility: hidden;
+        }
+        #jobCardModal, #jobCardModal * {
+            visibility: visible;
+        }
+        #jobCardModal {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: auto;
+            background: #ffffff !important;
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+        .modal-box {
+            max-width: 100% !important;
+            border: none !important;
+            box-shadow: none !important;
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+        .no-print {
+            display: none !important;
+        }
+    }
+</style>
+
 @push('scripts')
 <script>
-    function openStatusModal(id, jobNumber, currentStatus, cost) {
+    function openStatusModal(id, jobNumber, currentStatus, cost, technicianId) {
         document.getElementById('lblJobNumber').innerText = jobNumber;
         document.getElementById('selStatus').value = currentStatus;
         document.getElementById('inpFinalCost').value = cost;
+        document.getElementById('selTechnician').value = technicianId || '';
         document.getElementById('formUpdateStatus').action = '/shop/repairs/' + id + '/status';
         openModal('updateStatusModal');
     }
@@ -371,6 +520,37 @@
         document.getElementById('lblPartJobNumber').innerText = jobNumber;
         document.getElementById('formAllocatePart').action = '/shop/repairs/' + id + '/parts';
         openModal('allocatePartsModal');
+    }
+
+    function openJobCardModal(repair) {
+        document.getElementById('jcJobNumber').innerText = repair.job_number;
+        document.getElementById('jcDate').innerText = 'Intake: ' + (repair.created_at ? new Date(repair.created_at).toLocaleDateString() : 'Today');
+        document.getElementById('jcCustomerName').innerText = (repair.customer && repair.customer.name) ? repair.customer.name : 'Walk-in Customer';
+        document.getElementById('jcCustomerPhone').innerText = (repair.customer && repair.customer.phone) ? 'Phone: ' + repair.customer.phone : 'No phone';
+        document.getElementById('jcDevice').innerText = repair.brand + ' ' + repair.model;
+        document.getElementById('jcImei').innerText = repair.imei ? 'IMEI: ' + repair.imei : 'IMEI: Not Provided';
+        document.getElementById('jcTech').innerText = (repair.technician && repair.technician.name) ? 'Assigned Tech: ' + repair.technician.name : 'Tech: Unassigned';
+        document.getElementById('jcFault').innerText = repair.fault_description || 'General Service';
+        document.getElementById('jcCondition').innerText = repair.condition_notes || 'Normal Wear';
+        document.getElementById('jcAccessories').innerText = repair.accessories_received || 'Device Only';
+        document.getElementById('jcEstDate').innerText = repair.estimated_completion_date ? new Date(repair.estimated_completion_date).toLocaleDateString() : 'To be notified';
+
+        const est = parseFloat(repair.estimated_cost || 0);
+        const adv = parseFloat(repair.advance_amount || 0);
+        const bal = Math.max(0, est - adv);
+
+        document.getElementById('jcEstCost').innerText = 'LKR ' + est.toFixed(2);
+        document.getElementById('jcAdvance').innerText = 'LKR ' + adv.toFixed(2);
+        document.getElementById('jcBalance').innerText = 'LKR ' + bal.toFixed(2);
+
+        const trackUrl = window.location.origin + '/track-repair?id=' + encodeURIComponent(repair.job_number);
+        document.getElementById('jcTrackUrl').innerText = trackUrl;
+
+        openModal('jobCardModal');
+    }
+
+    function printJobCard() {
+        window.print();
     }
 </script>
 @endpush

@@ -244,20 +244,23 @@
         }
 
         .saas-topbar {
-            height: 64px;
+            min-height: 56px;
+            height: auto;
             background: #ffffff;
             border-bottom: 1px solid var(--surface-border);
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 0 2rem;
+            flex-wrap: wrap;
+            gap: 0.5rem 1rem;
+            padding: 0.65rem clamp(0.75rem, 1.5vw, 1.5rem);
             position: sticky;
             top: 0;
             z-index: 10;
         }
 
         .saas-topbar-title {
-            font-size: 1.15rem;
+            font-size: 1.1rem;
             font-weight: 750;
             color: var(--text-heading);
             letter-spacing: -0.01em;
@@ -278,7 +281,7 @@
             color: #065f46;
             font-size: 0.75rem;
             font-weight: 600;
-            padding: 0.3rem 0.75rem;
+            padding: 0.25rem 0.65rem;
             border-radius: 9999px;
         }
 
@@ -294,9 +297,9 @@
             display: inline-flex;
             align-items: center;
             gap: 0.4rem;
-            padding: 0.4rem 0.85rem;
-            border-radius: 7px;
-            font-size: 0.8125rem;
+            padding: 0.35rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.775rem;
             font-weight: 600;
             text-decoration: none;
             color: var(--brand-indigo-600);
@@ -311,62 +314,102 @@
         }
 
         .saas-body {
-            padding: 2rem;
+            padding: 1.25rem 1.5rem;
             flex-grow: 1;
         }
 
         /* Metric Grid */
         .metric-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-            gap: 1.25rem;
-            margin-bottom: 2rem;
+            grid-template-columns: repeat(6, minmax(0, 1fr));
+            gap: 0.75rem;
+            margin-bottom: 1.25rem;
+        }
+
+        @media (max-width: 1240px) {
+            .metric-grid {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+                gap: 0.75rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .metric-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 0.65rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .metric-grid {
+                grid-template-columns: 1fr;
+            }
         }
 
         .metric-card {
             background: #ffffff;
-            border-radius: 14px;
-            padding: 1.35rem 1.25rem;
+            border-radius: 10px;
+            padding: 0.85rem 0.95rem;
             border: 1px solid var(--surface-border);
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
             display: flex;
             flex-direction: column;
-            gap: 0.4rem;
+            justify-content: space-between;
+            gap: 0.25rem;
+            min-height: 108px;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .metric-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 14px -2px rgba(0, 0, 0, 0.08);
+            border-color: #cbd5e1;
         }
 
         .metric-label {
-            font-size: 0.775rem;
-            font-weight: 650;
+            font-size: 0.68rem;
+            font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 0.04em;
+            letter-spacing: 0.03em;
             color: var(--text-muted);
+            line-height: 1.2;
         }
 
         .metric-value {
-            font-size: 1.75rem;
+            font-size: 1.35rem;
             font-weight: 850;
             color: var(--text-heading);
-            letter-spacing: -0.02em;
+            letter-spacing: -0.01em;
+            line-height: 1.2;
+            margin: 0.15rem 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .metric-sub {
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             color: var(--color-success);
             font-weight: 600;
+            line-height: 1.2;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         /* Data Card */
         .data-card {
             background: #ffffff;
-            border-radius: 14px;
+            border-radius: 10px;
             border: 1px solid var(--surface-border);
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-            margin-bottom: 2rem;
-            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+            margin-bottom: 1.25rem;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
         }
 
         .data-card-header {
-            padding: 1.25rem 1.5rem;
+            padding: 0.85rem 1.25rem;
             border-bottom: 1px solid var(--surface-border);
             display: flex;
             align-items: center;
@@ -374,7 +417,7 @@
         }
 
         .data-card-title {
-            font-size: 1.05rem;
+            font-size: 0.95rem;
             font-weight: 750;
             color: var(--text-heading);
         }
@@ -460,9 +503,147 @@
             color: #065f46;
             border: 1px solid #a7f3d0;
         }
+
+        /* Mobile Off-Canvas Drawer & Overlay */
+        .saas-sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(6, 9, 19, 0.65);
+            backdrop-filter: blur(2px);
+            z-index: 1040;
+            opacity: 0;
+            transition: opacity 0.25s ease;
+        }
+
+        .saas-sidebar-overlay.active {
+            display: block;
+            opacity: 1;
+        }
+
+        .saas-mobile-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--text-heading);
+            padding: 0.35rem;
+            border-radius: 6px;
+            cursor: pointer;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .saas-mobile-toggle:hover {
+            background: #f1f5f9;
+        }
+
+        .saas-close-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: #94a3b8;
+            font-size: 1.5rem;
+            cursor: pointer;
+            margin-left: auto;
+            line-height: 1;
+            padding: 0.2rem 0.45rem;
+            border-radius: 4px;
+        }
+
+        .saas-close-btn:hover {
+            color: #ffffff;
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        @media (max-width: 1080px) {
+            body {
+                position: relative;
+                overflow-x: hidden;
+            }
+
+            .saas-mobile-toggle {
+                display: inline-flex;
+            }
+
+            .saas-close-btn {
+                display: block;
+            }
+
+            .saas-sidebar {
+                position: fixed;
+                top: 0;
+                left: 0;
+                bottom: 0;
+                width: 270px;
+                max-width: 85vw;
+                height: 100vh;
+                z-index: 1050;
+                transform: translateX(-100%);
+                transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+                box-shadow: none;
+            }
+
+            .saas-sidebar.open {
+                transform: translateX(0);
+                box-shadow: 12px 0 35px -5px rgba(0, 0, 0, 0.5);
+            }
+
+            .saas-main {
+                width: 100%;
+                min-width: 0;
+            }
+
+            .saas-topbar {
+                min-height: 54px;
+                height: auto;
+                padding: 0.55rem 1rem;
+                gap: 0.5rem;
+            }
+
+            .saas-body {
+                padding: 1rem;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .saas-topbar-title {
+                font-size: 0.95rem;
+            }
+
+            .saas-status-badge {
+                padding: 0.2rem 0.45rem;
+                font-size: 0.7rem;
+            }
+
+            .data-card-header {
+                flex-direction: column;
+                align-items: flex-start !important;
+                gap: 0.75rem;
+            }
+
+            .data-card-header form {
+                flex-direction: column;
+                align-items: stretch !important;
+                width: 100%;
+            }
+
+            .data-card-header form input,
+            .data-card-header form select {
+                width: 100% !important;
+                max-width: 100% !important;
+            }
+
+            .saas-body {
+                padding: 0.75rem;
+            }
+        }
     </style>
 </head>
 <body>
+    <!-- Mobile Off-Canvas Backdrop -->
+    <div class="saas-sidebar-overlay" id="saasSidebarOverlay" onclick="closeSaasSidebar()"></div>
+
     <!-- Sidebar -->
     <aside class="saas-sidebar">
         <div class="saas-brand">
@@ -473,6 +654,7 @@
                 <span class="saas-brand-title">{{ config('app.name') === 'Laravel' ? 'SaaS Phone Shop POS System' : config('app.name', 'SaaS Phone Shop POS System') }}</span>
                 <span class="saas-brand-subtitle">Super Admin Portal</span>
             </div>
+            <button type="button" class="saas-close-btn" onclick="closeSaasSidebar()" aria-label="Close menu">&times;</button>
         </div>
 
         <nav class="saas-nav">
@@ -544,6 +726,13 @@
     <!-- Main View Area -->
     <div class="saas-main">
         <header class="saas-topbar">
+            <button type="button" class="saas-mobile-toggle" onclick="openSaasSidebar()" aria-label="Open navigation menu">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
+            </button>
             <h1 class="saas-topbar-title">@yield('page_title', 'SaaS Platform Management')</h1>
             <div class="saas-topbar-right">
                 <span class="saas-status-badge">
@@ -565,6 +754,33 @@
         </main>
     </div>
 
+    <script>
+        function openSaasSidebar() {
+            var sidebar = document.querySelector('.saas-sidebar');
+            var overlay = document.getElementById('saasSidebarOverlay');
+            if (sidebar) sidebar.classList.add('open');
+            if (overlay) overlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeSaasSidebar() {
+            var sidebar = document.querySelector('.saas-sidebar');
+            var overlay = document.getElementById('saasSidebarOverlay');
+            if (sidebar) sidebar.classList.remove('open');
+            if (overlay) overlay.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.saas-nav-link').forEach(function(link) {
+                link.addEventListener('click', function() {
+                    if (window.innerWidth <= 1080) {
+                        closeSaasSidebar();
+                    }
+                });
+            });
+        });
+    </script>
     @stack('scripts')
 </body>
 </html>

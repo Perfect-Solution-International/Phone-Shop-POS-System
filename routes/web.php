@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [AuthController::class, 'entry'])->name('home');
 Route::get('/up', fn () => response()->json(['status' => 'ok']))->name('health');
 Route::get('/track-repair', [\App\Http\Controllers\PublicRepairTrackingController::class, 'show'])->name('public.repair-track');
+Route::post('/track-repair/approve', [\App\Http\Controllers\PublicRepairTrackingController::class, 'approveEstimate'])->name('public.repair-track.approve');
 
 // Authentication (Login / Logout)
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
@@ -39,6 +40,8 @@ Route::view('/app/{path?}', 'layouts.master')->middleware(['auth', 'verified'])-
 Route::prefix('portal')->name('customer.')->middleware(['auth', 'verified', 'shop'])->group(function (): void {
     Route::get('/', [\App\Http\Controllers\CustomerPortal\PortalController::class, 'index'])->name('portal');
     Route::get('/repairs/{repair}', [\App\Http\Controllers\CustomerPortal\PortalController::class, 'repair'])->name('repairs.show');
+    Route::post('/repairs/{repair}/estimate/approve', [\App\Http\Controllers\CustomerPortal\PortalController::class, 'approveEstimate'])->name('repairs.estimate.approve');
+    Route::post('/repairs/{repair}/estimate/decline', [\App\Http\Controllers\CustomerPortal\PortalController::class, 'declineEstimate'])->name('repairs.estimate.decline');
     Route::get('/invoices/{sale}', [\App\Http\Controllers\CustomerPortal\PortalController::class, 'invoice'])->name('invoices.show');
 });
 
@@ -69,6 +72,7 @@ Route::prefix('shop')->name('shop.')->middleware(['auth', 'verified', 'shop'])->
     Route::get('/warranties', [\App\Http\Controllers\Shop\WarrantyViewController::class, 'index'])->name('warranties');
     Route::post('/warranties', [\App\Http\Controllers\Shop\WarrantyViewController::class, 'store'])->name('warranties.store');
     Route::post('/warranties/{warranty}/claim', [\App\Http\Controllers\Shop\WarrantyViewController::class, 'claim'])->name('warranties.claim');
+    Route::post('/warranties/claims/{claim}/review', [\App\Http\Controllers\Shop\WarrantyViewController::class, 'reviewClaim'])->name('warranties.claims.review');
 
     // Spare Parts Inventory (Section 14)
     Route::get('/spare-parts', [\App\Http\Controllers\Shop\SparePartViewController::class, 'index'])->name('spare-parts');
@@ -124,6 +128,9 @@ Route::prefix('shop')->name('shop.')->middleware(['auth', 'verified', 'shop'])->
     // Stock Movement Audit & Inventory (Section 11)
     Route::get('/inventory', [\App\Http\Controllers\Shop\InventoryMovementViewController::class, 'index'])->name('inventory');
     Route::post('/inventory/adjust', [\App\Http\Controllers\Shop\InventoryMovementViewController::class, 'adjust'])->name('inventory.adjust');
+    Route::get('/inventory/grns', [\App\Http\Controllers\Shop\GrnViewController::class, 'index'])->name('inventory.grns');
+    Route::post('/inventory/grns', [\App\Http\Controllers\Shop\GrnViewController::class, 'store'])->name('inventory.grns.store');
+    Route::get('/inventory/grns/{grn}', [\App\Http\Controllers\Shop\GrnViewController::class, 'show'])->name('inventory.grns.show');
 
     // Sales Returns & Refunds (Section 7.3)
     Route::get('/sales-returns', [\App\Http\Controllers\Shop\SaleReturnViewController::class, 'index'])->name('sales.returns');
@@ -178,6 +185,11 @@ Route::prefix('shop')->name('shop.')->middleware(['auth', 'verified', 'shop'])->
     Route::get('/subscription', [\App\Http\Controllers\Shop\SubscriptionViewController::class, 'index'])->name('subscription.index');
     Route::post('/subscription/checkout', [\App\Http\Controllers\Shop\SubscriptionViewController::class, 'checkout'])->name('subscription.checkout');
     Route::post('/subscription/bank-transfer', [\App\Http\Controllers\Shop\SubscriptionViewController::class, 'bankTransfer'])->name('subscription.bank-transfer');
+    Route::post('/subscription/gateway/initiate', [\App\Http\Controllers\Payment\GatewayCallbackController::class, 'initiate'])->name('subscription.gateway.initiate');
+    Route::get('/subscription/gateway/sandbox-checkout', [\App\Http\Controllers\Payment\GatewayCallbackController::class, 'sandboxCheckout'])->name('subscription.gateway.sandbox-checkout');
+    Route::post('/subscription/gateway/simulate-action', [\App\Http\Controllers\Payment\GatewayCallbackController::class, 'simulateSandboxAction'])->name('subscription.gateway.simulate-action');
+    Route::get('/subscription/gateway/return', [\App\Http\Controllers\Payment\GatewayCallbackController::class, 'handleReturn'])->name('subscription.gateway.return');
+    Route::get('/subscription/gateway/cancel', [\App\Http\Controllers\Payment\GatewayCallbackController::class, 'handleCancel'])->name('subscription.gateway.cancel');
 });
 
 // SaaS Super Admin Panel

@@ -4,10 +4,39 @@
 @section('page-title', 'Financial & Operational Reports')
 
 @section('content')
+<style>
+    .reports-analytics-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+    }
+    .reports-full-span {
+        grid-column: span 2;
+    }
+    @media (max-width: 992px) {
+        .reports-analytics-grid {
+            grid-template-columns: 1fr;
+        }
+        .reports-full-span {
+            grid-column: 1 / -1 !important;
+        }
+    }
+    @media (max-width: 640px) {
+        .reports-filter-form {
+            flex-direction: column;
+            align-items: stretch !important;
+            width: 100%;
+        }
+        .reports-filter-form input {
+            max-width: 100% !important;
+            width: 100%;
+        }
+    }
+</style>
 <!-- Filter Date Bar -->
 <div class="card" style="margin-bottom: 1.5rem;">
     <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; padding: 1.25rem 1.5rem;">
-        <form method="GET" action="{{ route('shop.reports') }}" style="display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap;">
+        <form method="GET" action="{{ route('shop.reports') }}" class="reports-filter-form" style="display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap;">
             <label style="font-size: 0.8125rem; font-weight: 700; color: #475569; margin: 0;">Date Range:</label>
             <input type="date" name="start_date" class="form-control" style="max-width: 150px;" value="{{ $startDate }}">
             <span style="color: #94a3b8;">to</span>
@@ -68,7 +97,7 @@
 </div>
 
 <!-- 2x2 Analytical Section Grid -->
-<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+<div class="reports-analytics-grid">
     <!-- Sales by Tender & Payment -->
     <div class="card">
         <div class="card-header">
@@ -153,7 +182,7 @@
     </div>
 
     <!-- Top Selling Items -->
-    <div class="card" style="grid-column: span 2;">
+    <div class="card reports-full-span">
         <div class="card-header">
             <strong style="color: #0f172a; font-size: 0.9375rem;">Top Selling Items (In Selected Period)</strong>
             <span class="badge badge-success">Demand Leaders</span>

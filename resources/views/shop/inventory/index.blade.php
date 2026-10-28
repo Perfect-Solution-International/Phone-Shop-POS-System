@@ -59,7 +59,7 @@
 
         <button type="button" class="btn btn-primary" onclick="openModal('adjustmentModal')">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
-            + Stock Adjustment (Audit / Shrinkage)
+            Stock Adjustment (Audit / Shrinkage)
         </button>
     </div>
 

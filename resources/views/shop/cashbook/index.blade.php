@@ -4,9 +4,36 @@
 @section('page-title', 'Daily Cashbook & Cashier Reconciliation')
 
 @section('content')
+<style>
+    .cashbook-split-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+    }
+    @media (max-width: 992px) {
+        .cashbook-split-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+    @media (max-width: 640px) {
+        .cashbook-filter-form {
+            flex-direction: column;
+            align-items: stretch !important;
+            width: 100%;
+        }
+        .cashbook-filter-form input {
+            max-width: 100% !important;
+            width: 100%;
+        }
+        .cashbook-action-buttons {
+            width: 100%;
+            flex-direction: column;
+        }
+    }
+</style>
 <div class="card" style="margin-bottom: 1.5rem;">
     <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; padding: 1.25rem 1.5rem;">
-        <form method="GET" action="{{ route('shop.cashbook') }}" style="display: flex; gap: 0.75rem; align-items: center;">
+        <form method="GET" action="{{ route('shop.cashbook') }}" class="cashbook-filter-form" style="display: flex; gap: 0.75rem; align-items: center;">
             <label style="font-size: 0.875rem; font-weight: 700; color: #475569; margin: 0;">Select Date:</label>
             <input type="date" name="date" class="form-control" value="{{ $selectedDate }}" style="max-width: 170px;" onchange="this.form.submit()">
             <button type="submit" class="btn btn-secondary btn-sm">Load Cashbook</button>
@@ -15,7 +42,7 @@
             @endif
         </form>
 
-        <div style="display: flex; gap: 0.75rem;">
+        <div class="cashbook-action-buttons" style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
             <a href="{{ route('shop.expenses') }}" class="btn btn-secondary btn-sm">
                 View All Operating Expenses &rarr;
             </a>
@@ -60,7 +87,7 @@
 </div>
 
 <!-- Details Split Grid -->
-<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+<div class="cashbook-split-grid">
     <!-- Cash In -->
     <div class="card">
         <div class="card-header" style="background: #f0fdf4; border-bottom: 1px solid #bbf7d0;">

@@ -401,3 +401,172 @@ test('tenant isolation prevents Tenant A from viewing Tenant B repair jobs', fun
     $directResponse = $this->getJson("/api/v1/repairs/{$repairB->id}");
     $directResponse->assertNotFound();
 });
+
+test('technician reassignment updates assigned technician and reflects in queue filter', function (): void {
+    $shop = Shop::factory()->create();
+    $techA = User::factory()->create(['shop_id' => $shop->id, 'name' => 'Technician Alex']);
+    $techA->assignRole('Technician');
+    $techB = User::factory()->create(['shop_id' => $shop->id, 'name' => 'Technician Brian']);
+    $techB->assignRole('Technician');
+
+    app()->instance('shop.id', $shop->id);
+    $customer = Customer::create([
+        'shop_id' => $shop->id,
+        'name' => 'Kasun Chamara',
+        'phone' => '0772233445',
+    ]);
+
+    $repair = RepairJob::create([
+        'shop_id' => $shop->id,
+        'customer_id' => $customer->id,
+        'technician_id' => $techA->id,
+        'job_number' => 'REP-REASSIGN-01',
+        'brand' => 'Apple',
+        'model' => 'iPhone 12',
+        'fault_description' => 'Battery drain and thermal throttle',
+        'estimated_cost' => 12000.00,
+        'status' => 'received',
+    ]);
+    app()->forgetInstance('shop.id');
+
+    Sanctum::actingAs($techA);
+
+    // 1. Reassign to Tech B via API status transition endpoint
+    $response = $this->patchJson("/api/v1/repairs/{$repair->id}/status", [
+        'status' => 'diagnosing',
+        'technician_id' => $techB->id,
+        'technician_notes' => 'Reassigned to Tech B for specialized battery diagnostics',
+    ]);
+
+    $response->assertOk();
+    expect($repair->fresh()->technician_id)->toBe($techB->id);
+    expect($repair->fresh()->status)->toBe('diagnosing');
+
+    // 2. Verify Tech B queue filter reflects reassignment
+    $queueResponse = $this->getJson("/api/v1/repairs?technician_id={$techB->id}");
+    $queueResponse->assertOk();
+    $ids = collect($queueResponse->json('data'))->pluck('id');
+    expect($ids)->toContain($repair->id);
+
+    // 3. Web controller reassignment update
+    $this->actingAs($techB)
+        ->patch("/shop/repairs/{$repair->id}/status", [
+            'status' => 'in_repair',
+            'technician_id' => $techA->id,
+            'technician_notes' => 'Reassigned back to Alex for assembly',
+        ])
+        ->assertRedirect('/shop/repairs');
+
+    expect($repair->fresh()->technician_id)->toBe($techA->id);
+    expect($repair->fresh()->status)->toBe('in_repair');
+});
+
+test('unauthorized user without repairs manage permission cannot update repair status', function (): void {
+    $shop = Shop::factory()->create();
+    $cashier = User::factory()->create(['shop_id' => $shop->id]);
+    $cashier->assignRole('Cashier'); // Cashier has repairs.view, but NOT repairs.manage
+
+    app()->instance('shop.id', $shop->id);
+    $customer = Customer::create([
+        'shop_id' => $shop->id,
+        'name' => 'Sunil Shantha',
+        'phone' => '0715566778',
+    ]);
+
+    $repair = RepairJob::create([
+        'shop_id' => $shop->id,
+        'customer_id' => $customer->id,
+        'job_number' => 'REP-PERM-CHECK-01',
+        'brand' => 'Xiaomi',
+        'model' => 'Redmi Note 12',
+        'fault_description' => 'Mic not working',
+        'estimated_cost' => 3500.00,
+        'status' => 'received',
+    ]);
+    app()->forgetInstance('shop.id');
+
+    Sanctum::actingAs($cashier);
+
+    // Cashier attempting to update repair status is forbidden (403)
+    $response = $this->patchJson("/api/v1/repairs/{$repair->id}/status", [
+        'status' => 'in_repair',
+    ]);
+
+    $response->assertForbidden();
+
+    // Verify status was NOT modified
+    expect($repair->fresh()->status)->toBe('received');
+});
+
+test('repair job costing computes parts consumed cost and repair profitability', function (): void {
+    $shop = Shop::factory()->create();
+    $owner = User::factory()->create(['shop_id' => $shop->id]);
+    $owner->assignRole('Shop Owner');
+
+    app()->instance('shop.id', $shop->id);
+    $customer = Customer::create([
+        'shop_id' => $shop->id,
+        'name' => 'Dilshan Silva',
+        'phone' => '0778899001',
+    ]);
+
+    $repair = RepairJob::create([
+        'shop_id' => $shop->id,
+        'customer_id' => $customer->id,
+        'job_number' => 'REP-PROFIT-01',
+        'brand' => 'Samsung',
+        'model' => 'Galaxy S21',
+        'fault_description' => 'Display flickering',
+        'estimated_cost' => 25000.00,
+        'final_cost' => 25000.00,
+        'status' => 'delivered',
+        'delivered_at' => now(),
+    ]);
+
+    $screenPart = SparePart::create([
+        'shop_id' => $shop->id,
+        'name' => 'Galaxy S21 Dynamic AMOLED Display',
+        'part_number' => 'DISP-S21-OEM',
+        'quality_type' => 'original',
+        'cost_price' => 14000.00,
+        'selling_price' => 20000.00,
+        'stock_quantity' => 5,
+        'alert_quantity' => 1,
+    ]);
+
+    // Allocate part to repair
+    $partUsed = RepairPartUsed::create([
+        'shop_id' => $shop->id,
+        'repair_job_id' => $repair->id,
+        'spare_part_id' => $screenPart->id,
+        'quantity' => 1,
+        'unit_cost' => 14000.00,
+        'unit_price' => 20000.00,
+    ]);
+    $screenPart->decrement('stock_quantity', 1);
+
+    app()->forgetInstance('shop.id');
+
+    // Verify stock reservation: quantity reduced from 5 to 4
+    expect($screenPart->fresh()->stock_quantity)->toBe(4);
+
+    // Compute Job Costing and Profitability:
+    // Revenue = 25,000.00 | Parts Cost = 14,000.00 | Profit Margin = 11,000.00 (44%)
+    $partsConsumedCost = (float) RepairPartUsed::withoutGlobalScopes()
+        ->where('repair_job_id', $repair->id)
+        ->selectRaw('SUM(quantity * unit_cost) as total_cost')
+        ->value('total_cost');
+
+    $repairRevenue = (float) $repair->final_cost;
+    $netProfit = $repairRevenue - $partsConsumedCost;
+
+    expect($partsConsumedCost)->toBe(14000.00);
+    expect($repairRevenue)->toBe(25000.00);
+    expect($netProfit)->toBe(11000.00);
+
+    // Verify Shop Report reflects delivered repair volume and parts cost
+    $reportResponse = $this->actingAs($owner, 'web')->get('/shop/reports');
+    $reportResponse->assertOk();
+    $reportResponse->assertViewHas('repairRevenue', 25000.00);
+    $reportResponse->assertViewHas('repairPartsConsumedCost', 14000.00);
+});

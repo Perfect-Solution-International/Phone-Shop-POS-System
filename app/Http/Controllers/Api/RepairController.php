@@ -16,7 +16,7 @@ class RepairController extends Controller
     public function __construct()
     {
         $this->middleware('can:repairs.view')->only(['index', 'show']);
-        $this->middleware('can:repairs.manage')->only(['store', 'updateStatus', 'addPart']);
+        $this->middleware('can:repairs.manage')->only(['store', 'update', 'updateStatus', 'addPart']);
     }
 
     public function index(Request $request): JsonResponse
@@ -74,10 +74,33 @@ class RepairController extends Controller
         return response()->json($repair->load(['customer', 'technician', 'partsUsed.sparePart']));
     }
 
+    public function update(Request $request, RepairJob $repair): JsonResponse
+    {
+        $validated = $request->validate([
+            'status' => 'nullable|string|in:received,diagnosing,waiting_for_approval,waiting_for_parts,in_repair,quality_check,ready_for_collection,delivered',
+            'technician_id' => 'nullable|exists:users,id',
+            'technician_notes' => 'nullable|string|max:1000',
+            'fault_description' => 'nullable|string|max:1000',
+            'estimated_cost' => 'nullable|numeric|min:0',
+            'final_cost' => 'nullable|numeric|min:0',
+            'advance_amount' => 'nullable|numeric|min:0',
+            'estimated_completion_date' => 'nullable|date',
+        ]);
+
+        if (isset($validated['status']) && $validated['status'] === 'delivered' && ! $repair->delivered_at) {
+            $validated['delivered_at'] = now();
+        }
+
+        $repair->update($validated);
+
+        return response()->json($repair->fresh(['customer', 'technician', 'partsUsed.sparePart']));
+    }
+
     public function updateStatus(Request $request, RepairJob $repair): JsonResponse
     {
         $validated = $request->validate([
             'status' => 'required|string|in:received,diagnosing,waiting_for_approval,waiting_for_parts,in_repair,quality_check,ready_for_collection,delivered',
+            'technician_id' => 'nullable|exists:users,id',
             'technician_notes' => 'nullable|string|max:1000',
             'final_cost' => 'nullable|numeric|min:0',
         ]);
@@ -88,7 +111,45 @@ class RepairController extends Controller
 
         $repair->update($validated);
 
+        if ($validated['status'] === 'ready_for_collection') {
+            try {
+                app(\App\Services\SmsNotificationService::class)->sendRepairReadyAlert($repair);
+            } catch (\Throwable $e) {
+            }
+
+            try {
+                if ($repair->customer && $repair->customer->email) {
+                    \Illuminate\Support\Facades\Mail::to($repair->customer->email)->queue(new \App\Mail\RepairPickupReadyMail($repair));
+                }
+            } catch (\Throwable $e) {
+            }
+        }
+
         return response()->json($repair->fresh());
+    }
+
+    public function approveEstimate(Request $request, RepairJob $repair): JsonResponse
+    {
+        $user = $request->user();
+        if ($user && ! $user->can('repairs.manage')) {
+            $customer = \App\Models\Customer::where('email', $user->email)->first();
+            abort_unless($customer && $repair->customer_id === $customer->id, 403, 'Unauthorized access to this repair job.');
+        }
+
+        $validated = $request->validate([
+            'notes' => 'nullable|string|max:500',
+        ]);
+
+        $repair->update([
+            'status' => 'in_repair',
+            'technician_notes' => trim(($repair->technician_notes ? $repair->technician_notes . "\n" : '') . '[Customer Approved Estimate on ' . now()->toDayDateTimeString() . (! empty($validated['notes']) ? ': ' . $validated['notes'] : '') . ']'),
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Repair estimate approved successfully. Technicians will proceed with repairs.',
+            'repair' => $repair->fresh(['customer', 'technician']),
+        ]);
     }
 
     /**

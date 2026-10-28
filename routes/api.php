@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('v1')->name('v1.')->group(function (): void {
     Route::post('auth/login', [AuthController::class, 'login'])->middleware('throttle:login')->name('auth.login');
     Route::get('public/repairs/track', [\App\Http\Controllers\Api\RepairController::class, 'trackPublic'])->name('repairs.public_track');
+    Route::match(['get', 'post'], 'payments/gateway/callback/{gateway?}', [\App\Http\Controllers\Payment\GatewayCallbackController::class, 'handleCallback'])->name('payments.gateway.callback');
 
     Route::middleware('auth:sanctum')->group(function (): void {
         Route::get('auth/me', [AuthController::class, 'me'])->name('auth.me');
@@ -44,6 +45,7 @@ Route::prefix('v1')->name('v1.')->group(function (): void {
             // Phone Repairs & Service Management (Section 12)
             Route::patch('repairs/{repair}/status', [\App\Http\Controllers\Api\RepairController::class, 'updateStatus'])->name('repairs.status');
             Route::post('repairs/{repair}/parts', [\App\Http\Controllers\Api\RepairController::class, 'addPart'])->name('repairs.parts');
+            Route::post('repairs/{repair}/approve-estimate', [\App\Http\Controllers\Api\RepairController::class, 'approveEstimate'])->name('repairs.approve_estimate');
             Route::apiResource('repairs', \App\Http\Controllers\Api\RepairController::class);
 
             // Spare Parts Management (Section 14)
@@ -52,6 +54,7 @@ Route::prefix('v1')->name('v1.')->group(function (): void {
             // Warranty Management & Claims (Section 13)
             Route::get('warranties/verify', [\App\Http\Controllers\Api\WarrantyController::class, 'verify'])->name('warranties.verify');
             Route::post('warranties/{warranty}/claim', [\App\Http\Controllers\Api\WarrantyController::class, 'claim'])->name('warranties.claim');
+            Route::post('warranties/claims/{claim}/review', [\App\Http\Controllers\Api\WarrantyController::class, 'reviewClaim'])->name('warranties.claims.review');
             Route::apiResource('warranties', \App\Http\Controllers\Api\WarrantyController::class);
 
             // Shop Overview Analytics (Section 6)

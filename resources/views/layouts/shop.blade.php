@@ -6,18 +6,25 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Shop Console') — {{ auth()->user()->shop->name ?? 'Phone Shop POS' }}</title>
     <link rel="icon" href="{{ asset('favicon.ico') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 
     <style>
         :root {
             --brand-navy-950: #060913;
-            --brand-navy-900: #0b1120;
+            --brand-navy-900: #0a0f1d;
+            --brand-navy-850: #10172a;
             --brand-navy-800: #1e293b;
             --brand-indigo-600: #4f46e5;
+            --brand-indigo-500: #6366f1;
             --brand-indigo-700: #4338ca;
             --brand-cyan-500: #06b6d4;
+            --brand-cyan-400: #22d3ee;
             --surface-card: #ffffff;
             --surface-bg: #f8fafc;
             --surface-border: #e2e8f0;
+            --surface-border-subtle: #f1f5f9;
             --text-heading: #0f172a;
             --text-body: #334155;
             --text-muted: #64748b;
@@ -25,6 +32,12 @@
             --color-warning: #f59e0b;
             --color-danger: #ef4444;
             --color-info: #3b82f6;
+            --radius-xl: 18px;
+            --radius-lg: 14px;
+            --radius-md: 10px;
+            --radius-sm: 6px;
+            --shadow-card: 0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 8px 24px -4px rgba(0, 0, 0, 0.05);
+            --shadow-hover: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 16px 32px -4px rgba(0, 0, 0, 0.08);
         }
 
         *, *::before, *::after {
@@ -33,18 +46,36 @@
             padding: 0;
         }
 
+        /* Modern Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(148, 163, 184, 0.4);
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(100, 116, 139, 0.7);
+        }
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
             background-color: var(--surface-bg);
             color: var(--text-body);
             min-height: 100vh;
             display: flex;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
 
-        /* Sidebar */
+        /* High-Tech Dark Sidebar */
         .shop-sidebar {
-            width: 260px;
-            background-color: var(--brand-navy-950);
+            width: 268px;
+            background: linear-gradient(180deg, #070b16 0%, #050811 100%);
             color: #ffffff;
             display: flex;
             flex-direction: column;
@@ -54,41 +85,49 @@
             top: 0;
             height: 100vh;
             overflow: hidden;
+            box-shadow: 4px 0 24px -4px rgba(0, 0, 0, 0.35);
+            z-index: 30;
         }
 
         .shop-brand {
-            padding: 1.25rem 1.15rem;
+            padding: 1.35rem 1.25rem;
             display: flex;
             align-items: center;
-            gap: 0.75rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            gap: 0.85rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+            background: rgba(255, 255, 255, 0.02);
+            position: relative;
         }
 
         .shop-brand-icon {
-            width: 38px;
-            height: 38px;
-            border-radius: 10px;
-            background: linear-gradient(135deg, var(--brand-cyan-500) 0%, var(--brand-indigo-600) 100%);
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #06b6d4 0%, #4f46e5 100%);
             display: flex;
             align-items: center;
             justify-content: center;
             color: #ffffff;
-            box-shadow: 0 4px 12px rgba(6, 182, 212, 0.35);
+            box-shadow: 0 4px 16px rgba(6, 182, 212, 0.45), inset 0 1px 1px rgba(255, 255, 255, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            flex-shrink: 0;
         }
 
         .shop-brand-text {
             display: flex;
             flex-direction: column;
             overflow: hidden;
+            min-width: 0;
         }
 
         .shop-brand-title {
-            font-size: 0.9375rem;
+            font-size: 0.95rem;
             font-weight: 800;
             color: #ffffff;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+            letter-spacing: -0.01em;
         }
 
         .shop-brand-subtitle {
@@ -97,66 +136,102 @@
             text-transform: uppercase;
             letter-spacing: 0.06em;
             font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+            margin-top: 2px;
+        }
+
+        .shop-brand-subtitle::before {
+            content: '';
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background-color: #10b981;
+            box-shadow: 0 0 8px #10b981;
         }
 
         .shop-nav {
-            padding: 1rem 0.75rem;
+            padding: 1rem 0.85rem;
             display: flex;
             flex-direction: column;
-            gap: 0.25rem;
+            gap: 0.3rem;
             flex: 1;
             overflow-y: auto;
         }
 
         .shop-nav-header {
             font-size: 0.6875rem;
-            font-weight: 700;
+            font-weight: 750;
             text-transform: uppercase;
-            letter-spacing: 0.08em;
-            color: #64748b;
-            padding: 0.75rem 0.5rem 0.35rem;
+            letter-spacing: 0.09em;
+            color: #475569;
+            padding: 0.85rem 0.65rem 0.35rem;
         }
 
         .shop-nav-item {
             display: flex;
             align-items: center;
             gap: 0.75rem;
-            padding: 0.625rem 0.75rem;
+            padding: 0.625rem 0.8rem;
             color: #94a3b8;
             text-decoration: none;
-            font-size: 0.875rem;
-            font-weight: 500;
-            border-radius: 8px;
-            transition: all 0.15s ease;
+            font-size: 0.85rem;
+            font-weight: 550;
+            border-radius: 10px;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+
+        .shop-nav-item svg {
+            flex-shrink: 0;
+            opacity: 0.85;
+            transition: transform 0.2s ease, opacity 0.2s ease;
         }
 
         .shop-nav-item:hover {
             color: #ffffff;
             background-color: rgba(255, 255, 255, 0.06);
+            transform: translateX(3px);
+        }
+
+        .shop-nav-item:hover svg {
+            opacity: 1;
+            transform: scale(1.08);
         }
 
         .shop-nav-item.active {
             color: #ffffff;
-            background: linear-gradient(90deg, rgba(79, 70, 229, 0.35) 0%, rgba(6, 182, 212, 0.2) 100%);
-            border-left: 3px solid var(--brand-cyan-500);
-            font-weight: 600;
+            background: linear-gradient(90deg, rgba(79, 70, 229, 0.22) 0%, rgba(6, 182, 212, 0.12) 100%);
+            border-left: 3px solid #06b6d4;
+            font-weight: 650;
+            box-shadow: inset 0 0 16px rgba(6, 182, 212, 0.06);
+        }
+
+        .shop-nav-item.active svg {
+            color: #38bdf8;
+            opacity: 1;
         }
 
         .shop-nav-badge {
             margin-left: auto;
-            padding: 0.15rem 0.5rem;
+            padding: 0.15rem 0.55rem;
             border-radius: 9999px;
-            font-size: 0.7rem;
+            font-size: 0.6875rem;
             font-weight: 700;
             background: rgba(255, 255, 255, 0.1);
             color: #e2e8f0;
+            letter-spacing: 0.02em;
         }
 
+        /* Modern Glass User Footer */
         .shop-user-footer {
             flex-shrink: 0;
-            padding: 0.85rem 1rem;
+            padding: 0.95rem 1.1rem;
             border-top: 1px solid rgba(255, 255, 255, 0.08);
-            background: rgba(0, 0, 0, 0.32);
+            background: rgba(4, 7, 14, 0.7);
+            backdrop-filter: blur(10px);
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -166,24 +241,25 @@
         .shop-user-meta {
             display: flex;
             align-items: center;
-            gap: 0.65rem;
+            gap: 0.7rem;
             overflow: hidden;
             min-width: 0;
         }
 
         .shop-user-avatar {
-            width: 34px;
-            height: 34px;
-            border-radius: 8px;
-            background: linear-gradient(135deg, var(--brand-cyan-500) 0%, var(--brand-indigo-600) 100%);
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #06b6d4 0%, #4f46e5 100%);
             display: flex;
             align-items: center;
             justify-content: center;
             color: #ffffff;
-            font-size: 0.8125rem;
-            font-weight: 750;
+            font-size: 0.875rem;
+            font-weight: 800;
             flex-shrink: 0;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
         .shop-user-details {
@@ -207,24 +283,24 @@
             font-size: 0.6875rem;
             color: #38bdf8;
             text-transform: uppercase;
-            letter-spacing: 0.05em;
-            font-weight: 600;
-            margin-top: 1px;
+            letter-spacing: 0.06em;
+            font-weight: 700;
+            margin-top: 2px;
         }
 
         .shop-logout-btn {
             background: rgba(239, 68, 68, 0.12);
             border: 1px solid rgba(239, 68, 68, 0.28);
             color: #fca5a5;
-            padding: 0.38rem 0.65rem;
-            border-radius: 7px;
+            padding: 0.4rem 0.7rem;
+            border-radius: 8px;
             font-size: 0.75rem;
-            font-weight: 600;
+            font-weight: 650;
             cursor: pointer;
             display: inline-flex;
             align-items: center;
             gap: 0.35rem;
-            transition: all 0.18s ease;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             text-decoration: none;
             flex-shrink: 0;
         }
@@ -234,7 +310,7 @@
             color: #ffffff;
             border-color: #ef4444;
             transform: translateY(-1px);
-            box-shadow: 0 2px 6px rgba(239, 68, 68, 0.35);
+            box-shadow: 0 4px 10px rgba(239, 68, 68, 0.4);
         }
 
         /* Main Workspace Container */
@@ -244,43 +320,97 @@
             flex-direction: column;
             min-width: 0;
             overflow-x: hidden;
+            background: #f8fafc;
         }
 
+        /* Glassmorphic Responsive Topbar */
         .shop-topbar {
-            height: 64px;
-            background-color: #ffffff;
-            border-bottom: 1px solid var(--surface-border);
+            min-height: 64px;
+            height: auto;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(226, 232, 240, 0.85);
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 0 2rem;
+            flex-wrap: wrap;
+            gap: 0.65rem 1rem;
+            padding: 0.75rem clamp(0.85rem, 2vw, 1.75rem);
             position: sticky;
             top: 0;
-            z-index: 20;
+            z-index: 25;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.03);
+            width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
+        }
+
+        .shop-topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 0.65rem;
+            min-width: 0;
+            flex: 1 1 auto;
         }
 
         .shop-topbar-title {
-            font-size: 1.125rem;
-            font-weight: 700;
+            font-size: clamp(0.95rem, 1.5vw, 1.15rem);
+            font-weight: 800;
             color: var(--text-heading);
             display: flex;
             align-items: center;
-            gap: 0.75rem;
+            gap: 0.5rem 0.65rem;
+            letter-spacing: -0.02em;
+            flex-wrap: wrap;
+            line-height: 1.35;
+            min-width: 0;
+        }
+
+        .page-title-text {
+            line-height: 1.35;
+            display: inline;
+            word-break: normal;
+            overflow-wrap: break-word;
+        }
+
+        .topbar-branch-name {
+            display: inline-block;
+            max-width: 140px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            vertical-align: middle;
+        }
+
+        .shop-topbar-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-left: auto;
+            flex-shrink: 0;
+        }
+
+        .shop-topbar-actions .btn {
+            white-space: nowrap;
         }
 
         .shop-plan-pill {
             font-size: 0.6875rem;
-            padding: 0.2rem 0.6rem;
+            padding: 0.22rem 0.65rem;
             border-radius: 9999px;
-            font-weight: 700;
+            font-weight: 750;
             text-transform: uppercase;
-            letter-spacing: 0.05em;
-            background: #e0f2fe;
+            letter-spacing: 0.06em;
+            background: linear-gradient(135deg, #e0f2fe 0%, #e0e7ff 100%);
             color: #0369a1;
+            border: 1px solid #bae6fd;
+            white-space: nowrap;
         }
 
         .shop-content {
-            padding: 2rem;
+            padding: clamp(1rem, 2.5vw, 2rem);
             flex: 1;
         }
 
@@ -583,14 +713,239 @@
         .alert-success { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
         .alert-danger { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
 
-        @media (max-width: 900px) {
-            body { flex-direction: column; }
-            .shop-sidebar { width: 100%; height: auto; position: static; }
-            .form-row { grid-template-columns: 1fr; }
+        /* Mobile Off-Canvas Sidebar & Overlay */
+        .shop-sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(6, 9, 19, 0.65);
+            backdrop-filter: blur(2px);
+            z-index: 1040;
+            opacity: 0;
+            transition: opacity 0.25s ease;
+        }
+
+        .shop-sidebar-overlay.active {
+            display: block;
+            opacity: 1;
+        }
+
+        .mobile-sidebar-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--text-heading);
+            padding: 0.35rem;
+            border-radius: 6px;
+            cursor: pointer;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .mobile-sidebar-toggle:hover {
+            background: #f1f5f9;
+        }
+
+        .sidebar-close-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: #94a3b8;
+            font-size: 1.5rem;
+            cursor: pointer;
+            margin-left: auto;
+            line-height: 1;
+            padding: 0.2rem 0.45rem;
+            border-radius: 4px;
+        }
+
+        .sidebar-close-btn:hover {
+            color: #ffffff;
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        /* Responsive Breakpoints */
+        @media (max-width: 1250px) {
+            .shop-topbar {
+                padding: 0.65rem 1rem;
+                gap: 0.5rem 0.75rem;
+            }
+            .shop-topbar-title {
+                font-size: 1rem;
+            }
+            .shop-topbar-actions {
+                gap: 0.4rem;
+            }
+            .shop-topbar-actions .topbar-action-text {
+                font-size: 0.75rem;
+            }
+            .shop-topbar-actions .btn {
+                padding: 0.32rem 0.58rem;
+            }
+            .topbar-branch-name {
+                max-width: 95px;
+            }
+        }
+
+        @media (max-width: 1080px) {
+            body {
+                position: relative;
+                overflow-x: hidden;
+            }
+
+            .mobile-sidebar-toggle {
+                display: inline-flex;
+            }
+
+            .sidebar-close-btn {
+                display: block;
+            }
+
+            .shop-sidebar {
+                position: fixed;
+                top: 0;
+                left: 0;
+                bottom: 0;
+                width: 280px;
+                max-width: 85vw;
+                height: 100vh;
+                z-index: 1050;
+                transform: translateX(-100%);
+                transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+                box-shadow: none;
+            }
+
+            .shop-sidebar.open {
+                transform: translateX(0);
+                box-shadow: 12px 0 35px -5px rgba(0, 0, 0, 0.5);
+            }
+
+            .shop-workspace {
+                width: 100%;
+                min-width: 0;
+            }
+
+            .shop-topbar {
+                min-height: 58px;
+                height: auto;
+                padding: 0.65rem 1rem;
+                gap: 0.5rem;
+            }
+
+            .shop-content {
+                padding: 1.15rem 1rem;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 0.75rem;
+            }
+
+            /* Responsive 2-column grids */
+            .grid-2col, [style*="grid-template-columns: 1fr 1fr"], [style*="grid-template-columns: 1fr 380px"], [style*="grid-template-columns: 360px 1fr"] {
+                grid-template-columns: 1fr !important;
+            }
+        }
+
+        @media (max-width: 860px) {
+            .shop-topbar-actions .topbar-action-text {
+                display: none;
+            }
+            .shop-topbar-actions .btn {
+                padding: 0.35rem 0.6rem;
+                font-size: 0.75rem;
+            }
+            .shop-topbar-title {
+                font-size: 0.95rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .shop-topbar {
+                padding: 0.5rem 0.75rem;
+                gap: 0.5rem;
+            }
+
+            .shop-topbar-title {
+                font-size: 0.9rem;
+            }
+
+            .shop-plan-pill {
+                display: none;
+            }
+
+            .card-header {
+                flex-direction: column;
+                align-items: stretch !important;
+                gap: 0.75rem;
+            }
+
+            .card-header form {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .card-header form input,
+            .card-header form select {
+                max-width: 100% !important;
+                width: 100% !important;
+            }
+
+            .modal-box {
+                width: 95vw !important;
+                max-width: 95vw !important;
+                margin: 0.5rem auto !important;
+                max-height: 92vh;
+            }
+
+            .modal-header, .modal-body, .modal-footer {
+                padding: 0.85rem 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .shop-topbar {
+                padding: 0.55rem 0.65rem;
+                gap: 0.45rem;
+            }
+
+            .shop-topbar-left {
+                width: 100%;
+            }
+
+            .shop-topbar-actions {
+                width: 100%;
+                justify-content: flex-end;
+                margin-left: 0;
+                padding-top: 0.35rem;
+                border-top: 1px dashed rgba(226, 232, 240, 0.7);
+            }
+
+            .shop-content {
+                padding: 0.65rem;
+            }
+
+            .card {
+                border-radius: 8px;
+            }
+
+            .table th, .table td {
+                padding: 0.5rem 0.65rem;
+                font-size: 0.8rem;
+            }
+
+            .btn {
+                padding: 0.45rem 0.75rem;
+                font-size: 0.8rem;
+            }
         }
     </style>
 </head>
 <body>
+    <!-- Mobile Off-Canvas Backdrop -->
+    <div class="shop-sidebar-overlay" id="shopSidebarOverlay" onclick="closeShopSidebar()"></div>
+
     <!-- Sidebar -->
     <aside class="shop-sidebar">
         <div class="shop-brand">
@@ -604,6 +959,7 @@
                 <span class="shop-brand-title">{{ auth()->user()->shop->name ?? 'Phone Shop' }}</span>
                 <span class="shop-brand-subtitle">Branch: {{ session('active_outlet_name', auth()->user()->shop->mainOutlet->name ?? 'Main Branch') }}</span>
             </div>
+            <button type="button" class="sidebar-close-btn" onclick="closeShopSidebar()" aria-label="Close navigation">&times;</button>
         </div>
 
         <nav class="shop-nav">
@@ -663,6 +1019,10 @@
             <a href="{{ route('shop.purchases') }}" class="shop-nav-item {{ request()->routeIs('shop.purchases*') ? 'active' : '' }}">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
                 Inbound Purchases
+            </a>
+            <a href="{{ route('shop.inventory.grns') }}" class="shop-nav-item {{ request()->routeIs('shop.inventory.grns*') ? 'active' : '' }}">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                Goods Receiving (GRN)
             </a>
             <a href="{{ route('shop.suppliers') }}" class="shop-nav-item {{ request()->routeIs('shop.suppliers*') ? 'active' : '' }}">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>
@@ -758,33 +1118,41 @@
     <!-- Main Workspace -->
     <div class="shop-workspace">
         <header class="shop-topbar">
-            <div class="shop-topbar-title">
-                @yield('page-title', 'Overview')
-                <span class="shop-plan-pill">
-                    {{ auth()->user()->shop->activeSubscription->plan->name ?? 'Free Trial' }}
-                </span>
-                @if(auth()->user()->hasRole('Super Administrator') || auth()->user()->can('superadmin.view'))
-                    <span class="badge" style="background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); color: #ffffff; padding: 0.25rem 0.65rem; border-radius: 9999px; font-size: 0.72rem; font-weight: 700; display: inline-flex; align-items: center; gap: 0.35rem; box-shadow: 0 2px 4px rgba(79, 70, 229, 0.3);">
-                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
-                        Super Admin Mode
+            <div class="shop-topbar-left">
+                <button type="button" class="mobile-sidebar-toggle" onclick="openShopSidebar()" aria-label="Toggle navigation menu">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
+                </button>
+                <div class="shop-topbar-title">
+                    <span class="page-title-text">@yield('page-title', 'Overview')</span>
+                    <span class="shop-plan-pill">
+                        {{ auth()->user()->shop->activeSubscription->plan->name ?? 'Free Trial' }}
                     </span>
-                @endif
+                    @if(auth()->user()->hasRole('Super Administrator') || auth()->user()->can('superadmin.view'))
+                        <span class="badge" style="background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); color: #ffffff; padding: 0.2rem 0.55rem; border-radius: 9999px; font-size: 0.7rem; font-weight: 700; display: inline-flex; align-items: center; gap: 0.3rem;">
+                            Super Admin Mode
+                        </span>
+                    @endif
+                </div>
             </div>
 
-            <div style="display: flex; align-items: center; gap: 0.75rem;">
+            <div class="shop-topbar-actions">
                 @if(auth()->user()->hasRole('Super Administrator') || auth()->user()->can('superadmin.view'))
                     <a href="{{ route('superadmin.dashboard') }}" class="btn btn-sm" style="background: #1e1b4b; color: #c7d2fe; border: 1px solid #4f46e5; font-size: 0.78rem; display: inline-flex; align-items: center; gap: 0.35rem;" title="Return to Platform Super Admin">
                         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-                        SaaS Super Admin
+                        <span class="topbar-action-text">Super Admin</span>
                     </a>
                 @endif
-                <a href="{{ route('shop.outlets.index') }}" class="btn btn-sm btn-secondary" style="border-radius: 9999px; font-size: 0.78rem; display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.35rem 0.75rem;" title="Manage Outlets & Switch Branch">
+                <a href="{{ route('shop.outlets.index') }}" class="btn btn-sm btn-secondary" style="border-radius: 9999px; font-size: 0.78rem; display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.35rem 0.75rem;" title="Manage Outlets & Switch Branch">
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
-                    <span>Branch: <strong>{{ session('active_outlet_name', auth()->user()->shop->mainOutlet->name ?? 'Main Branch') }}</strong></span>
+                    <span class="topbar-action-text"><strong class="topbar-branch-name">{{ session('active_outlet_name', auth()->user()->shop->mainOutlet->name ?? 'Main') }}</strong></span>
                 </a>
-                <a href="{{ route('public.repair-track') }}" target="_blank" class="btn btn-sm btn-secondary" title="Open Customer Repair Tracking Portal">
+                <a href="{{ route('public.repair-track') }}" target="_blank" class="btn btn-sm btn-secondary" title="Open Customer Repair Tracking Portal" style="display: inline-flex; align-items: center; gap: 0.35rem; border-radius: 9999px; font-size: 0.78rem; padding: 0.35rem 0.75rem;">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                    Customer Tracking Portal
+                    <span class="topbar-action-text">Track Portal</span>
                 </a>
             </div>
         </header>
@@ -808,8 +1176,22 @@
         </main>
     </div>
 
-    <!-- Modal helper script -->
+    <!-- Modal helper & Mobile Navigation script -->
     <script>
+        function openShopSidebar() {
+            var sidebar = document.querySelector('.shop-sidebar');
+            var overlay = document.getElementById('shopSidebarOverlay');
+            if (sidebar) sidebar.classList.add('open');
+            if (overlay) overlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+        function closeShopSidebar() {
+            var sidebar = document.querySelector('.shop-sidebar');
+            var overlay = document.getElementById('shopSidebarOverlay');
+            if (sidebar) sidebar.classList.remove('open');
+            if (overlay) overlay.classList.remove('active');
+            document.body.style.overflow = '';
+        }
         function openModal(id) {
             const el = document.getElementById(id);
             if (el) el.classList.add('open');
@@ -822,6 +1204,16 @@
             if (e.target.classList.contains('modal-backdrop')) {
                 e.target.classList.remove('open');
             }
+        });
+        document.addEventListener('DOMContentLoaded', function() {
+            var navLinks = document.querySelectorAll('.shop-nav-item');
+            navLinks.forEach(function(link) {
+                link.addEventListener('click', function() {
+                    if (window.innerWidth <= 1080) {
+                        closeShopSidebar();
+                    }
+                });
+            });
         });
     </script>
     @stack('scripts')

@@ -24,6 +24,15 @@ class AppServiceProvider extends ServiceProvider
         });
 
         $this->app->alias(TenantContext::class, 'tenant.context');
+
+        // Payment Gateway Manager & Interface Binding
+        $this->app->singleton(\App\Services\Payment\PaymentGatewayManager::class, function () {
+            return new \App\Services\Payment\PaymentGatewayManager();
+        });
+
+        $this->app->bind(\App\Services\Payment\Contracts\PaymentGatewayInterface::class, function ($app) {
+            return $app->make(\App\Services\Payment\PaymentGatewayManager::class)->driver();
+        });
     }
 
     public function boot(): void

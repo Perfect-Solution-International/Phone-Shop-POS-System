@@ -55,10 +55,12 @@
                                 <div style="position: relative; display: inline-block; flex-shrink: 0;">
                                     <img src="{{ $product->image_url }}" 
                                          alt="{{ $product->name }}" 
+                                         data-title="{{ $product->name }}"
+                                         data-delete-url="{{ route('shop.products.delete-image', $product) }}"
                                          style="width: 64px; height: 64px; min-width: 64px; object-fit: cover; border-radius: 10px; border: 1.5px solid var(--surface-border); box-shadow: 0 1px 3px rgba(0,0,0,0.08); cursor: pointer;" 
-                                         onclick="openImageLightbox('{{ $product->image_url }}', '{{ addslashes($product->name) }}', '{{ route('shop.products.delete-image', $product) }}')" 
+                                         onclick="handleProductLightboxClick(this)" 
                                          title="Click to view full image">
-                                    <form method="POST" action="{{ route('shop.products.delete-image', $product) }}" onsubmit="return confirm('Delete photo for \'{{ addslashes($product->name) }}\'?');" style="margin: 0; position: absolute; top: -5px; right: -5px;">
+                                    <form method="POST" action="{{ route('shop.products.delete-image', $product) }}" data-confirm="Delete photo for {{ $product->name }}?" onsubmit="return confirm(this.getAttribute('data-confirm'));" style="margin: 0; position: absolute; top: -5px; right: -5px;">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" title="Delete image" style="width: 20px; height: 20px; border-radius: 50%; background: #dc2626; color: #ffffff; border: 2px solid #ffffff; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 13px; line-height: 1; padding: 0; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">&times;</button>
@@ -112,7 +114,8 @@
                                class="btn btn-secondary btn-sm" 
                                title="Print Barcode Label" 
                                style="padding: 0.3rem 0.55rem; font-size: 0.75rem; display: inline-flex; align-items: center; gap: 0.2rem; color: #4338ca; background: #eef2ff; border-color: #c7d2fe;">
-                                🏷️ Label
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>
+                                Label
                             </a>
                             <button type="button" 
                                     class="btn btn-secondary btn-sm" 
@@ -401,11 +404,13 @@
         <div class="modal-body">
             <!-- Tab Navigation -->
             <div style="display: flex; gap: 0.5rem; border-bottom: 2px solid var(--surface-border); margin-bottom: 1.25rem;">
-                <button type="button" id="tabBtnCat" onclick="switchCatalogTab('cat')" style="padding: 0.6rem 1rem; border: none; background: none; font-weight: 700; font-size: 0.875rem; color: #4338ca; border-bottom: 3px solid #4f46e5; cursor: pointer;">
-                    📁 Categories (<span id="catTotalCount">{{ $categories->count() }}</span>)
+                <button type="button" id="tabBtnCat" onclick="switchCatalogTab('cat')" style="padding: 0.6rem 1rem; border: none; background: none; font-weight: 700; font-size: 0.875rem; color: #4338ca; border-bottom: 3px solid #4f46e5; cursor: pointer; display: inline-flex; align-items: center; gap: 0.35rem;">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+                    Categories (<span id="catTotalCount">{{ $categories->count() }}</span>)
                 </button>
-                <button type="button" id="tabBtnBrand" onclick="switchCatalogTab('brand')" style="padding: 0.6rem 1rem; border: none; background: none; font-weight: 600; font-size: 0.875rem; color: #64748b; border-bottom: 3px solid transparent; cursor: pointer;">
-                    🏷️ Brands (<span id="brandTotalCount">{{ $brands->count() }}</span>)
+                <button type="button" id="tabBtnBrand" onclick="switchCatalogTab('brand')" style="padding: 0.6rem 1rem; border: none; background: none; font-weight: 600; font-size: 0.875rem; color: #64748b; border-bottom: 3px solid transparent; cursor: pointer; display: inline-flex; align-items: center; gap: 0.35rem;">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>
+                    Brands (<span id="brandTotalCount">{{ $brands->count() }}</span>)
                 </button>
             </div>
 
@@ -872,6 +877,10 @@
         document.getElementById('editProductRemoveImage').value = '0';
         document.getElementById('editProductExistingImageWrap').style.display = 'flex';
         document.getElementById('editProductImageRemovedNotice').style.display = 'none';
+    }
+
+    function handleProductLightboxClick(el) {
+        openImageLightbox(el.src, el.getAttribute('data-title'), el.getAttribute('data-delete-url'));
     }
 
     // Lightbox viewer

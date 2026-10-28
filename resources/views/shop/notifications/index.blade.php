@@ -4,6 +4,19 @@
 @section('page-title', 'Customer SMS & WhatsApp Communication')
 
 @section('content')
+<style>
+    .notifications-layout-grid {
+        display: grid;
+        grid-template-columns: 360px 1fr;
+        gap: 1.5rem;
+        align-items: start;
+    }
+    @media (max-width: 992px) {
+        .notifications-layout-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
 <div style="display: flex; flex-direction: column; gap: 1.5rem;">
     <!-- Metrics Row -->
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 1rem;">
@@ -54,7 +67,7 @@
     </div>
 
     <!-- Main Content: Forms & Logs -->
-    <div style="display: grid; grid-template-columns: 360px 1fr; gap: 1.5rem; align-items: start;">
+    <div class="notifications-layout-grid">
         <!-- Left Column: Quick SMS & Gateway Config -->
         <div style="display: flex; flex-direction: column; gap: 1.25rem;">
             <!-- Send Quick Customer SMS -->

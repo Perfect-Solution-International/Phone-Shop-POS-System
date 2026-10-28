@@ -118,13 +118,23 @@
                         </ul>
                     </div>
 
-                    <div style="display: flex; gap: 0.5rem;">
-                        <button type="button" class="btn btn-primary" onclick="selectPlanForCheckout({{ $plan->id }}, '{{ addslashes($plan->name) }}', {{ $plan->monthly_price }}, {{ $plan->annual_price }})" style="flex: 1; justify-content: center; font-size: 0.85rem; padding: 0.6rem;">
-                            Pay by Card
-                        </button>
-                        <button type="button" class="btn btn-secondary" onclick="selectPlanForBank({{ $plan->id }}, '{{ addslashes($plan->name) }}', {{ $plan->monthly_price }}, {{ $plan->annual_price }})" style="font-size: 0.85rem; padding: 0.6rem;">
-                            Bank Slip
-                        </button>
+                    <div style="display: flex; flex-direction: column; gap: 0.4rem;">
+                        <div style="display: flex; gap: 0.4rem;">
+                            <button type="button" class="btn btn-primary" onclick="selectPlanForCheckout({{ $plan->id }}, '{{ addslashes($plan->name) }}', {{ $plan->monthly_price }}, {{ $plan->annual_price }})" style="flex: 1; justify-content: center; font-size: 0.8rem; padding: 0.55rem;">
+                                Pay by Card
+                            </button>
+                            <button type="button" class="btn btn-secondary" onclick="selectPlanForBank({{ $plan->id }}, '{{ addslashes($plan->name) }}', {{ $plan->monthly_price }}, {{ $plan->annual_price }})" style="font-size: 0.8rem; padding: 0.55rem;">
+                                Bank Slip
+                            </button>
+                        </div>
+                        <form method="POST" action="{{ route('shop.subscription.gateway.initiate') }}" style="margin: 0;">
+                            @csrf
+                            <input type="hidden" name="plan_id" value="{{ $plan->id }}">
+                            <input type="hidden" name="billing_cycle" value="monthly">
+                            <button type="submit" class="btn btn-info" style="width: 100%; justify-content: center; font-size: 0.78rem; padding: 0.45rem; background: #6366f1; border-color: #6366f1; color: white;">
+                                ⚡ Payment Gateway (Sandbox)
+                            </button>
+                        </form>
                     </div>
                 </div>
             @endforeach
@@ -170,9 +180,15 @@
                         </td>
                         <td>
                             @if($payment->payment_method === 'card')
-                                <span class="badge" style="background: #e0e7ff; color: #4338ca; font-weight: 700;">💳 Online Card</span>
+                                <span class="badge" style="background: #e0e7ff; color: #4338ca; font-weight: 700; display: inline-flex; align-items: center; gap: 0.25rem;">
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
+                                    Online Card
+                                </span>
                             @else
-                                <span class="badge badge-secondary">🏦 Bank Transfer</span>
+                                <span class="badge badge-secondary" style="display: inline-flex; align-items: center; gap: 0.25rem;">
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 22 7 12 2"></polygon><line x1="4" y1="22" x2="20" y2="22"></line><line x1="4" y1="11" x2="4" y2="18"></line><line x1="10" y1="11" x2="10" y2="18"></line><line x1="14" y1="11" x2="14" y2="18"></line><line x1="20" y1="11" x2="20" y2="18"></line></svg>
+                                    Bank Transfer
+                                </span>
                             @endif
                         </td>
                         <td style="font-family: monospace; font-size: 0.8rem;">
@@ -212,7 +228,8 @@
     <div class="modal-box" style="max-width: 500px;">
         <div class="modal-header">
             <h3 style="font-size: 1.1rem; font-weight: 800; color: #0f172a; margin: 0; display: flex; align-items: center; gap: 0.5rem;">
-                <span>💳</span> Instant Card Checkout
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4f46e5" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
+                Instant Card Checkout
             </h3>
             <button type="button" class="modal-close" onclick="closeModal('cardCheckoutModal')">&times;</button>
         </div>

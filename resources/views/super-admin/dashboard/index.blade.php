@@ -10,12 +10,12 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        gap: 0.5rem;
+        gap: 0.25rem;
     }
     .metric-icon-bubble {
-        width: 36px;
-        height: 36px;
-        border-radius: 9px;
+        width: 30px;
+        height: 30px;
+        border-radius: 7px;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -27,6 +27,14 @@
     .bubble-amber { background: #fffbeb; color: #d97706; }
     .bubble-rose { background: #fef2f2; color: #ef4444; }
     .bubble-violet { background: #f5f3ff; color: #7c3aed; }
+
+    /* Card Top Accent Lines */
+    .metric-card-mrr { border-top: 3px solid #6366f1; }
+    .metric-card-shops { border-top: 3px solid #8b5cf6; }
+    .metric-card-active { border-top: 3px solid #10b981; }
+    .metric-card-trial { border-top: 3px solid #3b82f6; }
+    .metric-card-expired { border-top: 3px solid #ef4444; }
+    .metric-card-pending { border-top: 3px solid #f59e0b; }
 
     .metric-tooltip {
         position: relative;
@@ -78,27 +86,27 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        gap: 1rem;
+        gap: 0.75rem;
         flex-wrap: wrap;
-        margin-bottom: 1.5rem;
+        margin-bottom: 1rem;
         background: #ffffff;
-        padding: 0.85rem 1.25rem;
-        border-radius: 12px;
+        padding: 0.55rem 1rem;
+        border-radius: 10px;
         border: 1px solid var(--surface-border);
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
     }
     .filter-group {
         display: flex;
         align-items: center;
-        gap: 0.4rem;
+        gap: 0.35rem;
         flex-wrap: wrap;
     }
     .filter-pill {
         display: inline-flex;
         align-items: center;
-        padding: 0.35rem 0.85rem;
+        padding: 0.25rem 0.75rem;
         border-radius: 9999px;
-        font-size: 0.775rem;
+        font-size: 0.75rem;
         font-weight: 600;
         text-decoration: none;
         border: 1px solid #e2e8f0;
@@ -115,55 +123,55 @@
         background: #4f46e5;
         color: #ffffff;
         border-color: #4f46e5;
-        box-shadow: 0 2px 6px rgba(79, 70, 229, 0.3);
+        box-shadow: 0 2px 5px rgba(79, 70, 229, 0.25);
     }
 
     /* Payment Analytics Grid */
     .analytics-grid {
         display: grid;
         grid-template-columns: repeat(4, 1fr);
-        gap: 1rem;
-        margin-bottom: 1.5rem;
+        gap: 0.75rem;
+        margin-bottom: 1rem;
     }
     .analytics-stat-card {
         background: #ffffff;
         border: 1px solid var(--surface-border);
-        border-radius: 10px;
-        padding: 1rem 1.15rem;
+        border-radius: 8px;
+        padding: 0.75rem 0.95rem;
         display: flex;
         flex-direction: column;
-        gap: 0.3rem;
+        gap: 0.25rem;
     }
     .stat-label-row {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        font-size: 0.725rem;
+        font-size: 0.7rem;
         font-weight: 700;
         text-transform: uppercase;
-        letter-spacing: 0.04em;
+        letter-spacing: 0.03em;
     }
     .stat-main-amount {
-        font-size: 1.35rem;
+        font-size: 1.25rem;
         font-weight: 800;
         color: var(--text-heading);
         letter-spacing: -0.01em;
     }
     .stat-meta-note {
-        font-size: 0.75rem;
+        font-size: 0.7rem;
         color: var(--text-muted);
         display: flex;
         align-items: center;
-        gap: 0.35rem;
+        gap: 0.3rem;
     }
 
     /* SVG Trend Chart */
     .chart-box {
         background: #ffffff;
         border: 1px solid var(--surface-border);
-        border-radius: 12px;
-        padding: 1.25rem 1.5rem;
-        margin-bottom: 2rem;
+        border-radius: 10px;
+        padding: 1rem 1.25rem;
+        margin-bottom: 1.25rem;
     }
     .chart-header {
         display: flex;
@@ -338,33 +346,33 @@
 <!-- 1. Six Primary Dashboard Metric Cards -->
 <div class="metric-grid">
     <!-- 1. Monthly Recurring Revenue (MRR) -->
-    <div class="metric-card">
+    <div class="metric-card metric-card-mrr">
         <div class="metric-card-header">
-            <div style="display: flex; align-items: center; gap: 0.35rem;">
+            <div style="display: flex; align-items: center; gap: 0.25rem;">
                 <span class="metric-label">Monthly Recurring Revenue</span>
                 <span class="metric-tooltip">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
                     <span class="tooltip-box">
                         Normalized monthly subscription run rate from active paid subscriptions. Excludes free trials and unapproved payments.
                     </span>
                 </span>
             </div>
             <div class="metric-icon-bubble bubble-indigo">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
             </div>
         </div>
-        <div class="metric-value">LKR {{ number_format($stats['mrr'], 2) }}</div>
+        <div class="metric-value" style="font-size: 1.25rem;">LKR {{ number_format($stats['mrr'], 2) }}</div>
         <span class="metric-sub" style="color: #6366f1;">
-            Cash this month: LKR {{ number_format($stats['cash_received_this_month'], 2) }}
+            Cash: LKR {{ number_format($stats['cash_received_this_month'], 2) }}
         </span>
     </div>
 
     <!-- 2. Total Registered Shops -->
-    <div class="metric-card">
+    <div class="metric-card metric-card-shops">
         <div class="metric-card-header">
             <span class="metric-label">Registered Shops</span>
             <div class="metric-icon-bubble bubble-violet">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>
             </div>
         </div>
         <div class="metric-value">{{ $stats['total_shops'] }}</div>
@@ -372,17 +380,17 @@
     </div>
 
     <!-- 3. Active Paid Subscriptions -->
-    <div class="metric-card">
+    <div class="metric-card metric-card-active">
         <div class="metric-card-header">
-            <div style="display: flex; align-items: center; gap: 0.35rem;">
+            <div style="display: flex; align-items: center; gap: 0.25rem;">
                 <span class="metric-label">Active Subscriptions</span>
                 <span class="metric-tooltip">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
                     <span class="tooltip-box">Shops with a currently valid, active paid subscription. Excludes free trials and expired accounts.</span>
                 </span>
             </div>
             <div class="metric-icon-bubble bubble-emerald">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
             </div>
         </div>
         <div class="metric-value" style="color: var(--color-success);">{{ $stats['active_subscriptions'] }}</div>
@@ -390,11 +398,11 @@
     </div>
 
     <!-- 4. Trial Shops -->
-    <div class="metric-card">
+    <div class="metric-card metric-card-trial">
         <div class="metric-card-header">
             <span class="metric-label">Trial Shops</span>
             <div class="metric-icon-bubble bubble-blue">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
             </div>
         </div>
         <div class="metric-value" style="color: #2563eb;">{{ $stats['trial_shops'] }}</div>
@@ -402,30 +410,30 @@
     </div>
 
     <!-- 5. Expired Subscriptions -->
-    <div class="metric-card">
+    <div class="metric-card metric-card-expired">
         <div class="metric-card-header">
             <span class="metric-label">Expired Subscriptions</span>
             <div class="metric-icon-bubble bubble-rose">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
             </div>
         </div>
         <div class="metric-value" style="color: {{ $stats['expired_subscriptions'] > 0 ? '#ef4444' : '#64748b' }};">{{ $stats['expired_subscriptions'] }}</div>
-        <span class="metric-sub" style="color: #64748b;">Not covered by active plan</span>
+        <span class="metric-sub" style="color: #64748b;">Not covered by plan</span>
     </div>
 
     <!-- 6. Pending Payments -->
-    <div class="metric-card">
+    <div class="metric-card metric-card-pending">
         <div class="metric-card-header">
             <span class="metric-label">Pending Payments</span>
             <div class="metric-icon-bubble bubble-amber">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="2" y="5" width="20" height="14" rx="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line></svg>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="2" y="5" width="20" height="14" rx="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line></svg>
             </div>
         </div>
         <div class="metric-value" style="color: {{ $stats['pending_payments_count'] > 0 ? '#d97706' : '#64748b' }};">
             {{ $stats['pending_payments_count'] }}
         </div>
-        <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 0.15rem;">
-            <span class="metric-sub" style="color: #d97706; font-size: 0.725rem;">
+        <div style="display: flex; align-items: center; justify-content: space-between;">
+            <span class="metric-sub" style="color: #d97706; font-size: 0.7rem;">
                 LKR {{ number_format($stats['pending_payments_amount'], 2) }}
             </span>
             <a href="{{ route('superadmin.payments.approvals') }}" style="font-size: 0.725rem; font-weight: 700; color: #4f46e5; text-decoration: none;">Verify &rarr;</a>
@@ -448,7 +456,7 @@
         </div>
     </div>
 
-    <div style="padding: 1.5rem;">
+    <div style="padding: 1.15rem 1.25rem;">
         <!-- Analytics 4 Cards Row -->
         <div class="analytics-grid">
             <!-- Successful -->
@@ -516,7 +524,7 @@
             $pctPending = round(($payment_analytics['pending']['count'] / $tot) * 100);
             $pctFailed = round(($payment_analytics['failed']['count'] / $tot) * 100);
         @endphp
-        <div style="margin-top: 0.5rem; margin-bottom: 1.5rem;">
+        <div style="margin-top: 0.25rem; margin-bottom: 1rem;">
             <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: #64748b; margin-bottom: 0.35rem;">
                 <span>Transaction Status Distribution (Total: {{ $payment_analytics['total_transactions'] }})</span>
                 <span>{{ $pctSuccess }}% Approved</span>
@@ -750,10 +758,10 @@
             @forelse ($recent_activities as $act)
                 @php
                     $badgeClass = match ($act->action) {
-                        'payment.approved', 'subscription.activated' => 'status-active',
-                        'shop.registered', 'subscription.trial_started' => 'status-trial',
-                        'payment.rejected', 'shop.suspended' => 'status-rejected',
-                        'payment.refunded' => 'status-pending',
+                        'payment.approved', 'subscription.activated', 'system.backup_created', 'system.restore_smoke_test' => 'status-active',
+                        'shop.registered', 'subscription.trial_started', 'system.backup_pruned' => 'status-trial',
+                        'payment.rejected', 'shop.suspended', 'subscription.trial_expired', 'subscription.expired' => 'status-rejected',
+                        'payment.refunded', 'subscription.trial_expired_grace', 'subscription.renewal_overdue_grace', 'subscription.renewal_notice' => 'status-pending',
                         default => 'status-trial'
                     };
                 @endphp
@@ -763,6 +771,8 @@
                             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="2" y="5" width="20" height="14" rx="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line></svg>
                         @elseif (str_contains($act->action, 'shop'))
                             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>
+                        @elseif (str_contains($act->action, 'backup') || str_contains($act->action, 'restore'))
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg>
                         @else
                             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
                         @endif

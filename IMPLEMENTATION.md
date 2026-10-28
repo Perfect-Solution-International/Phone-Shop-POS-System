@@ -32,11 +32,11 @@ This document outlines the implementation of the secure multi-tenant onboarding,
 
 ### Controllers & Form Requests
 - [`app/Http/Requests/Auth/RegisterRequest.php`](file:///d:/Phone-Shop-POS-System/app/Http/Requests/Auth/RegisterRequest.php):
-  - Validates `shop_name`, `name`, `email` (unique:users,email), and strong password policy (min 12 characters, mixed case, numbers).
+  - Validates `shop_name`, `name`, `email` (unique:users,email), and strong password policy (min 8 characters, mixed case, numbers).
 - [`app/Http/Requests/Auth/ForgotPasswordRequest.php`](file:///d:/Phone-Shop-POS-System/app/Http/Requests/Auth/ForgotPasswordRequest.php):
   - Validates email address for password reset links.
 - [`app/Http/Requests/Auth/ResetPasswordRequest.php`](file:///d:/Phone-Shop-POS-System/app/Http/Requests/Auth/ResetPasswordRequest.php):
-  - Validates signed reset token, email, and password confirmation with the 12-character security policy.
+  - Validates signed reset token, email, and password confirmation with the 8-character security policy.
 - [`app/Http/Controllers/Auth/RegisterController.php`](file:///d:/Phone-Shop-POS-System/app/Http/Controllers/Auth/RegisterController.php):
   - Handles registration rendering and atomic creation; supports web and JSON responses.
 - [`app/Http/Controllers/Auth/VerificationController.php`](file:///d:/Phone-Shop-POS-System/app/Http/Controllers/Auth/VerificationController.php):

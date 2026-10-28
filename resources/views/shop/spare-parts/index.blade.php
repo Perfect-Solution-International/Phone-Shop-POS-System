@@ -4,6 +4,10 @@
 @section('page-title', 'Repair Spare Parts & Component Inventory')
 
 @section('content')
+<style>
+    .stock-qty-low { color: #b91c1c; }
+    .stock-qty-normal { color: #15803d; }
+</style>
 <div class="card">
     <div class="card-header" style="flex-wrap: wrap; gap: 1rem;">
         <form method="GET" action="{{ route('shop.spare-parts') }}" style="display: flex; gap: 0.75rem; flex: 1; flex-wrap: wrap;">
@@ -49,10 +53,12 @@
                                 <div style="position: relative; display: inline-block; flex-shrink: 0;">
                                     <img src="{{ $part->image_url }}" 
                                          alt="{{ $part->name }}" 
+                                         data-title="{{ $part->name }}"
+                                         data-delete-url="{{ route('shop.spare-parts.delete-image', $part) }}"
                                          style="width: 64px; height: 64px; min-width: 64px; object-fit: cover; border-radius: 10px; border: 1.5px solid var(--surface-border); box-shadow: 0 1px 3px rgba(0,0,0,0.08); cursor: pointer;" 
-                                         onclick="openImageLightbox('{{ $part->image_url }}', '{{ addslashes($part->name) }}', '{{ route('shop.spare-parts.delete-image', $part) }}')" 
+                                         onclick="handleLightboxClick(this)" 
                                          title="Click to view full image">
-                                    <form method="POST" action="{{ route('shop.spare-parts.delete-image', $part) }}" onsubmit="return confirm('Delete photo for \'{{ addslashes($part->name) }}\'?');" style="margin: 0; position: absolute; top: -5px; right: -5px;">
+                                    <form method="POST" action="{{ route('shop.spare-parts.delete-image', $part) }}" data-confirm="Delete photo for {{ $part->name }}?" onsubmit="return confirm(this.getAttribute('data-confirm'));" style="margin: 0; position: absolute; top: -5px; right: -5px;">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" title="Delete image" style="width: 20px; height: 20px; border-radius: 50%; background: #dc2626; color: #ffffff; border: 2px solid #ffffff; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 13px; line-height: 1; padding: 0; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">&times;</button>
@@ -84,7 +90,7 @@
                         @endif
                     </td>
                     <td>
-                        <strong style="font-size: 1rem; color: {{ $part->stock_quantity <= ($part->alert_quantity ?? 2) ? '#b91c1c' : '#15803d' }};">
+                        <strong class="{{ $part->stock_quantity <= ($part->alert_quantity ?? 2) ? 'stock-qty-low' : 'stock-qty-normal' }}" style="font-size: 1rem;">
                             {{ $part->stock_quantity }}
                         </strong>
                         <span style="font-size: 0.75rem; color: var(--text-muted);">units</span>
@@ -102,13 +108,14 @@
                         <div style="display: inline-flex; align-items: center; gap: 0.35rem;">
                             <button type="button" 
                                     class="btn btn-secondary btn-sm" 
-                                    onclick='openEditPartModal(@json($part))' 
+                                    data-part="{{ json_encode($part) }}" 
+                                    onclick="openEditPartModalFromButton(this)" 
                                     title="Edit spare part" 
                                     style="padding: 0.3rem 0.6rem; font-size: 0.75rem; display: inline-flex; align-items: center; gap: 0.25rem;">
                                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
                                 Edit
                             </button>
-                            <form method="POST" action="{{ route('shop.spare-parts.destroy', $part) }}" onsubmit="return confirm('Delete spare part \'{{ addslashes($part->name) }}\' from inventory?');" style="display: inline; margin: 0;">
+                            <form method="POST" action="{{ route('shop.spare-parts.destroy', $part) }}" data-confirm="Delete spare part {{ $part->name }} from inventory?" onsubmit="return confirm(this.getAttribute('data-confirm'));" style="display: inline; margin: 0;">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" 
@@ -451,6 +458,15 @@
         document.getElementById('editPartRemoveImage').value = '0';
         document.getElementById('editPartExistingImageWrap').style.display = 'flex';
         document.getElementById('editPartImageRemovedNotice').style.display = 'none';
+    }
+
+    function handleLightboxClick(el) {
+        openImageLightbox(el.src, el.getAttribute('data-title'), el.getAttribute('data-delete-url'));
+    }
+
+    function openEditPartModalFromButton(btn) {
+        const part = JSON.parse(btn.getAttribute('data-part'));
+        openEditPartModal(part);
     }
 
     function openImageLightbox(imageUrl, title, deleteUrl = '') {

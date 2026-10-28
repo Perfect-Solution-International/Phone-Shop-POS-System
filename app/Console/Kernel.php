@@ -11,6 +11,8 @@ class Kernel extends ConsoleKernel
     {
         $schedule->command('sanctum:prune-expired --hours=24')->daily();
         $schedule->command('payroll:auto-generate')->monthlyOn(25, '00:00');
+        $schedule->command('subscriptions:process-lifecycle')->daily();
+        $schedule->command('backup:database')->dailyAt('02:00');
     }
 
     protected function commands(): void

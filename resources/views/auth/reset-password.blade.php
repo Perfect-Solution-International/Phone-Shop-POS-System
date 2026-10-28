@@ -94,7 +94,7 @@
             <ul class="strength-rules-list">
                 <li id="rule-len" style="display: flex; align-items: center; gap: 0.35rem;">
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                    <span>12+ characters</span>
+                    <span>8+ characters</span>
                 </li>
                 <li id="rule-upper" style="display: flex; align-items: center; gap: 0.35rem;">
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
@@ -175,7 +175,7 @@
 
     function updateStrength() {
         const val = passwordInput.value;
-        const hasLen = val.length >= 12;
+        const hasLen = val.length >= 8;
         const hasUpper = /[A-Z]/.test(val);
         const hasLower = /[a-z]/.test(val);
         const hasNum = /[0-9]/.test(val);

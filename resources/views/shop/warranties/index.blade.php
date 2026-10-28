@@ -4,13 +4,23 @@
 @section('page-title', 'Warranty Certificates & IMEI Coverage Claims')
 
 @section('content')
+<style>
+    @media (max-width: 576px) {
+        .warranty-verify-box {
+            flex-direction: column !important;
+        }
+        .warranty-verify-box button {
+            width: 100%;
+        }
+    }
+</style>
 <!-- Quick IMEI Warranty Verification Box -->
 <div class="card" style="margin-bottom: 2rem;">
     <div class="card-header">
         <span class="card-title">Instant IMEI Warranty Verification</span>
     </div>
     <div class="card-body">
-        <div style="display: flex; gap: 0.75rem; max-width: 650px;">
+        <div class="warranty-verify-box" style="display: flex; gap: 0.75rem; max-width: 650px;">
             <input type="text" id="verifyQuery" class="form-control" placeholder="Enter 15-digit IMEI or Warranty Number (e.g. WAR-2026-XXXXXX)..." style="font-family: monospace;">
             <button type="button" class="btn btn-primary" onclick="verifyWarranty()">Verify Status</button>
         </div>
@@ -88,7 +98,15 @@
                     </td>
                     <td>
                         @if($w->claims->isNotEmpty())
-                            <span class="badge badge-warning">{{ $w->claims->count() }} Claims</span>
+                            <button type="button" 
+                                    class="badge badge-warning" 
+                                    style="cursor: pointer; border: none; padding: 0.35rem 0.6rem; font-weight: 700; display: inline-flex; align-items: center; gap: 0.25rem;" 
+                                    data-claims="{{ json_encode($w->claims) }}" 
+                                    data-warranty-number="{{ $w->warranty_number }}"
+                                    onclick="openClaimsHistoryModalFromButton(this)"
+                                    title="Click to view claims history & review">
+                                <span>📋</span> {{ $w->claims->count() }} Claims
+                            </button>
                         @else
                             <span style="font-size: 0.75rem; color: var(--text-muted);">0</span>
                         @endif
@@ -103,7 +121,8 @@
                                     $waMsg = urlencode("Hello {$w->customer->name}, your warranty certificate #{$w->warranty_number} (IMEI/Serial: {$w->imei}) is valid until {$waEndDate}. Thank you!");
                                 @endphp
                                 <a href="https://wa.me/{{ $waPhone }}?text={{ $waMsg }}" target="_blank" class="btn btn-sm" title="Send Warranty Details via WhatsApp" style="background: #25D366; color: #ffffff; padding: 0.25rem 0.5rem; font-size: 0.75rem; display: inline-flex; align-items: center; text-decoration: none; border-radius: 4px; font-weight: 700;">
-                                    💬 WA
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 0.2rem;"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+                                    WA
                                 </a>
                             @endif
                             @if($w->isValid())
@@ -235,12 +254,120 @@
     </div>
 </div>
 
+<!-- Modal: Claims History & Decision Review -->
+<div class="modal-backdrop" id="claimsHistoryModal">
+    <div class="modal-box" style="max-width: 650px;">
+        <div class="modal-header">
+            <h3>Claims History &amp; Decision Review</h3>
+            <button type="button" class="modal-close" onclick="closeModal('claimsHistoryModal')">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div style="margin-bottom: 1rem; font-size: 0.875rem;">
+                Certificate: <strong id="lblHistoryWarranty" style="font-family: monospace; color:#4f46e5;"></strong>
+            </div>
+
+            <div id="claimsHistoryContainer" style="display: flex; flex-direction: column; gap: 0.85rem;">
+                <!-- Populated via JS -->
+            </div>
+        </div>
+        <div style="padding: 1.25rem 1.5rem; border-top: 1px solid var(--surface-border); display: flex; justify-content: flex-end;">
+            <button type="button" class="btn btn-secondary" onclick="closeModal('claimsHistoryModal')">Close</button>
+        </div>
+    </div>
+</div>
+
 @push('scripts')
 <script>
     function openClaimModal(id, warrantyNumber, imei) {
         document.getElementById('lblClaimWarranty').innerText = warrantyNumber + (imei ? ' (IMEI: ' + imei + ')' : '');
         document.getElementById('formClaim').action = '/shop/warranties/' + id + '/claim';
         openModal('claimModal');
+    }
+
+    function openClaimsHistoryModalFromButton(btn) {
+        const claims = JSON.parse(btn.getAttribute('data-claims') || '[]');
+        const warrantyNum = btn.getAttribute('data-warranty-number');
+        
+        document.getElementById('lblHistoryWarranty').innerText = warrantyNum;
+        const container = document.getElementById('claimsHistoryContainer');
+        container.innerHTML = '';
+
+        if (!claims || claims.length === 0) {
+            container.innerHTML = '<p style="color: var(--text-muted); text-align: center; padding: 1.5rem 0;">No claims recorded for this warranty certificate.</p>';
+        } else {
+            claims.forEach(function(c) {
+                const card = document.createElement('div');
+                card.style.cssText = 'border: 1px solid var(--surface-border); border-radius: 8px; padding: 1rem; background: #f8fafc;';
+                
+                let statusBadge = '<span class="badge badge-warning">Pending</span>';
+                if (c.status === 'inspecting') statusBadge = '<span class="badge badge-info">Inspecting</span>';
+                if (c.status === 'approved') statusBadge = '<span class="badge badge-success">Approved</span>';
+                if (c.status === 'rejected') statusBadge = '<span class="badge badge-danger">Rejected</span>';
+                if (c.status === 'settled') statusBadge = '<span class="badge badge-success" style="background:#059669; color:#ffffff;">Settled</span>';
+
+                const csrfToken = document.querySelector('meta[name="csrf-token"]') ? document.querySelector('meta[name="csrf-token"]').getAttribute('content') : '';
+
+                card.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem;">
+                        <div>
+                            <strong style="font-family: monospace; color: #0284c7; font-size: 0.9375rem;">${c.claim_number}</strong>
+                            <span style="font-size: 0.75rem; color: var(--text-muted); margin-left: 0.5rem;">Filed on ${c.claim_date}</span>
+                        </div>
+                        ${statusBadge}
+                    </div>
+                    <div style="font-size: 0.8125rem; color: #334155; margin-bottom: 0.5rem;">
+                        <strong>Problem Claimed:</strong> ${c.issue_description || 'N/A'}
+                    </div>
+                    <div style="font-size: 0.8125rem; color: #475569; margin-bottom: 0.5rem;">
+                        <strong>Proposed Settlement:</strong> <span style="text-transform: capitalize;">${c.settlement_type || 'Repair'}</span>
+                        ${c.action_notes ? '<br><strong>Inspector Action Notes:</strong> ' + c.action_notes : ''}
+                    </div>
+                    <button type="button" class="btn btn-sm btn-secondary" onclick="toggleReviewForm(${c.id})" style="font-size: 0.75rem; padding: 0.25rem 0.5rem;">
+                        ✎ Review / Decision Update
+                    </button>
+                    <div id="review-form-${c.id}" style="display: none; margin-top: 0.75rem; background: #ffffff; border: 1px solid #cbd5e1; padding: 0.75rem; border-radius: 6px;">
+                        <form method="POST" action="/shop/warranties/claims/${c.id}/review">
+                            <input type="hidden" name="_token" value="${csrfToken}">
+                            <div style="margin-bottom: 0.5rem;">
+                                <label style="font-size: 0.75rem; font-weight: 700; display: block; margin-bottom: 0.25rem;">Review Status *</label>
+                                <select name="status" class="form-control" style="font-size: 0.8125rem; padding: 0.35rem;" required>
+                                    <option value="pending" ${c.status === 'pending' ? 'selected' : ''}>Pending</option>
+                                    <option value="inspecting" ${c.status === 'inspecting' ? 'selected' : ''}>Under Inspection</option>
+                                    <option value="approved" ${c.status === 'approved' ? 'selected' : ''}>Approved</option>
+                                    <option value="rejected" ${c.status === 'rejected' ? 'selected' : ''}>Rejected</option>
+                                    <option value="settled" ${c.status === 'settled' ? 'selected' : ''}>Settled (Complete)</option>
+                                </select>
+                            </div>
+                            <div style="margin-bottom: 0.5rem;">
+                                <label style="font-size: 0.75rem; font-weight: 700; display: block; margin-bottom: 0.25rem;">Settlement Decision</label>
+                                <select name="settlement_type" class="form-control" style="font-size: 0.8125rem; padding: 0.35rem;">
+                                    <option value="repair" ${c.settlement_type === 'repair' ? 'selected' : ''}>Warranty Repair / Part Fix</option>
+                                    <option value="replacement" ${c.settlement_type === 'replacement' ? 'selected' : ''}>Replacement Unit</option>
+                                    <option value="refund" ${c.settlement_type === 'refund' ? 'selected' : ''}>Refund / Store Credit</option>
+                                </select>
+                            </div>
+                            <div style="margin-bottom: 0.5rem;">
+                                <label style="font-size: 0.75rem; font-weight: 700; display: block; margin-bottom: 0.25rem;">Inspector Action Notes</label>
+                                <textarea name="action_notes" class="form-control" rows="2" style="font-size: 0.8125rem;" placeholder="Verification details, inspection outcome...">${c.action_notes || ''}</textarea>
+                            </div>
+                            <div style="display: flex; gap: 0.5rem; justify-content: flex-end;">
+                                <button type="button" class="btn btn-sm btn-secondary" onclick="toggleReviewForm(${c.id})">Cancel</button>
+                                <button type="submit" class="btn btn-sm btn-primary">Save Decision</button>
+                            </div>
+                        </form>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+        openModal('claimsHistoryModal');
+    }
+
+    function toggleReviewForm(claimId) {
+        const el = document.getElementById('review-form-' + claimId);
+        if (el) {
+            el.style.display = (el.style.display === 'none' || el.style.display === '') ? 'block' : 'none';
+        }
     }
 
     async function verifyWarranty() {

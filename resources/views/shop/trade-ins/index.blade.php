@@ -4,6 +4,13 @@
 @section('page-title', 'Used Phone Buying & Trade-Ins')
 
 @section('content')
+<style>
+    @media (max-width: 640px) {
+        .tradein-checklist-grid {
+            grid-template-columns: 1fr !important;
+        }
+    }
+</style>
 <!-- Metric Cards -->
 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
     <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.25rem 1.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
@@ -33,7 +40,7 @@
     <div style="display: flex; align-items: center; justify-content: flex-end;">
         <button type="button" class="btn btn-primary" onclick="openModal('tradeInModal')" style="width: 100%; height: 100%; max-height: 52px; font-weight: 700;">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-            + Buy Used Phone / Trade-In
+            Buy Used Phone / Trade-In
         </button>
     </div>
 </div>
@@ -230,7 +237,7 @@
                             <input type="text" name="battery_health" class="form-control" placeholder="e.g. 87%">
                         </div>
                     </div>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-top: 0.5rem;">
+                    <div class="tradein-checklist-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-top: 0.5rem;">
                         <label style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.8125rem; cursor: pointer;">
                             <input type="checkbox" name="cameras_working" value="1" checked>
                             <span>Front &amp; Rear Cameras Functional</span>

@@ -84,5 +84,22 @@ class WarrantyViewController extends Controller
 
         return redirect()->route('shop.warranties')->with('success', "Warranty Claim #{$claim->claim_number} recorded successfully!");
     }
+
+    public function reviewClaim(Request $request, WarrantyClaim $claim): RedirectResponse
+    {
+        $validated = $request->validate([
+            'status' => 'required|string|in:pending,inspecting,approved,rejected,settled',
+            'settlement_type' => 'nullable|string|in:repair,replacement,refund',
+            'action_notes' => 'nullable|string|max:1500',
+        ]);
+
+        $claim->update($validated);
+
+        if ($validated['status'] === 'settled' && in_array($validated['settlement_type'], ['replacement', 'refund'], true)) {
+            $claim->warranty->update(['status' => 'settled']);
+        }
+
+        return redirect()->route('shop.warranties')->with('success', "Warranty Claim #{$claim->claim_number} status updated to " . strtoupper($validated['status']) . " successfully!");
+    }
 }
 

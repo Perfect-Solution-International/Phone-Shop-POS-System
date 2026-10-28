@@ -4,6 +4,39 @@
 @section('page-title', 'Shop Outlets & Multi-Branch Management')
 
 @section('content')
+<style>
+    .outlets-grid {
+        padding: 1.5rem;
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(min(100%, 310px), 1fr));
+        gap: 1.25rem;
+    }
+    .outlet-card {
+        background: #ffffff;
+        border-radius: 12px;
+        padding: 1.25rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+        position: relative;
+        transition: all 0.2s ease;
+    }
+    .outlet-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+    }
+    @media (max-width: 640px) {
+        .outlets-grid {
+            padding: 1rem;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+        .outlet-card {
+            padding: 1rem;
+        }
+    }
+</style>
 <div class="card" style="margin-bottom: 1.5rem;">
     <div class="card-header" style="flex-wrap: wrap; gap: 1rem; justify-content: space-between; align-items: center;">
         <div>
@@ -26,7 +59,7 @@
             @if($canAddMore)
                 <button type="button" class="btn btn-primary" onclick="openModal('addOutletModal')">
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                    + Add New Outlet
+                    Add New Outlet
                 </button>
             @else
                 <button type="button" class="btn btn-secondary" onclick="alert('You have reached the maximum number of outlets ({{ $maxBranches }}) allowed by your current subscription plan. Please upgrade your plan to unlock more branches.')" style="opacity: 0.85;" title="Plan limit reached">
@@ -38,9 +71,9 @@
     </div>
 
     <!-- Outlets Grid -->
-    <div style="padding: 1.5rem; display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.25rem;">
+    <div class="outlets-grid">
         @forelse($outlets as $outlet)
-            <div class="outlet-card" style="background: #ffffff; border: 1.5px solid {{ $outlet->is_main ? '#818cf8' : 'var(--surface-border)' }}; border-radius: 12px; padding: 1.25rem; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 2px 6px rgba(0,0,0,0.03); position: relative; transition: all 0.2s ease;">
+            <div class="outlet-card" style="border: 1.5px solid {{ $outlet->is_main ? '#818cf8' : 'var(--surface-border)' }};">
                 <div>
                     <!-- Card Top Header -->
                     <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 0.5rem; margin-bottom: 0.75rem;">
@@ -78,24 +111,24 @@
                     <!-- Outlet Meta Details -->
                     <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.75rem 0.85rem; font-size: 0.8125rem; color: #334155; margin-bottom: 1rem; display: flex; flex-direction: column; gap: 0.4rem;">
                         <div style="display: flex; align-items: flex-start; gap: 0.4rem;">
-                            <span style="color: #64748b; min-width: 65px; font-weight: 600;">Address:</span>
-                            <span style="font-weight: 500; color: #1e293b;">{{ $outlet->address }}</span>
+                            <span style="color: #64748b; min-width: 65px; font-weight: 600; flex-shrink: 0;">Address:</span>
+                            <span style="font-weight: 500; color: #1e293b; word-break: break-word;">{{ $outlet->address }}</span>
                         </div>
                         @if($outlet->phone)
                             <div style="display: flex; align-items: center; gap: 0.4rem;">
-                                <span style="color: #64748b; min-width: 65px; font-weight: 600;">Phone:</span>
+                                <span style="color: #64748b; min-width: 65px; font-weight: 600; flex-shrink: 0;">Phone:</span>
                                 <span style="font-weight: 500; color: #0284c7;">{{ $outlet->phone }}</span>
                             </div>
                         @endif
                         @if($outlet->email)
-                            <div style="display: flex; align-items: center; gap: 0.4rem;">
-                                <span style="color: #64748b; min-width: 65px; font-weight: 600;">Email:</span>
-                                <span style="font-weight: 500; color: #475569;">{{ $outlet->email }}</span>
+                            <div style="display: flex; align-items: center; gap: 0.4rem; overflow: hidden;">
+                                <span style="color: #64748b; min-width: 65px; font-weight: 600; flex-shrink: 0;">Email:</span>
+                                <span style="font-weight: 500; color: #475569; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="{{ $outlet->email }}">{{ $outlet->email }}</span>
                             </div>
                         @endif
                         @if($outlet->manager_name)
                             <div style="display: flex; align-items: center; gap: 0.4rem;">
-                                <span style="color: #64748b; min-width: 65px; font-weight: 600;">Manager:</span>
+                                <span style="color: #64748b; min-width: 65px; font-weight: 600; flex-shrink: 0;">Manager:</span>
                                 <span style="font-weight: 600; color: #1e293b;">{{ $outlet->manager_name }}</span>
                             </div>
                         @endif

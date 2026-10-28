@@ -78,6 +78,7 @@ class RepairViewController extends Controller
     {
         $validated = $request->validate([
             'status' => 'required|string|in:received,diagnosing,waiting_for_approval,waiting_for_parts,in_repair,quality_check,ready_for_collection,delivered',
+            'technician_id' => 'nullable|exists:users,id',
             'technician_notes' => 'nullable|string|max:1000',
             'final_cost' => 'nullable|numeric|min:0',
         ]);
@@ -93,6 +94,14 @@ class RepairViewController extends Controller
                 app(\App\Services\SmsNotificationService::class)->sendRepairReadyAlert($repair);
             } catch (\Throwable $e) {
                 // Silently log or ignore delivery error to prevent blocking repair workflow
+            }
+
+            try {
+                if ($repair->customer && $repair->customer->email) {
+                    \Illuminate\Support\Facades\Mail::to($repair->customer->email)->queue(new \App\Mail\RepairPickupReadyMail($repair));
+                }
+            } catch (\Throwable $e) {
+                // Silently ignore mail failure to ensure repair workflow completes
             }
         }
 

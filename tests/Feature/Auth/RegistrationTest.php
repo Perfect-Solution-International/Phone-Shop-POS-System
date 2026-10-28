@@ -29,6 +29,7 @@ test('registration screen can be rendered with shop onboarding, business details
     $response->assertSee('Password');
     $response->assertSee('Confirm Password');
     $response->assertSee('Password Strength:');
+    $response->assertSee('8+ characters');
     $response->assertSee('Terms of Service');
     $response->assertSee('7-Day Free Trial');
 });
@@ -339,5 +340,23 @@ test('newly registered shop and owner immediately appear in super admin dashboar
     $dashResponse->assertSee('Colombo Apex Mobile');
     $dashResponse->assertSee('Dinesh Fonseka');
     $dashResponse->assertSee('Trial');
+});
+
+test('shop owner can register with an 8-character valid password', function (): void {
+    Event::fake([Registered::class]);
+
+    $response = $this->post('/register', [
+        'shop_name' => 'Eight Char Shop',
+        'name' => 'Owner Eight',
+        'phone' => '+94 77 123 4567',
+        'email' => 'eightchar@example.test',
+        'password' => 'Secret1!', // Exactly 8 characters with upper, lower, number
+        'password_confirmation' => 'Secret1!',
+        'terms' => '1',
+    ]);
+
+    $response->assertRedirect(route('verification.notice'));
+    $this->assertAuthenticated('web');
+    $this->assertDatabaseHas('users', ['email' => 'eightchar@example.test']);
 });
 
