@@ -15,11 +15,16 @@ class Customer extends Model
         'name',
         'phone',
         'email',
+        'password',
         'nic',
         'address',
         'customer_type',
         'credit_limit',
         'balance',
+    ];
+
+    protected $hidden = [
+        'password',
     ];
 
     protected $casts = [
