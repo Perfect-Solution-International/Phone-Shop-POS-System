@@ -199,13 +199,13 @@
         <header class="header-brand">
             <span class="brand-badge">Customer Service Portal</span>
             <h1 class="header-title">Track Your Phone Repair</h1>
-            <p class="header-desc">Enter your Job Number (from your receipt) or device IMEI to view real-time workshop progress.</p>
+            <p class="header-desc">Enter your Job Number, Device IMEI, or Customer ID / NIC to view real-time workshop progress.</p>
         </header>
 
         <div class="card">
             <form method="GET" action="{{ route('public.repair-track') }}">
                 <div class="form-row">
-                    <input type="text" name="tracking_id" class="input-track" placeholder="e.g. REP-20261022-XXXX or 15-digit IMEI" value="{{ $trackingId }}" required>
+                    <input type="text" name="tracking_id" class="input-track" placeholder="e.g. Job #, 15-digit IMEI, or ID / NIC Number" value="{{ $trackingId }}" required>
                     <button type="submit" class="btn-track">Check Status</button>
                 </div>
             </form>
@@ -271,13 +271,25 @@
 
                 <!-- Job Details -->
                 <div style="margin-top: 1.5rem;">
+                    @if($job->customer)
+                    <div class="detail-row">
+                        <span class="detail-label">Customer Name</span>
+                        <span class="detail-val">{{ $job->customer->name }}</span>
+                    </div>
+                    @endif
                     <div class="detail-row">
                         <span class="detail-label">Device</span>
                         <span class="detail-val">{{ $job->brand }} {{ $job->model }}</span>
                     </div>
+                    @if($job->customer_nic || ($job->customer && $job->customer->nic))
+                    <div class="detail-row">
+                        <span class="detail-label">Customer ID / NIC</span>
+                        <span class="detail-val" style="font-family: monospace; color: #4338ca;">{{ $job->customer_nic ?: $job->customer->nic }}</span>
+                    </div>
+                    @endif
                     @if($job->imei)
                     <div class="detail-row">
-                        <span class="detail-label">IMEI</span>
+                        <span class="detail-label">IMEI / Serial</span>
                         <span class="detail-val" style="font-family: monospace;">{{ $job->imei }}</span>
                     </div>
                     @endif
@@ -305,7 +317,10 @@
 
                 @if($job->status === 'waiting_for_approval')
                     <div style="background: #eff6ff; border: 1.5px solid #bfdbfe; border-radius: 10px; padding: 1.25rem; margin-top: 1.5rem; text-align: center;">
-                        <h4 style="color: #1e40af; font-weight: 800; font-size: 1.05rem; margin-bottom: 0.35rem;">⚠️ Repair Estimate Awaiting Your Approval</h4>
+                        <h4 style="color: #1e40af; font-weight: 800; font-size: 1.05rem; margin-bottom: 0.35rem; display: flex; align-items: center; justify-content: center; gap: 0.4rem;">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                            Repair Estimate Awaiting Your Approval
+                        </h4>
                         <p style="font-size: 0.875rem; color: #334155; margin-bottom: 0.75rem;">
                             Our technicians have completed diagnostic testing. Estimated repair cost: <strong style="color: #1e3a8a; font-size: 1.1rem;">LKR {{ number_format($job->estimated_cost, 2) }}</strong>
                         </p>
@@ -321,15 +336,24 @@
 
                 @if($job->status === 'ready_for_collection')
                     <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 1rem; margin-top: 1.5rem; text-align: center;">
-                        <strong style="color: #166534;">🎉 Your device has passed quality tests and is ready for collection!</strong>
+                        <strong style="color: #166534; display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem;">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                            Your device has passed quality tests and is ready for collection!
+                        </strong>
                         <p style="font-size: 0.8125rem; color: #166534; margin-top: 0.25rem;">Please bring your receipt or Job Ticket <code>{{ $job->job_number }}</code> to the shop counter to collect your device.</p>
                     </div>
                 @endif
             </div>
         @endif
 
-        <footer style="text-align: center; font-size: 0.8125rem; color: var(--text-muted); margin-top: 2rem;">
-            Powered by {{ config('app.name', 'SaaS Phone Shop POS System') }} • Multi-Tenant Phone Retail Cloud Platform
+        <footer style="display: flex; flex-direction: column; align-items: center; gap: 0.75rem; text-align: center; font-size: 0.8125rem; color: var(--text-muted); margin-top: 2.5rem; padding-bottom: 2rem;">
+            <div>Powered by {{ config('app.name', 'SaaS Phone Shop POS System') }} &bull; Multi-Tenant Phone Retail Cloud Platform</div>
+            <div style="display: inline-flex; align-items: center; gap: 0.5rem; font-size: 0.75rem;">
+                <span style="color: #64748b; font-weight: 500;">Developed by</span>
+                <a href="https://www.perfectsolutioninternational.com/" target="_blank" rel="noopener noreferrer" style="display: inline-flex; align-items: center; text-decoration: none;" title="Perfect Solution International — Visit Website">
+                    <img src="{{ asset('images/perfect-solution-logo.png') }}" alt="Perfect Solution International" style="height: 22px; width: auto; object-fit: contain; display: block;">
+                </a>
+            </div>
         </footer>
     </div>
 </body>

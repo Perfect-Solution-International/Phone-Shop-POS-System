@@ -22,10 +22,10 @@
 
     .pos-layout {
         display: grid;
-        grid-template-columns: 1.35fr 1fr;
-        gap: 1.5rem;
-        height: calc(100vh - 190px);
-        min-height: 580px;
+        grid-template-columns: 1.3fr 1fr;
+        gap: 1.25rem;
+        min-height: calc(100vh - 175px);
+        align-items: start;
     }
 
     /* Left Catalog Container */
@@ -171,22 +171,25 @@
     }
 
     .pos-item-add-btn {
-        width: 24px;
-        height: 24px;
+        height: 28px;
+        padding: 0 0.65rem;
         border-radius: 6px;
         background: #f1f5f9;
-        display: flex;
+        display: inline-flex;
         align-items: center;
         justify-content: center;
         color: #475569;
-        font-weight: 800;
-        font-size: 1rem;
-        transition: all 0.15s ease;
+        font-weight: 750;
+        font-size: 0.75rem;
+        transition: all 0.18s ease;
+        white-space: nowrap;
+        border: 1px solid #e2e8f0;
     }
 
     .pos-item-card:hover .pos-item-add-btn {
         background: #4f46e5;
         color: #ffffff;
+        border-color: #4f46e5;
     }
 
     /* Right Cart Container */
@@ -198,15 +201,17 @@
         flex-direction: column;
         overflow: hidden;
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03), 0 6px 16px -4px rgba(0, 0, 0, 0.04);
+        position: sticky;
+        top: 80px;
     }
 
     .pos-cart-header {
-        padding: 1rem 1.25rem;
+        padding: 0.9rem 1.25rem;
         border-bottom: 1px solid var(--surface-border);
         display: flex;
         justify-content: space-between;
         align-items: center;
-        background: #fafbfc;
+        background: #ffffff;
     }
 
     .pos-cart-title {
@@ -215,33 +220,42 @@
         color: #0f172a;
         display: flex;
         align-items: center;
-        gap: 0.45rem;
+        gap: 0.5rem;
     }
 
     .pos-cart-items {
         flex: 1;
         overflow-y: auto;
-        padding: 0.75rem 1.25rem;
-        background: #ffffff;
-    }
-
-    .pos-cart-row {
+        padding: 0.85rem;
+        background: #f8fafc;
         display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 0.75rem 0;
-        border-bottom: 1px solid #f1f5f9;
-        gap: 0.5rem;
+        flex-direction: column;
+        gap: 0.65rem;
+        min-height: 220px;
+        max-height: 380px;
     }
 
-    .pos-cart-row:last-child {
-        border-bottom: none;
+    .pos-cart-item-card {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 0.75rem 0.85rem;
+        display: flex;
+        gap: 0.75rem;
+        align-items: center;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+        transition: all 0.15s ease;
+    }
+
+    .pos-cart-item-card:hover {
+        border-color: #cbd5e1;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
     }
 
     .pos-cart-summary {
-        padding: 1.25rem 1.35rem;
+        padding: 1rem 1.25rem;
         border-top: 1px solid var(--surface-border);
-        background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+        background: #ffffff;
     }
 
     .summary-total-banner {
@@ -379,6 +393,12 @@
     </div>
 
     <div style="display: flex; gap: 0.65rem; align-items: center; flex-wrap: wrap;">
+        <!-- Top Cart Button (Appears as soon as items are added) -->
+        <button type="button" id="topCartBtn" class="btn btn-primary btn-sm" onclick="scrollToCart()" style="display: none; border-radius: 8px; font-weight: 750; gap: 0.45rem; background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%); box-shadow: 0 2px 8px rgba(79, 70, 229, 0.35);">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+            <span>Cart (<span id="topCartCount">0</span>)</span>
+            <span id="topCartTotal" style="background: rgba(255,255,255,0.22); padding: 1px 7px; border-radius: 6px; font-size: 0.72rem; font-weight: 700;">LKR 0.00</span>
+        </button>
         <button type="button" class="btn btn-secondary btn-sm" onclick="openModal('recentSalesModal')" style="border-radius: 8px; font-weight: 650; gap: 0.4rem;">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
             Recent Sales ({{ count($recentSales) }})
@@ -427,7 +447,10 @@
                      data-price="{{ $phone->selling_price }}" 
                      data-imei="{{ $phone->imei_1 }}"
                      data-category="Phones"
-                     onclick="addPhoneToCart({{ $phone->id }}, '{{ addslashes($phone->brand.' '.$phone->model) }}', {{ $phone->selling_price }}, '{{ $phone->imei_1 }}')">
+                     onclick="addPhoneToCart({{ $phone->id }}, '{{ addslashes($phone->brand.' '.$phone->model) }}', {{ $phone->selling_price }}, '{{ $phone->imei_1 }}', '{{ addslashes($phone->brand) }}', '{{ addslashes(($phone->color ? $phone->color.' • ' : '').$phone->storage) }}', '{{ $phone->image_url }}')">
+                    @if($phone->image_url)
+                        <img src="{{ $phone->image_url }}" alt="{{ $phone->brand }} {{ $phone->model }}" style="width: 100%; height: 80px; object-fit: cover; border-radius: 8px; margin-bottom: 0.5rem; border: 1px solid var(--surface-border);">
+                    @endif
                     <div>
                         <span class="pos-item-brand">{{ $phone->brand }}</span>
                         <div style="font-weight: 750; font-size: 0.9rem; margin-top: 0.35rem; color: #0f172a; line-height: 1.3;">{{ $phone->model }}</div>
@@ -440,7 +463,7 @@
                     </div>
                     <div class="pos-item-price">
                         <span>LKR {{ number_format($phone->selling_price, 2) }}</span>
-                        <div class="pos-item-add-btn">+</div>
+                        <div class="pos-item-add-btn item-add-btn">+ Add</div>
                     </div>
                 </div>
             @empty
@@ -464,7 +487,7 @@
                      data-price="{{ $product->selling_price }}" 
                      data-barcode="{{ $product->barcode }}"
                      data-category="{{ $product->category->name ?? 'General' }}"
-                     onclick="addProductToCart({{ $product->id }}, '{{ addslashes($product->name) }}', {{ $product->selling_price }}, {{ $product->stock_quantity }})">
+                     onclick="addProductToCart({{ $product->id }}, '{{ addslashes($product->name) }}', {{ $product->selling_price }}, {{ $product->stock_quantity }}, '{{ addslashes($product->category->name ?? 'Accessory') }}', '{{ $product->image_url }}')">
                     @if($product->image_url)
                         <img src="{{ $product->image_url }}" alt="{{ $product->name }}" style="width: 100%; height: 80px; object-fit: cover; border-radius: 8px; margin-bottom: 0.5rem; border: 1px solid var(--surface-border);">
                     @endif
@@ -477,7 +500,7 @@
                     </div>
                     <div class="pos-item-price">
                         <span>LKR {{ number_format($product->selling_price, 2) }}</span>
-                        <div class="pos-item-add-btn">+</div>
+                        <div class="pos-item-add-btn item-add-btn">+ Add</div>
                     </div>
                 </div>
             @empty
@@ -495,16 +518,19 @@
     <div class="pos-cart">
         <div class="pos-cart-header">
             <span class="pos-cart-title">
-                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+                <span style="display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 9px; background: #0f172a; color: #ffffff;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+                </span>
                 <span>Active Register Cart</span>
+                <span id="cartCountBadge" style="display: none; background: #0f172a; color: #ffffff; font-size: 0.72rem; font-weight: 800; border-radius: 9999px; padding: 0.15rem 0.55rem; margin-left: 0.3rem;">0</span>
             </span>
-            <button class="btn btn-sm btn-secondary" onclick="clearCart()" style="border-radius: 8px; color: #ef4444; font-size: 0.75rem;">Clear Cart</button>
+            <button type="button" class="btn btn-sm btn-secondary" onclick="clearCart()" style="border-radius: 8px; color: #ef4444; font-size: 0.75rem; border-color: #fee2e2; background: #fff;">Clear Cart</button>
         </div>
 
         <!-- Customer selection -->
-        <div style="padding: 0.85rem 1.25rem; border-bottom: 1px solid var(--surface-border); background: #fdfdfe;">
-            <label style="font-size: 0.72rem; font-weight: 700; color: #64748b; display: block; margin-bottom: 0.35rem; text-transform: uppercase;">Customer Selection</label>
-            <select id="customerSelect" class="form-control" style="height: 38px; border-radius: 8px; font-size: 0.85rem;">
+        <div style="padding: 0.65rem 1.15rem; border-bottom: 1px solid var(--surface-border); background: #ffffff; display: flex; align-items: center; gap: 0.6rem;">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+            <select id="customerSelect" class="form-control" style="height: 36px; border-radius: 8px; font-size: 0.825rem; border: 1px solid #e2e8f0; flex: 1;">
                 <option value="">Walk-in Customer (Cash / Default)</option>
                 @foreach($customers as $customer)
                     <option value="{{ $customer->id }}">{{ $customer->name }} ({{ $customer->phone }})</option>
@@ -512,78 +538,83 @@
             </select>
         </div>
 
-        <!-- Cart Items List -->
+        <!-- Cart Items List (Mockup Card Style) -->
         <div class="pos-cart-items" id="cartContainer">
             <div id="emptyCartNotice" style="text-align: center; color: var(--text-muted); padding: 3rem 1rem;">
-                <div style="width: 44px; height: 44px; border-radius: 50%; background: #f1f5f9; color: #94a3b8; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 0.75rem;">
+                <div style="width: 44px; height: 44px; border-radius: 50%; background: #f1f5f9; color: #94a3b8; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 0.5rem;">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
                 </div>
-                <div style="font-weight: 600; color: #475569;">Cart is currently empty</div>
-                <div style="font-size: 0.78rem; margin-top: 0.25rem;">Scan a barcode or click items on the left to add them to this sale.</div>
+                <div style="font-weight: 750; color: #334155; font-size: 0.9rem;">Cart is currently empty</div>
+                <div style="font-size: 0.775rem; margin-top: 0.2rem; color: #94a3b8;">Click items on the left or scan a barcode to add.</div>
             </div>
-            <div id="cartItemsList"></div>
+            <div id="cartItemsList" style="display: flex; flex-direction: column; gap: 0.65rem;"></div>
         </div>
 
-        <!-- Checkout Form & Split Payment -->
+        <!-- Checkout Form & Split Payment (Streamlined & Space-Efficient) -->
         <div class="pos-cart-summary">
-            <div style="display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 0.35rem;">
-                <span style="color: var(--text-muted);">Subtotal</span>
-                <span id="lblSubtotal" style="font-weight: 700; color: #1e293b;">LKR 0.00</span>
-            </div>
-            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; margin-bottom: 0.45rem;">
-                <span style="color: var(--text-muted);">Discount (LKR)</span>
-                <input type="number" id="inpDiscount" class="form-control" style="width: 110px; text-align: right; padding: 0.25rem 0.5rem; height: 32px; border-radius: 6px; font-weight: 600;" value="0" min="0" oninput="recalc()">
-            </div>
-            
-            <div class="summary-total-banner">
-                <span style="font-size: 0.95rem; font-weight: 800; color: #0f172a;">Total Payable</span>
-                <span id="lblGrandTotal" style="font-size: 1.35rem; font-weight: 800; color: #4f46e5; letter-spacing: -0.02em;">LKR 0.00</span>
-            </div>
-
-            <!-- Split Payments Entry -->
-            <label style="font-size: 0.72rem; font-weight: 750; text-transform: uppercase; color: #64748b; display: block; letter-spacing: 0.05em;">Payment Tender (Split Allowed)</label>
-            <div class="split-row">
-                <div class="split-tender-box">
-                    <label style="color: #166534;">
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
-                        <span>Cash</span>
-                    </label>
-                    <input type="number" id="payCash" placeholder="0.00" oninput="updatePaymentRemaining()">
+            <!-- Subtotal & Discount Row -->
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.65rem;">
+                <div>
+                    <div style="font-size: 0.7rem; color: #64748b; font-weight: 700; text-transform: uppercase;">Subtotal</div>
+                    <div id="lblSubtotal" style="font-size: 1.1rem; font-weight: 850; color: #0f172a; letter-spacing: -0.01em;">LKR 0.00</div>
                 </div>
-                <div class="split-tender-box">
-                    <label style="color: #1e40af;">
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
-                        <span>Card</span>
-                    </label>
-                    <input type="number" id="payCard" placeholder="0.00" oninput="updatePaymentRemaining()">
-                </div>
-                <div class="split-tender-box">
-                    <label style="color: #6b21a8;">
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
-                        <span>Bank / QR</span>
-                    </label>
-                    <input type="number" id="payBank" placeholder="0.00" oninput="updatePaymentRemaining()">
+                <div style="display: flex; align-items: center; gap: 0.4rem;">
+                    <label style="font-size: 0.72rem; color: #64748b; font-weight: 600; margin: 0;">Discount:</label>
+                    <input type="number" id="inpDiscount" class="form-control" style="width: 85px; text-align: right; padding: 0.2rem 0.4rem; height: 32px; border-radius: 6px; font-weight: 700; font-size: 0.8rem;" value="0" min="0" oninput="recalc()">
                 </div>
             </div>
 
-            <!-- Quick Cash Presets -->
-            <div class="quick-cash-row">
-                <button type="button" class="quick-cash-btn" onclick="setExactCash()">Exact</button>
-                <button type="button" class="quick-cash-btn" onclick="addCashPreset(1000)">+1,000</button>
-                <button type="button" class="quick-cash-btn" onclick="addCashPreset(5000)">+5,000</button>
-                <button type="button" class="quick-cash-btn" onclick="addCashPreset(10000)">+10,000</button>
+            <!-- Compact Payment Tender Box -->
+            <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 0.6rem 0.75rem; margin-bottom: 0.75rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
+                    <span style="font-size: 0.68rem; font-weight: 750; text-transform: uppercase; color: #64748b; letter-spacing: 0.04em;">Payment Tender (Split Allowed)</span>
+                    <div style="display: flex; gap: 0.25rem;">
+                        <button type="button" class="btn btn-sm btn-secondary" onclick="setExactCash()" style="padding: 1px 6px; font-size: 0.68rem; border-radius: 4px; font-weight: 700;">Exact</button>
+                        <button type="button" class="btn btn-sm btn-secondary" onclick="addCashPreset(1000)" style="padding: 1px 6px; font-size: 0.68rem; border-radius: 4px;">+1k</button>
+                        <button type="button" class="btn btn-sm btn-secondary" onclick="addCashPreset(5000)" style="padding: 1px 6px; font-size: 0.68rem; border-radius: 4px;">+5k</button>
+                        <button type="button" class="btn btn-sm btn-secondary" onclick="addCashPreset(10000)" style="padding: 1px 6px; font-size: 0.68rem; border-radius: 4px;">+10k</button>
+                    </div>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.45rem;">
+                    <div style="background: #ffffff; border: 1px solid #cbd5e1; border-radius: 6px; padding: 0.25rem 0.45rem;">
+                        <label style="font-size: 0.65rem; font-weight: 750; color: #166534; display: block; margin: 0;">💵 Cash</label>
+                        <input type="number" id="payCash" placeholder="0.00" style="width: 100%; border: none; outline: none; font-size: 0.825rem; font-weight: 700; text-align: right; padding: 0;" oninput="updatePaymentRemaining()">
+                    </div>
+                    <div style="background: #ffffff; border: 1px solid #cbd5e1; border-radius: 6px; padding: 0.25rem 0.45rem;">
+                        <label style="font-size: 0.65rem; font-weight: 750; color: #1e40af; display: block; margin: 0;">💳 Card</label>
+                        <input type="number" id="payCard" placeholder="0.00" style="width: 100%; border: none; outline: none; font-size: 0.825rem; font-weight: 700; text-align: right; padding: 0;" oninput="updatePaymentRemaining()">
+                    </div>
+                    <div style="background: #ffffff; border: 1px solid #cbd5e1; border-radius: 6px; padding: 0.25rem 0.45rem;">
+                        <label style="font-size: 0.65rem; font-weight: 750; color: #6b21a8; display: block; margin: 0;">🏦 Bank</label>
+                        <input type="number" id="payBank" placeholder="0.00" style="width: 100%; border: none; outline: none; font-size: 0.825rem; font-weight: 700; text-align: right; padding: 0;" oninput="updatePaymentRemaining()">
+                    </div>
+                </div>
+                <div id="paymentStatusNotice" style="font-size: 0.72rem; font-weight: 700; margin-top: 0.35rem; color: #b45309; text-align: center;">
+                    Remaining to settle: LKR 0.00
+                </div>
             </div>
 
-            <div id="paymentStatusNotice" style="font-size: 0.78rem; font-weight: 700; margin-top: 0.65rem; color: #b45309; text-align: center;">
-                Remaining to settle: LKR 0.00
+            <!-- Pinned Checkout Action Bar like the Mockup -->
+            <div style="display: flex; justify-content: space-between; align-items: center; gap: 0.75rem;">
+                <div>
+                    <div style="font-size: 0.68rem; color: #64748b; font-weight: 700; text-transform: uppercase;">Total Payable</div>
+                    <div id="lblGrandTotal" style="font-size: 1.25rem; font-weight: 850; color: #0f172a; letter-spacing: -0.02em;">LKR 0.00</div>
+                </div>
+                <button type="button" id="btnSubmitSale" class="btn btn-primary" onclick="processCheckout()" style="flex: 1; height: 44px; border-radius: 12px; font-weight: 800; font-size: 0.925rem; background: #0f172a; border: none; display: flex; align-items: center; justify-content: center; gap: 0.5rem; box-shadow: 0 4px 14px rgba(15, 23, 42, 0.25); cursor: pointer; transition: all 0.2s ease;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    <span>Complete Sale &amp; Print</span>
+                </button>
             </div>
-
-            <button type="button" id="btnSubmitSale" class="btn btn-primary" style="width: 100%; margin-top: 0.75rem; padding: 0.85rem; border-radius: 10px; font-weight: 800; font-size: 0.95rem; box-shadow: 0 4px 14px rgba(79, 70, 229, 0.4);" onclick="processCheckout()">
-                Complete Sale &amp; Generate Invoice
-            </button>
         </div>
     </div>
 </div>
+
+<!-- Floating View Cart Button (Shows dynamically when items are added to cart) -->
+<button type="button" id="floatingCartBtn" onclick="scrollToCart()" style="display: none; position: fixed; bottom: 24px; right: 24px; z-index: 999; background: #4f46e5; color: #ffffff; border: none; border-radius: 50px; padding: 0.75rem 1.35rem; font-weight: 800; font-size: 0.9rem; box-shadow: 0 8px 24px rgba(79, 70, 229, 0.45); cursor: pointer; align-items: center; gap: 0.65rem; transition: transform 0.2s ease, box-shadow 0.2s ease;">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+    <span>Cart (<span id="floatingCartCount">0</span>)</span>
+    <span id="floatingCartTotal" style="background: rgba(255,255,255,0.22); padding: 2px 8px; border-radius: 12px; font-size: 0.8rem; font-weight: 700;">LKR 0.00</span>
+</button>
 
 <!-- Receipt Modal -->
 <div class="modal-backdrop" id="receiptModal">
@@ -714,7 +745,34 @@
         });
     }
 
-    function addPhoneToCart(id, name, price, imei) {
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchInp = document.getElementById('searchInput');
+        if (searchInp) {
+            searchInp.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    const val = this.value.trim().toLowerCase();
+                    if (!val) return;
+
+                    const visibleCards = Array.from(document.querySelectorAll('.item-card')).filter(c => c.style.display !== 'none');
+                    if (visibleCards.length === 1) {
+                        visibleCards[0].click();
+                        this.value = '';
+                        filterItems();
+                    } else if (visibleCards.length > 1) {
+                        const exact = visibleCards.find(c => (c.dataset.imei && c.dataset.imei.toLowerCase() === val) || (c.dataset.barcode && c.dataset.barcode.toLowerCase() === val));
+                        if (exact) {
+                            exact.click();
+                            this.value = '';
+                            filterItems();
+                        }
+                    }
+                }
+            });
+        }
+    });
+
+    function addPhoneToCart(id, name, price, imei, brand, variant, image) {
         if (cart.some(item => item.phone_device_id === id)) {
             alert('This specific serialized phone (IMEI ' + imei + ') is already in your cart.');
             return;
@@ -724,14 +782,18 @@
             phone_device_id: id,
             product_id: null,
             name: name,
+            brand: brand || 'Mobile Phone',
+            variant: variant || '',
+            image: image || null,
             imei: imei,
             quantity: 1,
             unit_price: parseFloat(price)
         });
+        showAddedToast(name);
         renderCart();
     }
 
-    function addProductToCart(id, name, price, maxStock) {
+    function addProductToCart(id, name, price, maxStock, brand, image) {
         const existing = cart.find(item => item.product_id === id);
         if (existing) {
             if (existing.quantity >= maxStock) {
@@ -745,11 +807,68 @@
                 product_id: id,
                 phone_device_id: null,
                 name: name,
+                brand: brand || 'Accessory',
+                variant: '',
+                image: image || null,
                 imei: null,
                 quantity: 1,
-                unit_price: parseFloat(price)
+                unit_price: parseFloat(price),
+                max_stock: maxStock
             });
         }
+        showAddedToast(name);
+        renderCart();
+    }
+
+    function showAddedToast(itemName) {
+        let toast = document.getElementById('posAddedToast');
+        if (!toast) {
+            toast = document.createElement('div');
+            toast.id = 'posAddedToast';
+            toast.style.cssText = 'position: fixed; bottom: 85px; right: 24px; z-index: 1000; background: #0f172a; color: #ffffff; padding: 0.65rem 1rem; border-radius: 10px; font-size: 0.8125rem; font-weight: 600; display: flex; align-items: center; gap: 0.6rem; box-shadow: 0 10px 25px rgba(0,0,0,0.25); transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); opacity: 0; transform: translateY(10px); pointer-events: none;';
+            document.body.appendChild(toast);
+        }
+        toast.innerHTML = `
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            <span>Added to Cart: <strong style="color: #38bdf8;">${itemName}</strong></span>
+        `;
+        toast.style.opacity = '1';
+        toast.style.transform = 'translateY(0)';
+
+        if (window._toastTimeout) clearTimeout(window._toastTimeout);
+        window._toastTimeout = setTimeout(() => {
+            toast.style.opacity = '0';
+            toast.style.transform = 'translateY(10px)';
+        }, 1800);
+    }
+
+    function scrollToCart() {
+        const cartEl = document.querySelector('.pos-cart');
+        if (cartEl) {
+            cartEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            cartEl.style.transition = 'box-shadow 0.3s ease';
+            cartEl.style.boxShadow = '0 0 0 3px #4f46e5, 0 10px 25px rgba(79, 70, 229, 0.25)';
+            setTimeout(() => {
+                cartEl.style.boxShadow = '';
+            }, 1200);
+        }
+    }
+
+    function updateItemQuantity(index, delta) {
+        const item = cart[index];
+        if (!item) return;
+        if (item.type === 'phone') return;
+
+        const newQty = item.quantity + delta;
+        if (newQty <= 0) {
+            removeFromCart(index);
+            return;
+        }
+        if (item.max_stock && newQty > item.max_stock) {
+            alert('Maximum available stock reached for this product (' + item.max_stock + ').');
+            return;
+        }
+        item.quantity = newQty;
         renderCart();
     }
 
@@ -766,27 +885,150 @@
     function renderCart() {
         const list = document.getElementById('cartItemsList');
         const emptyNotice = document.getElementById('emptyCartNotice');
+        const badge = document.getElementById('cartCountBadge');
+
+        const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+        const subtotal = cart.reduce((sum, item) => sum + (item.quantity * item.unit_price), 0);
+        const formattedTotal = 'LKR ' + subtotal.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+
+        // Dynamic Top & Floating Cart Buttons
+        const topCartBtn = document.getElementById('topCartBtn');
+        const topCartCount = document.getElementById('topCartCount');
+        const topCartTotal = document.getElementById('topCartTotal');
+
+        const floatingCartBtn = document.getElementById('floatingCartBtn');
+        const floatingCartCount = document.getElementById('floatingCartCount');
+        const floatingCartTotal = document.getElementById('floatingCartTotal');
+
+        if (totalItems > 0) {
+            if (topCartBtn) topCartBtn.style.display = 'inline-flex';
+            if (topCartCount) topCartCount.innerText = totalItems;
+            if (topCartTotal) topCartTotal.innerText = formattedTotal;
+
+            if (floatingCartBtn) floatingCartBtn.style.display = 'inline-flex';
+            if (floatingCartCount) floatingCartCount.innerText = totalItems;
+            if (floatingCartTotal) floatingCartTotal.innerText = formattedTotal;
+        } else {
+            if (topCartBtn) topCartBtn.style.display = 'none';
+            if (floatingCartBtn) floatingCartBtn.style.display = 'none';
+        }
 
         if (cart.length === 0) {
             list.innerHTML = '';
             emptyNotice.style.display = 'block';
+            if (badge) badge.style.display = 'none';
         } else {
             emptyNotice.style.display = 'none';
+            if (badge) {
+                badge.innerText = totalItems + (totalItems === 1 ? ' item' : ' items');
+                badge.style.display = 'inline-block';
+            }
+
             list.innerHTML = cart.map((item, idx) => `
-                <div class="pos-cart-row">
-                    <div style="flex: 1; padding-right: 0.5rem;">
-                        <div style="font-weight: 700; font-size: 0.85rem; color: #0f172a;">${item.name}</div>
-                        ${item.imei ? `<div style="font-size: 0.7rem; color: #0284c7; font-family: 'JetBrains Mono', monospace; font-weight: 600;">IMEI: ${item.imei}</div>` : ''}
-                        <div style="font-size: 0.75rem; color: var(--text-muted);">${item.quantity} x LKR ${item.unit_price.toFixed(2)}</div>
+                <div class="pos-cart-item-card">
+                    <!-- 1. Thumbnail Photo on Left (like Mockup) -->
+                    <div style="width: 52px; height: 52px; border-radius: 10px; background: #f8fafc; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0;">
+                        ${item.image ? `
+                            <img src="${item.image}" alt="${item.name}" style="width: 100%; height: 100%; object-fit: cover;">
+                        ` : `
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="1.8">
+                                ${item.type === 'phone' ? '<rect x="5" y="2" width="14" height="20" rx="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line>' : '<path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>'}
+                            </svg>
+                        `}
                     </div>
-                    <div style="font-weight: 800; font-size: 0.9rem; margin-right: 0.75rem; color: #1e293b;">
-                        LKR ${(item.quantity * item.unit_price).toFixed(2)}
+
+                    <!-- 2. Middle & Right Grid (like Mockup) -->
+                    <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 0.35rem;">
+                        <!-- Top Row: Brand & Model on left, Variant/IMEI on right -->
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 0.4rem;">
+                            <div style="min-width: 0;">
+                                <div style="font-size: 0.68rem; color: #64748b; font-weight: 750; text-transform: uppercase; letter-spacing: 0.04em;">${item.brand || 'Item'}</div>
+                                <div style="font-size: 0.875rem; font-weight: 750; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${item.name}">${item.name}</div>
+                            </div>
+                            <div style="text-align: right; flex-shrink: 0;">
+                                ${item.variant ? `<div style="font-size: 0.72rem; color: #475569; font-weight: 600;">${item.variant}</div>` : ''}
+                                ${item.imei ? `<div style="font-size: 0.68rem; color: #0284c7; font-family: 'JetBrains Mono', monospace; font-weight: 700;">IMEI: ${item.imei}</div>` : ''}
+                            </div>
+                        </div>
+
+                        <!-- Bottom Row: Bold Price on left, Stepper & Trash button on right -->
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.15rem;">
+                            <div style="font-weight: 850; font-size: 0.95rem; color: #0f172a; letter-spacing: -0.01em;">
+                                LKR ${(item.quantity * item.unit_price).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}
+                            </div>
+
+                            <div style="display: flex; align-items: center; gap: 0.45rem;">
+                                <!-- Stepper Pill like Mockup -->
+                                ${item.type === 'product' ? `
+                                    <div style="display: inline-flex; align-items: center; border: 1.5px solid #e2e8f0; border-radius: 9999px; background: #f8fafc; padding: 2px;">
+                                        <button type="button" onclick="updateItemQuantity(${idx}, -1)" style="width: 22px; height: 22px; border: none; background: #ffffff; border-radius: 50%; font-weight: 800; color: #475569; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 1px 2px rgba(0,0,0,0.06); font-size: 0.85rem;" title="Decrease">−</button>
+                                        <span style="min-width: 24px; text-align: center; font-weight: 800; font-size: 0.8rem; color: #0f172a;">${item.quantity}</span>
+                                        <button type="button" onclick="updateItemQuantity(${idx}, 1)" style="width: 22px; height: 22px; border: none; background: #ffffff; border-radius: 50%; font-weight: 800; color: #475569; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 1px 2px rgba(0,0,0,0.06); font-size: 0.85rem;" title="Increase">+</button>
+                                    </div>
+                                ` : `
+                                    <div style="display: inline-flex; align-items: center; border: 1.5px solid #e2e8f0; border-radius: 9999px; background: #f8fafc; padding: 2px 8px; font-size: 0.7rem; font-weight: 750; color: #475569;">
+                                        Qty: 1
+                                    </div>
+                                `}
+
+                                <!-- Red Circular Trash Button like Mockup -->
+                                <button type="button" onclick="removeFromCart(${idx})" style="width: 26px; height: 26px; border-radius: 50%; border: none; background: #fee2e2; color: #dc2626; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.15s ease;" onmouseover="this.style.background='#ef4444'; this.style.color='#fff';" onmouseout="this.style.background='#fee2e2'; this.style.color='#dc2626';" title="Delete item">
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                                </button>
+                            </div>
+                        </div>
                     </div>
-                    <button type="button" onclick="removeFromCart(${idx})" style="background:none; border:none; color: #ef4444; font-size: 1.25rem; cursor:pointer; line-height: 1; padding: 2px 6px;">&times;</button>
                 </div>
             `).join('');
         }
         recalc();
+        updateCatalogBadges();
+    }
+
+    function updateCatalogBadges() {
+        document.querySelectorAll('.item-card').forEach(card => {
+            const type = card.dataset.type;
+            const id = parseInt(card.dataset.id);
+            const existing = cart.find(i => (type === 'phone' ? i.phone_device_id === id : i.product_id === id));
+            
+            let badgeEl = card.querySelector('.cart-in-badge');
+            const addBtn = card.querySelector('.item-add-btn');
+
+            if (existing) {
+                card.style.borderColor = '#4f46e5';
+                if (!badgeEl) {
+                    badgeEl = document.createElement('div');
+                    badgeEl.className = 'cart-in-badge';
+                    badgeEl.style.cssText = 'position: absolute; top: 8px; right: 8px; background: #4f46e5; color: white; border-radius: 9999px; padding: 2px 7px; font-size: 0.68rem; font-weight: 800; z-index: 2; box-shadow: 0 2px 6px rgba(79, 70, 229, 0.4); pointer-events: none;';
+                    card.appendChild(badgeEl);
+                }
+                badgeEl.textContent = type === 'phone' ? '✓ In Cart' : `In Cart (${existing.quantity})`;
+
+                if (addBtn) {
+                    if (type === 'phone') {
+                        addBtn.innerHTML = '✓ In Cart';
+                        addBtn.style.background = '#dcfce7';
+                        addBtn.style.color = '#15803d';
+                        addBtn.style.borderColor = '#86efac';
+                    } else {
+                        addBtn.innerHTML = '+ Add (' + existing.quantity + ')';
+                        addBtn.style.background = '#e0e7ff';
+                        addBtn.style.color = '#4338ca';
+                        addBtn.style.borderColor = '#c7d2fe';
+                    }
+                }
+            } else {
+                card.style.borderColor = '';
+                if (badgeEl) badgeEl.remove();
+
+                if (addBtn) {
+                    addBtn.innerHTML = '+ Add';
+                    addBtn.style.background = '#f1f5f9';
+                    addBtn.style.color = '#475569';
+                    addBtn.style.borderColor = '#e2e8f0';
+                }
+            }
+        });
     }
 
     function recalc() {
@@ -839,14 +1081,15 @@
 
         const notice = document.getElementById('paymentStatusNotice');
         if (Math.abs(diff) < 0.01) {
-            notice.innerText = '✓ Exact payment tendered (LKR ' + tendered.toFixed(2) + ')';
-            notice.style.color = '#166534';
+            notice.innerHTML = '<span style="color: #166534; font-size: 0.85rem; font-weight: 700;">✓ Exact payment tendered: LKR ' + tendered.toLocaleString('en-US', {minimumFractionDigits: 2}) + '</span>';
         } else if (diff < 0) {
-            notice.innerText = 'Change due to customer: LKR ' + Math.abs(diff).toFixed(2);
-            notice.style.color = '#0284c7';
+            const change = Math.abs(diff);
+            notice.innerHTML = '<div style="background: #ecfdf5; border: 1.5px solid #a7f3d0; border-radius: 8px; padding: 0.6rem 0.85rem; margin-top: 0.4rem; text-align: center;">' +
+                '<span style="color: #065f46; font-size: 0.72rem; text-transform: uppercase; font-weight: 800; display: block; letter-spacing: 0.05em; margin-bottom: 0.2rem;">💵 Return Change To Customer</span>' +
+                '<span style="color: #047857; font-size: 1.35rem; font-weight: 900; letter-spacing: -0.02em;">LKR ' + change.toLocaleString('en-US', {minimumFractionDigits: 2}) + '</span>' +
+                '</div>';
         } else {
-            notice.innerText = 'Remaining to settle: LKR ' + diff.toFixed(2);
-            notice.style.color = '#b45309';
+            notice.innerHTML = '<span style="color: #b45309; font-weight: 700;">Remaining to settle: LKR ' + diff.toLocaleString('en-US', {minimumFractionDigits: 2}) + '</span>';
         }
     }
 
@@ -863,9 +1106,13 @@
         const cash = parseFloat(document.getElementById('payCash').value || 0);
         const card = parseFloat(document.getElementById('payCard').value || 0);
         const bank = parseFloat(document.getElementById('payBank').value || 0);
+        const tendered = cash + card + bank;
+        const changeDue = tendered > total ? (tendered - total) : 0;
 
         const payments = [];
-        if (cash > 0) payments.push({ payment_method: 'cash', amount: cash });
+        // If cash was tendered in excess, the recorded payment is capped at net amount
+        const netCash = (cash > 0 && changeDue > 0) ? Math.max(0, cash - changeDue) : cash;
+        if (netCash > 0) payments.push({ payment_method: 'cash', amount: netCash });
         if (card > 0) payments.push({ payment_method: 'card', amount: card });
         if (bank > 0) payments.push({ payment_method: 'bank_transfer', amount: bank });
 
@@ -906,8 +1153,8 @@
                 throw new Error(data.message || 'Error processing transaction.');
             }
 
-            // Show Receipt Modal
-            showReceipt(data.sale);
+            // Show Receipt Modal with change details
+            showReceipt(data.sale, cash, changeDue);
             clearCart();
         } catch (err) {
             alert(err.message);
@@ -917,7 +1164,7 @@
         }
     }
 
-    function showReceipt(sale) {
+    function showReceipt(sale, cashTendered = 0, changeAmount = 0) {
         const rc = document.getElementById('receiptContent');
         const items = sale.items || [];
         const payments = sale.payments || [];
@@ -969,6 +1216,12 @@
                 </div>
                 <div style="background: #f8fafc; border-radius: 6px; padding: 0.5rem 0.75rem; margin-bottom: 0.75rem;">
                     ${paymentsHtml}
+                    ${changeAmount > 0 ? `
+                        <div style="display:flex; justify-content:space-between; font-size: 0.8125rem; font-weight: 800; color: #047857; border-top: 1px dashed #cbd5e1; padding-top: 0.35rem; margin-top: 0.35rem;">
+                            <span>Change Returned:</span>
+                            <span>LKR ${parseFloat(changeAmount).toFixed(2)}</span>
+                        </div>
+                    ` : ''}
                 </div>
                 <div style="font-size: 0.72rem; color: #64748b; text-align: center; margin-top: 0.75rem;">
                     Thank you for your purchase!<br>

@@ -347,7 +347,10 @@
                     </div>
 
                     <div id="editProductImageRemovedNotice" style="display: none; background: #fee2e2; border: 1px solid #fca5a5; border-radius: 6px; padding: 0.45rem 0.75rem; margin-bottom: 0.75rem; font-size: 0.78rem; color: #991b1b; align-items: center; justify-content: space-between;">
-                        <span>⚠️ Image will be removed upon saving.</span>
+                        <span style="display: inline-flex; align-items: center; gap: 0.35rem;">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                            Image will be removed upon saving.
+                        </span>
                         <button type="button" onclick="undoDeleteProductImage()" style="background: none; border: none; color: #4338ca; text-decoration: underline; font-size: 0.75rem; font-weight: 700; cursor: pointer;">Undo</button>
                     </div>
 
@@ -537,8 +540,9 @@
                 </span>
                 <form method="POST" action="{{ route('shop.catalog.seed-defaults') }}">
                     @csrf
-                    <button type="submit" class="btn btn-secondary btn-sm" style="font-size: 0.75rem;">
-                        ✨ Load Standard Phone Catalog
+                    <button type="submit" class="btn btn-secondary btn-sm" style="font-size: 0.75rem; display: inline-flex; align-items: center; gap: 0.35rem;">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#4f46e5" stroke-width="2"><path d="M12 2l2.4 7.2L22 12l-7.6 2.8L12 22l-2.4-7.2L2 12l7.6-2.8z"></path></svg>
+                        Load Standard Phone Catalog
                     </button>
                 </form>
             </div>
@@ -730,7 +734,7 @@
         if (count > 0) {
             const itemType = type === 'category' ? 'category' : 'brand';
             const unassignDesc = type === 'category' ? 'marked as Uncategorized' : 'left without a brand';
-            confirmText = `⚠️ Warning: "${name}" currently has ${count} product(s) assigned.\n\nDeleting this ${itemType} will keep the products in your inventory, but they will be ${unassignDesc}.\n\nAre you sure you want to proceed with deletion?`;
+            confirmText = `Warning: "${name}" currently has ${count} product(s) assigned.\n\nDeleting this ${itemType} will keep the products in your inventory, but they will be ${unassignDesc}.\n\nAre you sure you want to proceed with deletion?`;
         }
 
         if (!confirm(confirmText)) {

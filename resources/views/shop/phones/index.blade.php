@@ -26,6 +26,11 @@
                 <a href="{{ route('shop.phones') }}" class="btn btn-sm btn-secondary" style="color: #64748b;">Clear</a>
             @endif
         </form>
+
+        <button type="button" class="btn btn-primary" onclick="openModal('addPhoneModal')" style="display: inline-flex; align-items: center; gap: 0.4rem; font-weight: 700;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            Register Phone
+        </button>
     </div>
 
     <div class="table-responsive">
@@ -46,15 +51,39 @@
                 @forelse($phones as $phone)
                 <tr>
                     <td>
-                        <strong style="color: var(--text-heading); font-size: 0.9375rem;">{{ $phone->brand }} {{ $phone->model }}</strong>
-                        @if($phone->serial_number)
-                            <div style="font-size: 0.75rem; color: var(--text-muted);">S/N: {{ $phone->serial_number }}</div>
-                        @endif
-                        @if($phone->supplier)
-                            <div style="font-size: 0.75rem; color: #4f46e5; margin-top: 2px;">
-                                Supplier: {{ $phone->supplier->name }}
+                        <div style="display: flex; align-items: center; gap: 0.75rem;">
+                            @if($phone->image_url)
+                                <div style="position: relative; display: inline-block; flex-shrink: 0;">
+                                    <img src="{{ $phone->image_url }}" 
+                                         alt="{{ $phone->brand }} {{ $phone->model }}"
+                                         data-title="{{ $phone->brand }} {{ $phone->model }} (IMEI: {{ $phone->imei_1 }})"
+                                         data-delete-url="{{ route('shop.phones.delete-image', $phone) }}"
+                                         style="width: 50px; height: 50px; min-width: 50px; object-fit: cover; border-radius: 8px; border: 1.5px solid var(--surface-border); box-shadow: 0 1px 3px rgba(0,0,0,0.06); cursor: pointer;"
+                                         onclick="handlePhoneLightboxClick(this)"
+                                         title="Click to view full photo">
+                                    <form method="POST" action="{{ route('shop.phones.delete-image', $phone) }}" data-confirm="Delete photo for {{ $phone->brand }} {{ $phone->model }}?" onsubmit="return confirm(this.getAttribute('data-confirm'));" style="margin: 0; position: absolute; top: -5px; right: -5px;">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" title="Delete image" style="width: 18px; height: 18px; border-radius: 50%; background: #dc2626; color: #ffffff; border: 2px solid #ffffff; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 11px; line-height: 1; padding: 0; box-shadow: 0 1px 3px rgba(0,0,0,0.2);">&times;</button>
+                                    </form>
+                                </div>
+                            @else
+                                <div style="width: 50px; height: 50px; min-width: 50px; border-radius: 8px; background: #f8fafc; border: 1.5px solid var(--surface-border); display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: #94a3b8;" title="No image uploaded">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="5" y="2" width="14" height="20" rx="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
+                                </div>
+                            @endif
+                            <div style="min-width: 0;">
+                                <strong style="color: var(--text-heading); font-size: 0.9375rem; display: block;">{{ $phone->brand }} {{ $phone->model }}</strong>
+                                @if($phone->serial_number)
+                                    <div style="font-size: 0.75rem; color: var(--text-muted);">S/N: {{ $phone->serial_number }}</div>
+                                @endif
+                                @if($phone->supplier)
+                                    <div style="font-size: 0.75rem; color: #4f46e5; margin-top: 2px;">
+                                        Supplier: {{ $phone->supplier->name }}
+                                    </div>
+                                @endif
                             </div>
-                        @endif
+                        </div>
                     </td>
                     <td>
                         <div style="font-family: monospace; font-size: 0.8125rem; font-weight: 600; color: #0284c7;">
@@ -140,8 +169,16 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="8" style="text-align: center; color: var(--text-muted); padding: 3rem;">
-                        No phone devices match your search criteria.
+                    <td colspan="8" style="text-align: center; color: var(--text-muted); padding: 3.5rem 1rem;">
+                        <div style="width: 48px; height: 48px; border-radius: 50%; background: #f1f5f9; color: #94a3b8; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 0.75rem;">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
+                        </div>
+                        <div style="font-weight: 700; color: #334155; font-size: 0.95rem;">No serialized phone devices found</div>
+                        <div style="font-size: 0.8125rem; color: #94a3b8; margin: 0.25rem 0 1rem;">Register new or used phones with IMEI 1 &amp; IMEI 2 to start selling in POS.</div>
+                        <button type="button" class="btn btn-primary btn-sm" onclick="openModal('addPhoneModal')" style="display: inline-flex; align-items: center; gap: 0.35rem; font-weight: 600;">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                            Register First Phone
+                        </button>
                     </td>
                 </tr>
                 @endforelse
@@ -163,7 +200,7 @@
             <h3>Register Serialized Phone (Dual IMEI)</h3>
             <button type="button" class="modal-close" onclick="closeModal('addPhoneModal')">&times;</button>
         </div>
-        <form method="POST" action="{{ route('shop.phones.store') }}">
+        <form method="POST" action="{{ route('shop.phones.store') }}" enctype="multipart/form-data">
             @csrf
             <div class="modal-body">
                 <div class="form-row">
@@ -246,6 +283,25 @@
                     </div>
                 </div>
 
+                <!-- Device Image Upload -->
+                <div class="form-group" style="background: #f8fafc; border: 1.5px dashed #cbd5e1; border-radius: 8px; padding: 0.85rem; margin-top: 0.5rem;">
+                    <label style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
+                        <span style="font-weight: 700; color: #1e293b;">Device Photo / Image (Optional)</span>
+                        <span style="font-size: 0.75rem; color: #64748b;">JPG, PNG, WEBP up to 5MB</span>
+                    </label>
+                    <div style="display: flex; gap: 0.85rem; align-items: center;">
+                        <div id="newPhoneImagePreviewContainer" style="width: 60px; height: 60px; border-radius: 8px; border: 1px dashed #94a3b8; background: #ffffff; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; flex-shrink: 0;">
+                            <svg id="newPhoneImagePlaceholderIcon" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="1.8"><rect x="5" y="2" width="14" height="20" rx="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
+                            <img id="newPhoneImagePreview" src="" alt="Preview" style="display: none; width: 100%; height: 100%; object-fit: cover;">
+                            <button type="button" id="btnClearNewPhoneImage" onclick="clearNewPhoneImage()" style="display: none; position: absolute; top: 2px; right: 2px; background: rgba(15,23,42,0.75); color: white; border: none; border-radius: 50%; width: 16px; height: 16px; font-size: 11px; line-height: 1; cursor: pointer; align-items: center; justify-content: center;">&times;</button>
+                        </div>
+                        <div style="flex: 1;">
+                            <input type="file" name="image" id="phone_image_input" class="form-control" accept="image/png,image/jpeg,image/webp,image/gif" onchange="previewNewPhoneImage(this)" style="font-size: 0.8125rem;">
+                            <span style="font-size: 0.72rem; color: #64748b; display: block; margin-top: 0.2rem;">Photo will appear in Inventory lists and on POS Terminal.</span>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="form-group">
                     <label>Inspection Notes</label>
                     <textarea name="notes" class="form-control" rows="2" placeholder="Battery health %, cosmetic rating, included accessories..."></textarea>
@@ -266,9 +322,10 @@
             <h3>Edit Serialized Phone Device</h3>
             <button type="button" class="modal-close" onclick="closeModal('editPhoneModal')">&times;</button>
         </div>
-        <form method="POST" id="editPhoneForm" action="">
+        <form method="POST" id="editPhoneForm" action="" enctype="multipart/form-data">
             @csrf
             @method('PUT')
+            <input type="hidden" name="remove_image" id="editPhoneRemoveImage" value="0">
             <div class="modal-body">
                 <div class="form-row">
                     <div class="form-group">
@@ -357,6 +414,48 @@
                     </select>
                 </div>
 
+                <!-- Device Image Upload (Edit) -->
+                <div class="form-group" style="background: #f8fafc; border: 1.5px dashed #cbd5e1; border-radius: 8px; padding: 0.85rem; margin-top: 0.5rem;">
+                    <label style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
+                        <span style="font-weight: 700; color: #1e293b;">Device Photo / Image</span>
+                        <span style="font-size: 0.75rem; color: #64748b;">JPG, PNG, WEBP up to 5MB</span>
+                    </label>
+
+                    <!-- Existing Image Section -->
+                    <div id="editPhoneExistingImageWrap" style="display: none; align-items: center; justify-content: space-between; background: #ffffff; border: 1px solid var(--surface-border); border-radius: 6px; padding: 0.5rem 0.75rem; margin-bottom: 0.75rem;">
+                        <div style="display: flex; align-items: center; gap: 0.75rem;">
+                            <img id="editPhoneExistingImg" src="" alt="Current image" style="width: 55px; height: 55px; object-fit: cover; border-radius: 8px; border: 1px solid #e2e8f0; cursor: pointer;" onclick="openPhoneImageLightbox(this.src, document.getElementById('edit_phone_brand').value + ' ' + document.getElementById('edit_phone_model').value)">
+                            <div>
+                                <span style="font-size: 0.8125rem; font-weight: 600; color: #1e293b; display: block;">Current Active Photo</span>
+                                <span style="font-size: 0.72rem; color: #10b981; font-weight: 600;">Saved on storage</span>
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-sm" onclick="markDeletePhoneImage()" style="background: #fef2f2; border: 1px solid #fecaca; color: #dc2626; font-size: 0.75rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 0.3rem; padding: 0.3rem 0.65rem; border-radius: 6px;">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                            Delete Photo
+                        </button>
+                    </div>
+
+                    <div id="editPhoneImageRemovedNotice" style="display: none; background: #fee2e2; border: 1px solid #fca5a5; border-radius: 6px; padding: 0.45rem 0.75rem; margin-bottom: 0.75rem; font-size: 0.78rem; color: #991b1b; align-items: center; justify-content: space-between;">
+                        <span style="display: inline-flex; align-items: center; gap: 0.35rem;">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                            Photo will be removed upon saving.
+                        </span>
+                        <button type="button" onclick="undoDeletePhoneImage()" style="background: none; border: none; color: #4338ca; text-decoration: underline; font-size: 0.75rem; font-weight: 700; cursor: pointer;">Undo</button>
+                    </div>
+
+                    <!-- Replace / Upload New Image -->
+                    <div style="display: flex; gap: 0.75rem; align-items: center;">
+                        <div id="editPhoneNewImagePreviewWrap" style="width: 55px; height: 55px; border-radius: 8px; border: 1px dashed #94a3b8; background: #ffffff; display: none; align-items: center; justify-content: center; overflow: hidden; position: relative; flex-shrink: 0;">
+                            <img id="editPhoneNewImagePreview" src="" alt="New Preview" style="width: 100%; height: 100%; object-fit: cover;">
+                        </div>
+                        <div style="flex: 1;">
+                            <input type="file" name="image" id="edit_phone_image_input" class="form-control" accept="image/png,image/jpeg,image/webp,image/gif" onchange="previewEditPhoneImage(this)" style="font-size: 0.8125rem;">
+                            <span style="font-size: 0.72rem; color: #64748b; display: block; margin-top: 0.2rem;">Select a file to upload or replace the current photo.</span>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="form-group">
                     <label>Inspection Notes</label>
                     <textarea name="notes" id="edit_phone_notes" class="form-control" rows="2" placeholder="Battery health %, cosmetic rating, included accessories..."></textarea>
@@ -367,6 +466,30 @@
                 <button type="submit" class="btn btn-primary">Update Device</button>
             </div>
         </form>
+    </div>
+</div>
+
+<!-- Modal: Image Lightbox Preview -->
+<div class="modal-backdrop" id="phoneImageLightboxModal" style="z-index: 1070;" onclick="closeModal('phoneImageLightboxModal')">
+    <div class="modal-box" style="max-width: 500px; padding: 0.5rem; background: #0f172a; border: 1px solid #334155;" onclick="event.stopPropagation()">
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0.75rem; color: #ffffff;">
+            <strong id="phoneLightboxTitle" style="font-size: 0.9375rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Device Photo</strong>
+            <button type="button" class="modal-close" style="color: #ffffff; font-size: 1.5rem;" onclick="closeModal('phoneImageLightboxModal')">&times;</button>
+        </div>
+        <div style="text-align: center; padding: 0.5rem;">
+            <img id="phoneLightboxImg" src="" alt="Full preview" style="max-width: 100%; max-height: 65vh; object-fit: contain; border-radius: 8px;">
+        </div>
+        <div style="padding: 0.75rem 0.75rem 0.5rem; border-top: 1px solid #334155; display: flex; justify-content: space-between; align-items: center;">
+            <button type="button" class="btn btn-sm btn-secondary" onclick="closeModal('phoneImageLightboxModal')" style="font-size: 0.78rem; background: #334155; border-color: #475569; color: #f8fafc;">Close</button>
+            <form id="phoneLightboxDeleteForm" method="POST" action="" onsubmit="return confirm('Are you sure you want to permanently delete this device photo?');" style="margin: 0; display: none;">
+                @csrf
+                @method('DELETE')
+                <button type="submit" class="btn btn-sm btn-danger" style="font-size: 0.78rem; display: inline-flex; align-items: center; gap: 0.35rem; background: #dc2626; border-color: #dc2626;">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                    Delete Photo
+                </button>
+            </form>
+        </div>
     </div>
 </div>
 
@@ -391,7 +514,100 @@
         document.getElementById('edit_phone_supplier_id').value = phone.supplier_id || '';
         document.getElementById('edit_phone_notes').value = phone.notes || '';
 
+        // Reset and populate image handling
+        document.getElementById('editPhoneRemoveImage').value = '0';
+        document.getElementById('editPhoneImageRemovedNotice').style.display = 'none';
+        document.getElementById('edit_phone_image_input').value = '';
+        document.getElementById('editPhoneNewImagePreviewWrap').style.display = 'none';
+
+        const existingImg = document.getElementById('editPhoneExistingImg');
+        const existingWrap = document.getElementById('editPhoneExistingImageWrap');
+        if (phone.image_url) {
+            existingImg.src = phone.image_url;
+            existingWrap.style.display = 'flex';
+        } else {
+            existingImg.src = '';
+            existingWrap.style.display = 'none';
+        }
+
         openModal('editPhoneModal');
+    }
+
+    // Preview new image in Create Modal
+    function previewNewPhoneImage(input) {
+        const preview = document.getElementById('newPhoneImagePreview');
+        const placeholder = document.getElementById('newPhoneImagePlaceholderIcon');
+        const clearBtn = document.getElementById('btnClearNewPhoneImage');
+
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                preview.src = e.target.result;
+                preview.style.display = 'block';
+                placeholder.style.display = 'none';
+                clearBtn.style.display = 'flex';
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    function clearNewPhoneImage() {
+        const input = document.getElementById('phone_image_input');
+        input.value = '';
+        document.getElementById('newPhoneImagePreview').src = '';
+        document.getElementById('newPhoneImagePreview').style.display = 'none';
+        document.getElementById('newPhoneImagePlaceholderIcon').style.display = 'block';
+        document.getElementById('btnClearNewPhoneImage').style.display = 'none';
+    }
+
+    // Preview replacement image in Edit Modal
+    function previewEditPhoneImage(input) {
+        const previewWrap = document.getElementById('editPhoneNewImagePreviewWrap');
+        const preview = document.getElementById('editPhoneNewImagePreview');
+
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                preview.src = e.target.result;
+                previewWrap.style.display = 'flex';
+            };
+            reader.readAsDataURL(input.files[0]);
+        } else {
+            previewWrap.style.display = 'none';
+        }
+    }
+
+    function markDeletePhoneImage() {
+        document.getElementById('editPhoneRemoveImage').value = '1';
+        document.getElementById('editPhoneExistingImageWrap').style.display = 'none';
+        document.getElementById('editPhoneImageRemovedNotice').style.display = 'flex';
+    }
+
+    function undoDeletePhoneImage() {
+        document.getElementById('editPhoneRemoveImage').value = '0';
+        document.getElementById('editPhoneExistingImageWrap').style.display = 'flex';
+        document.getElementById('editPhoneImageRemovedNotice').style.display = 'none';
+    }
+
+    function handlePhoneLightboxClick(el) {
+        openPhoneImageLightbox(el.src, el.getAttribute('data-title'), el.getAttribute('data-delete-url'));
+    }
+
+    function openPhoneImageLightbox(imageUrl, title, deleteUrl = '') {
+        document.getElementById('phoneLightboxImg').src = imageUrl;
+        document.getElementById('phoneLightboxTitle').textContent = title || 'Device Photo';
+
+        const deleteForm = document.getElementById('phoneLightboxDeleteForm');
+        if (deleteForm) {
+            if (deleteUrl) {
+                deleteForm.action = deleteUrl;
+                deleteForm.style.display = 'inline-block';
+            } else {
+                deleteForm.style.display = 'none';
+            }
+        }
+
+        openModal('phoneImageLightboxModal');
     }
 </script>
 @endpush

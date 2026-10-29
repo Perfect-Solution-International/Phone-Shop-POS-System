@@ -10,6 +10,7 @@ use App\Models\PhoneTradeIn;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
 class TradeInViewController extends Controller
@@ -68,8 +69,8 @@ class TradeInViewController extends Controller
             'customer_name' => ['required', 'string', 'max:255'],
             'customer_phone' => ['required', 'string', 'max:50'],
             'customer_nic' => ['nullable', 'string', 'max:50'],
-            'customer_id' => ['nullable', 'exists:customers,id'],
-            'outlet_id' => ['nullable', 'exists:outlets,id'],
+            'customer_id' => ['nullable', Rule::exists('customers', 'id')->where('shop_id', $shopId)],
+            'outlet_id' => ['nullable', Rule::exists('outlets', 'id')->where('shop_id', $shopId)],
             'brand' => ['required', 'string', 'max:100'],
             'model' => ['required', 'string', 'max:100'],
             'storage' => ['nullable', 'string', 'max:50'],

@@ -105,7 +105,7 @@ class StaffViewController extends Controller
             'position' => ['required', 'string', 'max:100'],
             'department' => ['nullable', 'string', 'max:100'],
             'basic_salary' => ['nullable', 'numeric', 'min:0'],
-            'outlet_id' => ['nullable', 'exists:outlets,id'],
+            'outlet_id' => ['nullable', Rule::exists('outlets', 'id')->where('shop_id', $shopId)],
             'joined_on' => ['required', 'date'],
             'create_user_account' => ['nullable', 'boolean'],
             'user_role' => ['nullable', 'string', 'in:Shop Manager,Cashier,Technician'],
@@ -166,7 +166,7 @@ class StaffViewController extends Controller
             'position' => ['required', 'string', 'max:100'],
             'department' => ['nullable', 'string', 'max:100'],
             'basic_salary' => ['nullable', 'numeric', 'min:0'],
-            'outlet_id' => ['nullable', 'exists:outlets,id'],
+            'outlet_id' => ['nullable', Rule::exists('outlets', 'id')->where('shop_id', $shopId)],
             'joined_on' => ['required', 'date'],
             'is_active' => ['nullable', 'boolean'],
         ]);

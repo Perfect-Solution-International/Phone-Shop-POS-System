@@ -8,6 +8,7 @@ use App\Models\WarrantyClaim;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 
 class WarrantyController extends Controller
 {
@@ -45,11 +46,12 @@ class WarrantyController extends Controller
 
     public function store(Request $request): JsonResponse
     {
+        $shopId = (int) auth()->user()?->shop_id;
         $validated = $request->validate([
-            'customer_id' => 'nullable|exists:customers,id',
-            'product_id' => 'nullable|exists:products,id',
-            'phone_device_id' => 'nullable|exists:phone_devices,id',
-            'repair_job_id' => 'nullable|exists:repair_jobs,id',
+            'customer_id' => ['nullable', Rule::exists('customers', 'id')->where('shop_id', $shopId)],
+            'product_id' => ['nullable', Rule::exists('products', 'id')->where('shop_id', $shopId)],
+            'phone_device_id' => ['nullable', Rule::exists('phone_devices', 'id')->where('shop_id', $shopId)],
+            'repair_job_id' => ['nullable', Rule::exists('repair_jobs', 'id')->where('shop_id', $shopId)],
             'warranty_type' => 'required|string|in:manufacturer,shop,supplier,repair',
             'imei' => 'nullable|string|max:50',
             'duration_months' => 'required|integer|min:1|max:60',

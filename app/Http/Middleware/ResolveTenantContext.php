@@ -51,6 +51,23 @@ class ResolveTenantContext
             // 3. Ensure the tenant workspace exists in the database
             $tenant = Shop::find($tenantId);
             abort_unless($tenant, 403, 'Assigned tenant workspace does not exist or is inaccessible.');
+
+            // 4. Enforce tenant suspension: blocked shops cannot perform daily operations
+            $sub = $tenant->subscription;
+            if ($sub && $sub->isSuspended()) {
+                if ($request->wantsJson() || $request->is('api/*')) {
+                    abort(403, 'Your shop workspace has been suspended by platform administration.');
+                }
+
+                if ($user->hasRole('Customer')) {
+                    abort(403, 'This store is temporarily unavailable due to administrative suspension.');
+                }
+
+                if (! $request->routeIs('shop.subscription.*') && ! $request->is('shop/subscription*')) {
+                    return redirect()->route('shop.subscription.index')
+                        ->with('error', 'Your shop workspace has been suspended. Please renew your subscription plan or contact platform administration to reactivate your workspace.');
+                }
+            }
         }
 
         // 4. Bind tenant instance globally to container and request context

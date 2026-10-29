@@ -50,7 +50,8 @@
                     Pay Online by Card (Instant)
                 </button>
                 <button type="button" class="btn" onclick="openModal('bankTransferModal')" style="background: rgba(255,255,255,0.15); color: white; font-weight: 600; padding: 0.75rem 1.25rem; border-radius: 8px; border: 1px solid rgba(255,255,255,0.3); cursor: pointer; display: inline-flex; align-items: center; gap: 0.5rem;">
-                    🏦 Upload Bank Slip
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="21" x2="21" y2="21"></line><line x1="3" y1="10" x2="21" y2="10"></line><polyline points="5 6 12 3 19 6"></polyline><line x1="4" y1="10" x2="4" y2="21"></line><line x1="20" y1="10" x2="20" y2="21"></line><line x1="8" y1="14" x2="8" y2="17"></line><line x1="12" y1="14" x2="12" y2="17"></line><line x1="16" y1="14" x2="16" y2="17"></line></svg>
+                    Upload Bank Slip
                 </button>
             </div>
         </div>
@@ -131,8 +132,9 @@
                             @csrf
                             <input type="hidden" name="plan_id" value="{{ $plan->id }}">
                             <input type="hidden" name="billing_cycle" value="monthly">
-                            <button type="submit" class="btn btn-info" style="width: 100%; justify-content: center; font-size: 0.78rem; padding: 0.45rem; background: #6366f1; border-color: #6366f1; color: white;">
-                                ⚡ Payment Gateway (Sandbox)
+                            <button type="submit" class="btn btn-info" style="width: 100%; justify-content: center; font-size: 0.78rem; padding: 0.45rem; background: #6366f1; border-color: #6366f1; color: white; display: inline-flex; align-items: center; gap: 0.35rem;">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                                Payment Gateway (Sandbox)
                             </button>
                         </form>
                     </div>
@@ -145,7 +147,8 @@
     <div class="card" style="padding: 1.5rem; border-radius: 12px;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
             <h4 style="font-size: 1rem; font-weight: 800; color: #0f172a; margin: 0; display: flex; align-items: center; gap: 0.5rem;">
-                <span>🧾</span> Subscription Payment Invoices
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4f46e5" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                Subscription Payment Invoices
             </h4>
             <span class="badge badge-secondary">{{ $payments->total() }} payments</span>
         </div>
@@ -282,8 +285,9 @@
                     </div>
                 </div>
 
-                <div style="font-size: 0.72rem; color: #166534; background: #f0fdf4; padding: 0.6rem; border-radius: 6px; border: 1px solid #bbf7d0; margin-top: 0.5rem;">
-                    🔒 256-bit encrypted simulated card checkout. Your plan will activate immediately upon confirmation.
+                <div style="font-size: 0.72rem; color: #166534; background: #f0fdf4; padding: 0.6rem; border-radius: 6px; border: 1px solid #bbf7d0; margin-top: 0.5rem; display: flex; align-items: center; gap: 0.35rem;">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink: 0;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                    <span>256-bit encrypted simulated card checkout. Your plan will activate immediately upon confirmation.</span>
                 </div>
             </div>
 
@@ -302,7 +306,8 @@
     <div class="modal-box" style="max-width: 500px;">
         <div class="modal-header">
             <h3 style="font-size: 1.1rem; font-weight: 800; color: #0f172a; margin: 0; display: flex; align-items: center; gap: 0.5rem;">
-                <span>🏦</span> Bank Transfer Payment
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4f46e5" stroke-width="2"><line x1="3" y1="21" x2="21" y2="21"></line><line x1="3" y1="10" x2="21" y2="10"></line><polyline points="5 6 12 3 19 6"></polyline><line x1="4" y1="10" x2="4" y2="21"></line><line x1="20" y1="10" x2="20" y2="21"></line><line x1="8" y1="14" x2="8" y2="17"></line><line x1="12" y1="14" x2="12" y2="17"></line><line x1="16" y1="14" x2="16" y2="17"></line></svg>
+                Bank Transfer Payment
             </h3>
             <button type="button" class="modal-close" onclick="closeModal('bankTransferModal')">&times;</button>
         </div>

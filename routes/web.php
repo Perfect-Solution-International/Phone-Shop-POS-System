@@ -9,8 +9,8 @@ use Illuminate\Support\Facades\Route;
 // Public entry & health check
 Route::get('/', [AuthController::class, 'entry'])->name('home');
 Route::get('/up', fn () => response()->json(['status' => 'ok']))->name('health');
-Route::get('/track-repair', [\App\Http\Controllers\PublicRepairTrackingController::class, 'show'])->name('public.repair-track');
-Route::post('/track-repair/approve', [\App\Http\Controllers\PublicRepairTrackingController::class, 'approveEstimate'])->name('public.repair-track.approve');
+Route::get('/track-repair', [\App\Http\Controllers\PublicRepairTrackingController::class, 'show'])->middleware('throttle:30,1')->name('public.repair-track');
+Route::post('/track-repair/approve', [\App\Http\Controllers\PublicRepairTrackingController::class, 'approveEstimate'])->middleware('throttle:15,1')->name('public.repair-track.approve');
 
 // Authentication (Login / Logout)
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
@@ -61,6 +61,7 @@ Route::prefix('shop')->name('shop.')->middleware(['auth', 'verified', 'shop'])->
     Route::post('/phones', [\App\Http\Controllers\Shop\PhoneViewController::class, 'store'])->name('phones.store');
     Route::put('/phones/{phone}', [\App\Http\Controllers\Shop\PhoneViewController::class, 'update'])->name('phones.update');
     Route::delete('/phones/{phone}', [\App\Http\Controllers\Shop\PhoneViewController::class, 'destroy'])->name('phones.destroy');
+    Route::delete('/phones/{phone}/image', [\App\Http\Controllers\Shop\PhoneViewController::class, 'deleteImage'])->name('phones.delete-image');
 
     // Phone Repairs & 8-Stage Pipeline (Section 12)
     Route::get('/repairs', [\App\Http\Controllers\Shop\RepairViewController::class, 'index'])->name('repairs');
@@ -109,6 +110,9 @@ Route::prefix('shop')->name('shop.')->middleware(['auth', 'verified', 'shop'])->
     // Customer Directory (Section 15)
     Route::get('/customers', [\App\Http\Controllers\Shop\CustomerViewController::class, 'index'])->name('customers');
     Route::post('/customers', [\App\Http\Controllers\Shop\CustomerViewController::class, 'store'])->name('customers.store');
+    Route::put('/customers/{customer}', [\App\Http\Controllers\Shop\CustomerViewController::class, 'update'])->name('customers.update');
+    Route::delete('/customers/{customer}', [\App\Http\Controllers\Shop\CustomerViewController::class, 'destroy'])->name('customers.destroy');
+    Route::post('/customers/{customer}/settle-debt', [\App\Http\Controllers\Shop\CustomerViewController::class, 'settleDebt'])->name('customers.settle-debt');
 
     // Purchasing & Suppliers (Section 10)
     Route::get('/suppliers', [\App\Http\Controllers\Shop\SupplierViewController::class, 'index'])->name('suppliers');
@@ -199,6 +203,9 @@ Route::prefix('super-admin')->name('superadmin.')->middleware(['auth', 'superadm
     // Shops
     Route::get('/shops', [\App\Http\Controllers\SuperAdmin\ShopController::class, 'index'])->name('shops.index');
     Route::get('/shops/{shop}', [\App\Http\Controllers\SuperAdmin\ShopController::class, 'show'])->name('shops.show');
+    Route::get('/shops/{shop}/edit', [\App\Http\Controllers\SuperAdmin\ShopController::class, 'edit'])->name('shops.edit');
+    Route::put('/shops/{shop}', [\App\Http\Controllers\SuperAdmin\ShopController::class, 'update'])->name('shops.update');
+    Route::delete('/shops/{shop}', [\App\Http\Controllers\SuperAdmin\ShopController::class, 'destroy'])->name('shops.destroy');
     Route::post('/shops/{shop}/toggle-suspension', [\App\Http\Controllers\SuperAdmin\ShopController::class, 'toggleSuspension'])->name('shops.toggle-suspension');
     Route::post('/shops/{shop}/switch', function (\App\Models\Platform\Shop $shop) {
         session(['superadmin_active_shop_id' => $shop->id]);

@@ -13,6 +13,7 @@ class Grn extends Model
     use BelongsToTenant, HasFactory;
 
     protected $fillable = [
+        'shop_id',
         'supplier_id',
         'purchase_id',
         'received_by_id',

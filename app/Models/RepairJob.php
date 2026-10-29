@@ -19,6 +19,7 @@ class RepairJob extends Model
         'brand',
         'model',
         'imei',
+        'customer_nic',
         'fault_description',
         'condition_notes',
         'accessories_received',

@@ -97,7 +97,10 @@
                     </td>
                     <td>
                         @if($trf->status === 'in_transit')
-                            <span class="badge badge-warning">🚚 In Transit</span>
+                            <span class="badge badge-warning" style="display: inline-flex; align-items: center; gap: 0.25rem;">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>
+                                In Transit
+                            </span>
                         @elseif($trf->status === 'received')
                             <span class="badge badge-success">✓ Received</span>
                         @else
@@ -121,8 +124,9 @@
                                 </button>
                             </form>
                         @endif
-                        <button type="button" class="btn btn-secondary btn-sm" onclick='viewTransferChallan(@json($trf))' style="padding: 0.25rem 0.6rem; font-size: 0.75rem;">
-                            🖨️ Challan
+                        <button type="button" class="btn btn-secondary btn-sm" onclick='viewTransferChallan(@json($trf))' style="padding: 0.25rem 0.6rem; font-size: 0.75rem; display: inline-flex; align-items: center; gap: 0.25rem;">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+                            Challan
                         </button>
                     </td>
                 </tr>
@@ -235,7 +239,10 @@
         </div>
         <div style="padding: 1rem 1.5rem; border-top: 1px solid var(--surface-border); display: flex; justify-content: flex-end; gap: 0.5rem;">
             <button type="button" class="btn btn-secondary" onclick="closeModal('challanModal')">Close</button>
-            <button type="button" class="btn btn-primary" onclick="window.print()">🖨️ Print Challan</button>
+            <button type="button" class="btn btn-primary" onclick="window.print()" style="display: inline-flex; align-items: center; gap: 0.35rem;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+                Print Challan
+            </button>
         </div>
     </div>
 </div>

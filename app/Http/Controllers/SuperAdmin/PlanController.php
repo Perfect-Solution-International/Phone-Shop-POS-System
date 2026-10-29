@@ -72,6 +72,19 @@ class PlanController extends Controller
             'is_active' => 'boolean',
         ]);
 
+        $booleanFields = [
+            'has_imei_tracking',
+            'has_repair_management',
+            'has_warranty_management',
+            'has_accounting_reports',
+            'has_multi_branch',
+            'has_customer_portal',
+            'is_active',
+        ];
+        foreach ($booleanFields as $field) {
+            $validated[$field] = $request->boolean($field);
+        }
+
         $plan->update($validated);
 
         if ($request->wantsJson()) {

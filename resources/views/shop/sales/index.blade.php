@@ -4,6 +4,34 @@
 @section('page-title', 'Sales & Invoices Directory')
 
 @section('content')
+<style>
+    @media (max-width: 768px) {
+        .sales-desktop-table-wrap {
+            display: none !important;
+        }
+        .sales-mobile-cards-wrap {
+            display: flex !important;
+            flex-direction: column;
+            gap: 0.85rem;
+            padding: 1rem;
+        }
+    }
+    @media (min-width: 769px) {
+        .sales-mobile-cards-wrap {
+            display: none !important;
+        }
+    }
+    .sale-mobile-card {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 1rem;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+        display: flex;
+        flex-direction: column;
+        gap: 0.65rem;
+    }
+</style>
 <div class="card">
     <div class="card-header" style="flex-wrap: wrap; gap: 1rem;">
         <form method="GET" action="{{ route('shop.sales') }}" style="display: flex; gap: 0.75rem; flex: 1; flex-wrap: wrap;">
@@ -27,7 +55,7 @@
         </form>
     </div>
 
-    <div class="table-responsive">
+    <div class="table-responsive sales-desktop-table-wrap">
         <table class="data-table">
             <thead>
                 <tr>
@@ -159,6 +187,86 @@
                 @endforelse
             </tbody>
         </table>
+    </div>
+
+    <!-- Mobile Card View (Auto-enabled on screens <= 768px) -->
+    <div class="sales-mobile-cards-wrap">
+        @forelse($sales as $sale)
+        <div class="sale-mobile-card">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <strong style="color: #4f46e5; font-family: monospace; font-size: 0.95rem;">
+                        {{ $sale->invoice_number }}
+                    </strong>
+                    <div style="font-size: 0.72rem; color: #64748b;">
+                        {{ \Carbon\Carbon::parse($sale->created_at)->format('Y-m-d h:i A') }} &bull; Cashier: {{ $sale->cashier->name ?? 'Staff' }}
+                    </div>
+                </div>
+                <div>
+                    @if($sale->status === 'completed')
+                        <span class="badge badge-success">Completed</span>
+                    @elseif($sale->status === 'partial')
+                        <span class="badge badge-warning">Partial</span>
+                    @else
+                        <span class="badge badge-purple">{{ ucfirst($sale->status) }}</span>
+                    @endif
+                </div>
+            </div>
+
+            <div style="font-size: 0.8125rem; background: #f8fafc; border-radius: 8px; padding: 0.5rem 0.75rem;">
+                <div style="font-weight: 700; color: #0f172a;">
+                    {{ $sale->customer ? $sale->customer->name : 'Walk-in Customer' }}
+                    @if($sale->customer && $sale->customer->phone)
+                        <span style="font-size: 0.75rem; color: #64748b; font-weight: normal;">({{ $sale->customer->phone }})</span>
+                    @endif
+                </div>
+                <div style="margin-top: 0.35rem; color: #475569; font-size: 0.78rem;">
+                    @foreach($sale->items as $item)
+                        <div>
+                            &bull; {{ $item->item_name }} &times; {{ $item->quantity }}
+                            @if($item->phoneDevice)
+                                <span class="badge badge-info" style="font-size: 0.65rem; font-family: monospace;">IMEI: {{ $item->phoneDevice->imei_1 }}</span>
+                            @endif
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px dashed #e2e8f0; padding-top: 0.5rem;">
+                <div>
+                    <span style="font-size: 0.72rem; color: #64748b; text-transform: uppercase; font-weight: 700; display: block;">Total Amount</span>
+                    <strong style="color: #166534; font-size: 1.05rem;">
+                        LKR {{ number_format($sale->total_amount, 2) }}
+                    </strong>
+                    <div style="font-size: 0.7rem; color: #64748b;">
+                        {{ ucfirst(str_replace('_', ' ', $sale->payment_method)) }}
+                    </div>
+                </div>
+                <div style="display: flex; gap: 0.4rem; align-items: center;">
+                    @if($sale->customer && $sale->customer->phone)
+                        @php
+                            $rawPhone = preg_replace('/[^0-9]/', '', $sale->customer->phone);
+                            $waPhone = str_starts_with($rawPhone, '0') ? '94' . substr($rawPhone, 1) : $rawPhone;
+                            $waMsg = urlencode("Hello {$sale->customer->name}, thank you for your purchase! Invoice #{$sale->invoice_number}, Total Amount: LKR " . number_format($sale->total_amount, 2) . ". Thank you!");
+                        @endphp
+                        <a href="https://wa.me/{{ $waPhone }}?text={{ $waMsg }}" target="_blank" class="btn btn-sm" title="WhatsApp Receipt" style="background: #25D366; color: #ffffff; padding: 0.4rem 0.6rem; font-size: 0.75rem; border-radius: 6px; font-weight: 700;">
+                            WA
+                        </a>
+                    @endif
+                    <button type="button" class="btn btn-secondary btn-sm" onclick='viewInvoiceModal({{ $sale->id }})' style="font-size: 0.75rem; padding: 0.4rem 0.65rem; border-radius: 6px;">
+                        Details
+                    </button>
+                    <a href="{{ route('shop.sales.show', $sale) }}" class="btn btn-primary btn-sm" target="_blank" style="font-size: 0.75rem; padding: 0.4rem 0.65rem; border-radius: 6px;">
+                        Print
+                    </a>
+                </div>
+            </div>
+        </div>
+        @empty
+        <div style="text-align: center; color: #94a3b8; padding: 2rem;">
+            No sales transactions recorded yet.
+        </div>
+        @endforelse
     </div>
 
     @if($sales->hasPages())

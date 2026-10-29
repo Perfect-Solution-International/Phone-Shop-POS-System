@@ -316,6 +316,34 @@
 <!-- TAB 4: PAYROLL & SALARY SLIPS              -->
 <!-- ========================================== -->
 @if($tab === 'payroll')
+<style>
+    @media (max-width: 768px) {
+        .payroll-desktop-table-wrap {
+            display: none !important;
+        }
+        .payroll-mobile-cards-wrap {
+            display: flex !important;
+            flex-direction: column;
+            gap: 0.85rem;
+            padding: 1rem;
+        }
+    }
+    @media (min-width: 769px) {
+        .payroll-mobile-cards-wrap {
+            display: none !important;
+        }
+    }
+    .payroll-card-item {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 1rem;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+        display: flex;
+        flex-direction: column;
+        gap: 0.6rem;
+    }
+</style>
 <!-- Mini summary cards for selected payroll month -->
 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.25rem;">
     <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 1rem 1.25rem; box-shadow: 0 1px 2px rgba(0,0,0,0.03);">
@@ -352,8 +380,8 @@
         <div style="display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap;">
             <!-- Auto-Generate Button -->
             <button type="button" class="btn" onclick="openAutoPayrollModal()" style="background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%); color: #ffffff; border: none; font-weight: 700; box-shadow: 0 2px 4px rgba(79, 70, 229, 0.25); display: inline-flex; align-items: center; gap: 0.4rem;">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
-                ⚡ Auto-Generate Monthly Payroll
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                Auto-Generate Monthly Payroll
             </button>
 
             <!-- Manual Generate Button -->
@@ -364,7 +392,7 @@
         </div>
     </div>
 
-    <div class="table-responsive">
+    <div class="table-responsive payroll-desktop-table-wrap">
         <table class="data-table">
             <thead>
                 <tr>
@@ -407,9 +435,15 @@
                     </td>
                     <td>
                         @if($pay->generation_type === 'auto')
-                            <span class="badge" style="background: #e0e7ff; color: #4338ca; border: 1px solid #c7d2fe; font-size: 0.72rem; font-weight: 700;">⚡ Auto</span>
+                            <span class="badge" style="background: #e0e7ff; color: #4338ca; border: 1px solid #c7d2fe; font-size: 0.72rem; font-weight: 700; display: inline-flex; align-items: center; gap: 0.25rem;">
+                                <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                                Auto
+                            </span>
                         @else
-                            <span class="badge" style="background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; font-size: 0.72rem; font-weight: 700;">✏️ Manual</span>
+                            <span class="badge" style="background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; font-size: 0.72rem; font-weight: 700; display: inline-flex; align-items: center; gap: 0.25rem;">
+                                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+                                Manual
+                            </span>
                         @endif
                     </td>
                     <td>
@@ -424,11 +458,13 @@
                     <td style="text-align: right; white-space: nowrap;">
                         <div style="display: inline-flex; gap: 0.35rem; align-items: center;">
                             @if($pay->status !== 'paid')
-                                <button type="button" class="btn btn-sm btn-primary" onclick='openMarkPaidModal(@json($pay))' style="padding: 0.25rem 0.6rem; font-size: 0.75rem;">
-                                    ✓ Pay
+                                <button type="button" class="btn btn-sm btn-primary" onclick='openMarkPaidModal(@json($pay))' style="padding: 0.25rem 0.6rem; font-size: 0.75rem; display: inline-flex; align-items: center; gap: 0.2rem;">
+                                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                                    Pay
                                 </button>
-                                <button type="button" class="btn btn-sm btn-secondary" onclick='openEditPayrollModal(@json($pay))' style="padding: 0.25rem 0.6rem; font-size: 0.75rem;" title="Adjust Basic, Allowances & Deductions">
-                                    ✏️ Edit
+                                <button type="button" class="btn btn-sm btn-secondary" onclick='openEditPayrollModal(@json($pay))' style="padding: 0.25rem 0.6rem; font-size: 0.75rem; display: inline-flex; align-items: center; gap: 0.2rem;" title="Adjust Basic, Allowances & Deductions">
+                                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+                                    Edit
                                 </button>
                                 <form action="{{ route('shop.staff.payroll.destroy', $pay) }}" method="POST" onsubmit="return confirm('Delete this draft payslip for {{ $pay->employee->name }}?')" style="display: inline-block;">
                                     @csrf
@@ -436,8 +472,9 @@
                                     <button type="submit" class="btn btn-sm btn-danger" style="padding: 0.25rem 0.5rem; font-size: 0.75rem;" title="Delete Draft">✕</button>
                                 </form>
                             @endif
-                            <button type="button" class="btn btn-secondary btn-sm" onclick='viewPayslipModal(@json($pay))' style="padding: 0.25rem 0.6rem; font-size: 0.75rem;">
-                                🖨️ Slip
+                            <button type="button" class="btn btn-secondary btn-sm" onclick='viewPayslipModal(@json($pay))' style="padding: 0.25rem 0.6rem; font-size: 0.75rem; display: inline-flex; align-items: center; gap: 0.2rem;">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+                                Slip
                             </button>
                         </div>
                     </td>
@@ -447,12 +484,83 @@
                     <td colspan="9" style="text-align: center; padding: 3.5rem 1rem; color: #94a3b8;">
                         <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#cbd5e1" stroke-width="1.5" style="margin-bottom: 0.75rem;"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
                         <div style="font-weight: 600; color: #64748b; font-size: 0.9375rem;">No payslips generated for {{ \Carbon\Carbon::parse($payrollMonth . '-01')->format('F Y') }}</div>
-                        <div style="font-size: 0.8125rem; color: #94a3b8; margin-top: 0.25rem;">Click <strong>⚡ Auto-Generate Monthly Payroll</strong> to process all staff at once, or <strong>+ Manual Payslip</strong> for a single employee.</div>
+                        <div style="font-size: 0.8125rem; color: #94a3b8; margin-top: 0.25rem;">Click <strong>Auto-Generate Monthly Payroll</strong> to process all staff at once, or <strong>+ Manual Payslip</strong> for a single employee.</div>
                     </td>
                 </tr>
                 @endforelse
             </tbody>
         </table>
+    </div>
+
+    <!-- Mobile Stacked Card View (<= 768px) -->
+    <div class="payroll-mobile-cards-wrap">
+        @forelse($payrolls as $pay)
+            <div class="payroll-card-item">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 0.5rem;">
+                    <div>
+                        <strong style="color: #0f172a; font-size: 0.95rem;">{{ $pay->employee->name ?? 'Staff' }}</strong>
+                        <div style="font-size: 0.75rem; color: #64748b; margin-top: 0.15rem;">
+                            {{ $pay->employee->employee_code ?? 'EMP' }} &bull; {{ $pay->employee->position ?? 'Staff' }}
+                        </div>
+                    </div>
+                    <div>
+                        @if($pay->status === 'paid')
+                            <span class="badge badge-success" style="font-size: 0.72rem;">✓ Paid ({{ ucfirst($pay->payment_method ?? 'cash') }})</span>
+                        @else
+                            <span class="badge badge-warning" style="font-size: 0.72rem;">Draft</span>
+                        @endif
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; background: #f8fafc; padding: 0.65rem 0.75rem; border-radius: 8px; font-size: 0.78rem;">
+                    <div>
+                        <span style="color: #64748b; display: block; font-size: 0.7rem;">Period:</span>
+                        <strong>{{ \Carbon\Carbon::parse($pay->period)->format('F Y') }}</strong>
+                    </div>
+                    <div>
+                        <span style="color: #64748b; display: block; font-size: 0.7rem;">Basic:</span>
+                        <span>LKR {{ number_format($pay->basic_salary, 2) }}</span>
+                    </div>
+                    <div>
+                        <span style="color: #166534; display: block; font-size: 0.7rem;">Allowances:</span>
+                        <span style="color: #166534; font-weight: 600;">+LKR {{ number_format($pay->allowances, 2) }}</span>
+                    </div>
+                    <div>
+                        <span style="color: #b91c1c; display: block; font-size: 0.7rem;">Deductions:</span>
+                        <span style="color: #b91c1c; font-weight: 600;">-LKR {{ number_format($pay->deductions, 2) }}</span>
+                    </div>
+                </div>
+
+                <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 0.4rem; border-top: 1px dashed #e2e8f0;">
+                    <div>
+                        <span style="font-size: 0.7rem; color: #64748b; text-transform: uppercase; font-weight: 700; display: block;">Net Take-Home</span>
+                        <strong style="color: #166534; font-size: 1.05rem;">LKR {{ number_format($pay->net_salary, 2) }}</strong>
+                    </div>
+                    <div style="display: flex; gap: 0.35rem; align-items: center;">
+                        @if($pay->status !== 'paid')
+                            <button type="button" class="btn btn-sm btn-primary" onclick='openMarkPaidModal(@json($pay))' style="padding: 0.3rem 0.6rem; font-size: 0.75rem;">
+                                Pay
+                            </button>
+                            <button type="button" class="btn btn-sm btn-secondary" onclick='openEditPayrollModal(@json($pay))' style="padding: 0.3rem 0.5rem; font-size: 0.75rem;">
+                                Edit
+                            </button>
+                            <form action="{{ route('shop.staff.payroll.destroy', $pay) }}" method="POST" onsubmit="return confirm('Delete this draft payslip for {{ $pay->employee->name }}?')" style="display: inline-block;">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-sm btn-danger" style="padding: 0.3rem 0.5rem; font-size: 0.75rem;">✕</button>
+                            </form>
+                        @endif
+                        <button type="button" class="btn btn-secondary btn-sm" onclick='viewPayslipModal(@json($pay))' style="padding: 0.3rem 0.6rem; font-size: 0.75rem;">
+                            Slip
+                        </button>
+                    </div>
+                </div>
+            </div>
+        @empty
+            <div style="text-align: center; padding: 2.5rem 1rem; color: #94a3b8;">
+                <div style="font-weight: 600; color: #64748b; font-size: 0.9rem;">No payslips generated for this period</div>
+            </div>
+        @endforelse
     </div>
 </div>
 @endif
@@ -696,7 +804,7 @@
     <div class="modal-box" style="max-width: 520px;">
         <div class="modal-header">
             <div style="display: flex; align-items: center; gap: 0.5rem;">
-                <span style="font-size: 1.25rem;">⚡</span>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="#4f46e5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
                 <h3 style="margin: 0;">Auto-Generate Monthly Payroll</h3>
             </div>
             <button type="button" class="modal-close" onclick="closeModal('autoPayrollModal')">&times;</button>
@@ -736,8 +844,9 @@
             </div>
             <div style="padding: 1rem 1.5rem; border-top: 1px solid var(--surface-border); display: flex; justify-content: flex-end; gap: 0.5rem;">
                 <button type="button" class="btn btn-secondary" onclick="closeModal('autoPayrollModal')">Cancel</button>
-                <button type="submit" class="btn btn-primary" style="background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%); border: none;">
-                    ⚡ Run Auto-Generation
+                <button type="submit" class="btn btn-primary" style="background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%); border: none; display: inline-flex; align-items: center; gap: 0.35rem;">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                    Run Auto-Generation
                 </button>
             </div>
         </form>
@@ -899,7 +1008,10 @@
         </div>
         <div style="padding: 1rem 1.5rem; border-top: 1px solid var(--surface-border); display: flex; justify-content: flex-end; gap: 0.5rem;">
             <button type="button" class="btn btn-secondary" onclick="closeModal('payslipModal')">Close</button>
-            <button type="button" class="btn btn-primary" onclick="window.print()">🖨️ Print Payslip</button>
+            <button type="button" class="btn btn-primary" onclick="window.print()" style="display: inline-flex; align-items: center; gap: 0.35rem;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+                Print Payslip
+            </button>
         </div>
     </div>
 </div>
@@ -996,7 +1108,7 @@
         const c = document.getElementById('payslipContent');
         const isPaid = pay.status === 'paid';
         const method = pay.payment_method ? pay.payment_method.toUpperCase().replace('_', ' ') : 'CASH';
-        const genType = pay.generation_type === 'auto' ? '⚡ System Auto-Generated' : '✏️ Manual Configured';
+        const genType = pay.generation_type === 'auto' ? 'System Auto-Generated' : 'Manual Configured';
 
         c.innerHTML = `
             <div id="printablePayslip" style="padding: 10px;">

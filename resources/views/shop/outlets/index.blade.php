@@ -87,8 +87,9 @@
                                 </span>
                             </div>
                             @if($outlet->city)
-                                <span style="font-size: 0.75rem; color: #64748b; font-weight: 500;">
-                                    📍 {{ $outlet->city }}
+                                <span style="font-size: 0.75rem; color: #64748b; font-weight: 500; display: inline-flex; align-items: center; gap: 0.25rem;">
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                                    {{ $outlet->city }}
                                 </span>
                             @endif
                         </div>
@@ -96,7 +97,8 @@
                         <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 0.25rem;">
                             @if($outlet->is_main)
                                 <span class="badge" style="background: #4f46e5; color: #ffffff; font-size: 0.68rem; font-weight: 700; padding: 0.2rem 0.5rem; border-radius: 6px; display: inline-flex; align-items: center; gap: 0.25rem;">
-                                    ★ Main Branch
+                                    <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                                    Main Branch
                                 </span>
                             @endif
 
@@ -169,8 +171,9 @@
                             <!-- Set as Main Button -->
                             <form method="POST" action="{{ route('shop.outlets.toggle-main', $outlet) }}" style="display: inline; margin: 0;">
                                 @csrf
-                                <button type="submit" class="btn btn-sm btn-secondary" title="Set as primary Main Branch" style="padding: 0.3rem 0.55rem; font-size: 0.75rem;">
-                                    ★ Make Main
+                                <button type="submit" class="btn btn-sm btn-secondary" title="Set as primary Main Branch" style="padding: 0.3rem 0.55rem; font-size: 0.75rem; display: inline-flex; align-items: center; gap: 0.25rem;">
+                                    <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                                    Make Main
                                 </button>
                             </form>
 

@@ -20,6 +20,7 @@ class PhoneDevice extends Model
         'storage',
         'ram',
         'color',
+        'image_path',
         'condition',
         'imei_1',
         'imei_2',
@@ -37,6 +38,18 @@ class PhoneDevice extends Model
         'selling_price' => 'decimal:2',
         'sold_at' => 'datetime',
     ];
+
+    protected $appends = [
+        'image_url',
+    ];
+
+    public function getImageUrlAttribute(): ?string
+    {
+        if (! empty($this->image_path)) {
+            return asset('storage/' . $this->image_path);
+        }
+        return null;
+    }
 
     public function outlet(): BelongsTo
     {

@@ -7,6 +7,7 @@ use App\Models\Sale;
 use App\Services\Sales\PosCheckoutService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class PosController extends Controller
 {
@@ -19,11 +20,12 @@ class PosController extends Controller
 
     public function checkout(Request $request): JsonResponse
     {
+        $shopId = (int) auth()->user()?->shop_id;
         $validated = $request->validate([
-            'customer_id' => 'nullable|exists:customers,id',
+            'customer_id' => ['nullable', Rule::exists('customers', 'id')->where('shop_id', $shopId)],
             'items' => 'required|array|min:1',
-            'items.*.product_id' => 'nullable|exists:products,id',
-            'items.*.phone_device_id' => 'nullable|exists:phone_devices,id',
+            'items.*.product_id' => ['nullable', Rule::exists('products', 'id')->where('shop_id', $shopId)],
+            'items.*.phone_device_id' => ['nullable', Rule::exists('phone_devices', 'id')->where('shop_id', $shopId)],
             'items.*.item_name' => 'required|string|max:255',
             'items.*.quantity' => 'required|integer|min:1',
             'items.*.unit_price' => 'required|numeric|min:0',
@@ -37,12 +39,18 @@ class PosController extends Controller
             'notes' => 'nullable|string|max:500',
         ]);
 
-        $sale = $this->checkoutService->checkout($validated, (int) auth()->id());
+        try {
+            $sale = $this->checkoutService->checkout($validated, (int) auth()->id());
 
-        return response()->json([
-            'message' => 'Sale completed successfully.',
-            'sale' => $sale,
-        ], 201);
+            return response()->json([
+                'message' => 'Sale completed successfully.',
+                'sale' => $sale,
+            ], 201);
+        } catch (\InvalidArgumentException $e) {
+            return response()->json([
+                'message' => $e->getMessage(),
+            ], 422);
+        }
     }
 
     public function invoices(Request $request): JsonResponse

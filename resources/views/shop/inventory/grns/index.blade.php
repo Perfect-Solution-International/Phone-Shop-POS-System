@@ -1,7 +1,7 @@
 @extends('layouts.shop')
 
 @section('title', 'Goods Received Notes (GRN)')
-@section('page_title', 'Goods Received Notes & Inbound Stock Receiving')
+@section('page-title', 'Goods Received Notes & Inbound Stock Receiving')
 
 @section('content')
 <div class="metrics-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">

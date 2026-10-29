@@ -530,6 +530,13 @@
                     <p class="card-subtitle">Retail POS, IMEI Tracking, Repairs &amp; Portal</p>
                 </header>
 
+                @auth
+                    <div style="background-color: #eff6ff; border: 1px solid #bfdbfe; color: #1e40af; padding: 0.75rem 1rem; border-radius: 10px; margin-bottom: 1.25rem; font-size: 0.85rem; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;">
+                        <span>Signed in as: <strong>{{ auth()->user()->email }}</strong></span>
+                        <a href="{{ auth()->user()->hasRole('Super Administrator') ? route('superadmin.dashboard') : (auth()->user()->hasRole('Customer') ? route('customer.portal') : route('shop.dashboard')) }}" style="font-weight: 600; color: #2563eb; text-decoration: underline;">Go to Dashboard &rarr;</a>
+                    </div>
+                @endauth
+
                 @if (session('status'))
                     <div style="background-color: var(--color-success-bg); border: 1px solid var(--color-success-border); color: #065f46; padding: 0.85rem 1rem; border-radius: 10px; margin-bottom: 1.25rem; font-size: 0.85rem; display: flex; align-items: center; gap: 0.5rem;" role="status">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>

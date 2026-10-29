@@ -410,7 +410,7 @@
         }
 
         .shop-content {
-            padding: clamp(1rem, 2.5vw, 2rem);
+            padding: clamp(0.85rem, 1.6vw, 1.25rem);
             flex: 1;
         }
 
@@ -938,6 +938,32 @@
             .btn {
                 padding: 0.45rem 0.75rem;
                 font-size: 0.8rem;
+            }
+        }
+
+        @media print {
+            @page {
+                margin: 0;
+            }
+            .shop-sidebar,
+            .shop-topbar,
+            .shop-sidebar-overlay,
+            .mobile-sidebar-toggle,
+            .alert,
+            .no-print {
+                display: none !important;
+            }
+            body {
+                background: #ffffff !important;
+                color: #0f172a !important;
+                min-height: auto !important;
+            }
+            .shop-workspace,
+            .shop-content {
+                width: 100% !important;
+                max-width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
             }
         }
     </style>

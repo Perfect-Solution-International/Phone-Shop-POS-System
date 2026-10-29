@@ -12,6 +12,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
 class RepairViewController extends Controller
@@ -52,12 +53,14 @@ class RepairViewController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
+        $shopId = (int) auth()->user()?->shop_id;
         $validated = $request->validate([
-            'customer_id' => 'required|exists:customers,id',
-            'technician_id' => 'nullable|exists:users,id',
+            'customer_id' => ['required', Rule::exists('customers', 'id')->where('shop_id', $shopId)],
+            'technician_id' => ['nullable', Rule::exists('users', 'id')->where('shop_id', $shopId)],
             'brand' => 'required|string|max:100',
             'model' => 'required|string|max:100',
             'imei' => 'nullable|string|max:50',
+            'customer_nic' => 'nullable|string|max:50',
             'fault_description' => 'required|string|max:1000',
             'condition_notes' => 'nullable|string|max:1000',
             'accessories_received' => 'nullable|string|max:255',
@@ -65,6 +68,13 @@ class RepairViewController extends Controller
             'advance_amount' => 'nullable|numeric|min:0',
             'estimated_completion_date' => 'nullable|date',
         ]);
+
+        $customer = \App\Models\Customer::find($validated['customer_id']);
+        if (empty($validated['customer_nic']) && $customer && $customer->nic) {
+            $validated['customer_nic'] = $customer->nic;
+        } elseif (! empty($validated['customer_nic']) && $customer) {
+            $customer->update(['nic' => $validated['customer_nic']]);
+        }
 
         $validated['job_number'] = 'REP-'.date('Ymd').'-'.strtoupper(Str::random(4));
         $validated['status'] = 'received';

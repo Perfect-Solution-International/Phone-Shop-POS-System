@@ -105,7 +105,8 @@
                                     data-warranty-number="{{ $w->warranty_number }}"
                                     onclick="openClaimsHistoryModalFromButton(this)"
                                     title="Click to view claims history & review">
-                                <span>📋</span> {{ $w->claims->count() }} Claims
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+                                {{ $w->claims->count() }} Claims
                             </button>
                         @else
                             <span style="font-size: 0.75rem; color: var(--text-muted);">0</span>
@@ -322,8 +323,9 @@
                         <strong>Proposed Settlement:</strong> <span style="text-transform: capitalize;">${c.settlement_type || 'Repair'}</span>
                         ${c.action_notes ? '<br><strong>Inspector Action Notes:</strong> ' + c.action_notes : ''}
                     </div>
-                    <button type="button" class="btn btn-sm btn-secondary" onclick="toggleReviewForm(${c.id})" style="font-size: 0.75rem; padding: 0.25rem 0.5rem;">
-                        ✎ Review / Decision Update
+                    <button type="button" class="btn btn-sm btn-secondary" onclick="toggleReviewForm(${c.id})" style="font-size: 0.75rem; padding: 0.25rem 0.5rem; display: inline-flex; align-items: center; gap: 0.25rem;">
+                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+                        Review / Decision Update
                     </button>
                     <div id="review-form-${c.id}" style="display: none; margin-top: 0.75rem; background: #ffffff; border: 1px solid #cbd5e1; padding: 0.75rem; border-radius: 6px;">
                         <form method="POST" action="/shop/warranties/claims/${c.id}/review">
@@ -401,8 +403,9 @@
             resBox.style.background = isActive ? '#dcfce7' : '#fef3c7';
             resBox.innerHTML = `
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-                    <strong style="color: ${isActive ? '#15803d' : '#b45309'}; font-size: 1rem;">
-                        ${isActive ? '✓ Valid Warranty Found' : '⚠️ Warranty Has Expired'}
+                    <strong style="color: ${isActive ? '#15803d' : '#b45309'}; font-size: 1rem; display: inline-flex; align-items: center; gap: 0.35rem;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                        ${isActive ? 'Valid Warranty Found' : 'Warranty Has Expired'}
                     </strong>
                     <span class="badge ${isActive ? 'badge-success' : 'badge-warning'}">${data.status.toUpperCase()}</span>
                 </div>
