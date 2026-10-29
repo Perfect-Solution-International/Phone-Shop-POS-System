@@ -213,7 +213,10 @@
 </head>
 <body>
     <div class="print-toolbar">
-        <span>Ready to print <strong>{{ $quantity }}</strong> labels ({{ $template }})</span>
+        <div style="display: flex; align-items: center; gap: 0.75rem;">
+            <span>Ready to print <strong>{{ $quantity }}</strong> labels ({{ $template }})</span>
+            <span style="background: rgba(255,255,255,0.2); padding: 0.2rem 0.6rem; border-radius: 4px; font-size: 0.75rem; border: 1px solid rgba(255,255,255,0.3);">💡 Tip: Set Margins to "None" in Print Dialog</span>
+        </div>
         <button class="print-btn" onclick="window.print()">Print Now (Ctrl + P)</button>
     </div>
 

@@ -118,6 +118,25 @@ test('superadmin can create and update subscription plans', function (): void {
         'monthly_price' => 19500.00,
         'max_branches' => 10,
     ]);
+
+    // Update existing subscription plan
+    $plan = SubscriptionPlan::where('name', 'Multi-Branch Ultimate')->first();
+    $updatePayload = array_merge($payload, [
+        'name' => 'Multi-Branch Enterprise Pro',
+        'monthly_price' => 24500.00,
+        'max_branches' => 15,
+    ]);
+
+    $this->actingAs($superAdmin, 'web')
+        ->put("/super-admin/plans/{$plan->id}", $updatePayload)
+        ->assertRedirect();
+
+    $this->assertDatabaseHas('subscription_plans', [
+        'id' => $plan->id,
+        'name' => 'Multi-Branch Enterprise Pro',
+        'monthly_price' => 24500.00,
+        'max_branches' => 15,
+    ]);
 });
 
 test('superadmin can approve bank transfer payments and activate subscription', function (): void {

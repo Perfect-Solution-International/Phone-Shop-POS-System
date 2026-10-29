@@ -15,6 +15,7 @@ use App\Models\SalePayment;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
 class QuotationViewController extends Controller
@@ -74,12 +75,12 @@ class QuotationViewController extends Controller
             'customer_name' => ['required', 'string', 'max:255'],
             'customer_phone' => ['nullable', 'string', 'max:50'],
             'customer_email' => ['nullable', 'email', 'max:255'],
-            'customer_id' => ['nullable', 'exists:customers,id'],
+            'customer_id' => ['nullable', Rule::exists('customers', 'id')->where('shop_id', $shopId)],
             'valid_until' => ['required', 'date', 'after_or_equal:today'],
             'items' => ['required', 'array', 'min:1'],
             'items.*.item_type' => ['required', 'in:product,phone,custom'],
-            'items.*.product_id' => ['nullable', 'exists:products,id'],
-            'items.*.phone_device_id' => ['nullable', 'exists:phone_devices,id'],
+            'items.*.product_id' => ['nullable', Rule::exists('products', 'id')->where('shop_id', $shopId)],
+            'items.*.phone_device_id' => ['nullable', Rule::exists('phone_devices', 'id')->where('shop_id', $shopId)],
             'items.*.item_name' => ['required', 'string', 'max:255'],
             'items.*.quantity' => ['required', 'integer', 'min:1'],
             'items.*.unit_price' => ['required', 'numeric', 'min:0'],

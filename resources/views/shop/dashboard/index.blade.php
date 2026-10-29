@@ -235,7 +235,9 @@
     <div class="hero-meta">
         <h1>
             <span>Welcome back, {{ auth()->user()->name }}</span>
-            <span style="font-size: 1.2rem;">👋</span>
+            <span style="display: inline-flex; vertical-align: middle; margin-left: 0.25rem;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="#6366f1" stroke="#6366f1" stroke-width="1.5"><path d="M12 2l2.4 7.2L22 12l-7.6 2.8L12 22l-2.4-7.2L2 12l7.6-2.8z"></path></svg>
+            </span>
         </h1>
         <p>
             <span>Today is <strong>{{ now()->format('l, F j, Y') }}</strong></span>

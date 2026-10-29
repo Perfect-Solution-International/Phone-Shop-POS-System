@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Product;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class ProductController extends Controller
 {
@@ -41,12 +42,13 @@ class ProductController extends Controller
 
     public function store(Request $request): JsonResponse
     {
+        $shopId = (int) auth()->user()?->shop_id;
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'code' => 'required|string|max:100',
             'type' => 'required|string|in:standard,phone_device,spare_part,service',
-            'category_id' => 'nullable|exists:categories,id',
-            'brand_id' => 'nullable|exists:brands,id',
+            'category_id' => ['nullable', Rule::exists('categories', 'id')->where('shop_id', $shopId)],
+            'brand_id' => ['nullable', Rule::exists('brands', 'id')->where('shop_id', $shopId)],
             'cost_price' => 'nullable|numeric|min:0',
             'retail_price' => 'required|numeric|min:0',
             'wholesale_price' => 'nullable|numeric|min:0',
@@ -66,12 +68,13 @@ class ProductController extends Controller
 
     public function update(Request $request, Product $product): JsonResponse
     {
+        $shopId = (int) auth()->user()?->shop_id;
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'code' => 'required|string|max:100',
             'type' => 'required|string|in:standard,phone_device,spare_part,service',
-            'category_id' => 'nullable|exists:categories,id',
-            'brand_id' => 'nullable|exists:brands,id',
+            'category_id' => ['nullable', Rule::exists('categories', 'id')->where('shop_id', $shopId)],
+            'brand_id' => ['nullable', Rule::exists('brands', 'id')->where('shop_id', $shopId)],
             'cost_price' => 'nullable|numeric|min:0',
             'retail_price' => 'required|numeric|min:0',
             'wholesale_price' => 'nullable|numeric|min:0',

@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->name('v1.')->group(function (): void {
     Route::post('auth/login', [AuthController::class, 'login'])->middleware('throttle:login')->name('auth.login');
-    Route::get('public/repairs/track', [\App\Http\Controllers\Api\RepairController::class, 'trackPublic'])->name('repairs.public_track');
+    Route::get('public/repairs/track', [\App\Http\Controllers\Api\RepairController::class, 'trackPublic'])->middleware('throttle:30,1')->name('repairs.public_track');
     Route::match(['get', 'post'], 'payments/gateway/callback/{gateway?}', [\App\Http\Controllers\Payment\GatewayCallbackController::class, 'handleCallback'])->name('payments.gateway.callback');
 
     Route::middleware('auth:sanctum')->group(function (): void {

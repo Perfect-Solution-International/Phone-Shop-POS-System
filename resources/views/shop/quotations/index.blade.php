@@ -113,16 +113,18 @@
                     </td>
                     <td style="text-align: right; white-space: nowrap;">
                         @if($qt->status === 'pending')
-                            <button type="button" class="btn btn-sm btn-primary" onclick='openConvertModal(@json($qt))' style="padding: 0.25rem 0.6rem; font-size: 0.75rem;">
-                                ⚡ Convert to Sale
+                            <button type="button" class="btn btn-sm btn-primary" onclick='openConvertModal(@json($qt))' style="padding: 0.25rem 0.6rem; font-size: 0.75rem; display: inline-flex; align-items: center; gap: 0.25rem;">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                                Convert to Sale
                             </button>
                         @elseif($qt->convertedSale)
                             <a href="{{ route('shop.sales.show', $qt->convertedSale) }}" class="btn btn-sm btn-secondary" style="padding: 0.25rem 0.6rem; font-size: 0.75rem;">
                                 View Invoice
                             </a>
                         @endif
-                        <button type="button" class="btn btn-secondary btn-sm" onclick='viewQuotationDocument(@json($qt))' style="padding: 0.25rem 0.6rem; font-size: 0.75rem;">
-                            🖨️ Print Quote
+                        <button type="button" class="btn btn-secondary btn-sm" onclick='viewQuotationDocument(@json($qt))' style="padding: 0.25rem 0.6rem; font-size: 0.75rem; display: inline-flex; align-items: center; gap: 0.25rem;">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+                            Print Quote
                         </button>
                     </td>
                 </tr>
@@ -277,7 +279,10 @@
         </div>
         <div style="padding: 1rem 1.5rem; border-top: 1px solid var(--surface-border); display: flex; justify-content: flex-end; gap: 0.5rem;">
             <button type="button" class="btn btn-secondary" onclick="closeModal('quoteDocModal')">Close</button>
-            <button type="button" class="btn btn-primary" onclick="window.print()">🖨️ Print Quotation</button>
+            <button type="button" class="btn btn-primary" onclick="window.print()" style="display: inline-flex; align-items: center; gap: 0.35rem;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+                Print Quotation
+            </button>
         </div>
     </div>
 </div>

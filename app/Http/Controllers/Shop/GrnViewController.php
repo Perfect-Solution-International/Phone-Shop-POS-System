@@ -10,6 +10,7 @@ use App\Models\Supplier;
 use App\Services\Inventory\GoodsReceivingService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
 class GrnViewController extends Controller
@@ -71,8 +72,9 @@ class GrnViewController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
+        $shopId = (int) auth()->user()?->shop_id;
         $validated = $request->validate([
-            'supplier_id' => ['required', 'exists:suppliers,id'],
+            'supplier_id' => ['required', Rule::exists('suppliers', 'id')->where('shop_id', $shopId)],
             'supplier_invoice_ref' => ['nullable', 'string', 'max:100'],
             'received_date' => ['required', 'date'],
             'notes' => ['nullable', 'string', 'max:1000'],
@@ -81,8 +83,8 @@ class GrnViewController extends Controller
             'items.*.item_name' => ['required', 'string', 'max:255'],
             'items.*.quantity' => ['required', 'integer', 'min:1'],
             'items.*.unit_cost' => ['required', 'numeric', 'min:0'],
-            'items.*.product_id' => ['nullable', 'exists:products,id'],
-            'items.*.spare_part_id' => ['nullable', 'exists:spare_parts,id'],
+            'items.*.product_id' => ['nullable', Rule::exists('products', 'id')->where('shop_id', $shopId)],
+            'items.*.spare_part_id' => ['nullable', Rule::exists('spare_parts', 'id')->where('shop_id', $shopId)],
             'items.*.brand' => ['nullable', 'string', 'max:255'],
             'items.*.model' => ['nullable', 'string', 'max:255'],
             'items.*.imei_1' => ['nullable', 'string', 'max:50'],

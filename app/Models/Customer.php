@@ -15,6 +15,7 @@ class Customer extends Model
         'name',
         'phone',
         'email',
+        'nic',
         'address',
         'customer_type',
         'credit_limit',
@@ -29,6 +30,11 @@ class Customer extends Model
     public function sales(): HasMany
     {
         return $this->hasMany(Sale::class);
+    }
+
+    public function debtPayments(): HasMany
+    {
+        return $this->hasMany(CustomerDebtPayment::class);
     }
 }
 

@@ -11,6 +11,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
 class ProductViewController extends Controller
@@ -39,10 +40,11 @@ class ProductViewController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
+        $shopId = (int) auth()->user()?->shop_id;
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'category_id' => 'required|exists:categories,id',
-            'brand_id' => 'nullable|exists:brands,id',
+            'category_id' => ['required', Rule::exists('categories', 'id')->where('shop_id', $shopId)],
+            'brand_id' => ['nullable', Rule::exists('brands', 'id')->where('shop_id', $shopId)],
             'barcode' => 'nullable|string|max:100',
             'sku' => 'nullable|string|max:100',
             'cost_price' => 'required|numeric|min:0',
@@ -75,10 +77,11 @@ class ProductViewController extends Controller
 
     public function update(Request $request, Product $product): RedirectResponse
     {
+        $shopId = (int) auth()->user()?->shop_id;
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'category_id' => 'required|exists:categories,id',
-            'brand_id' => 'nullable|exists:brands,id',
+            'category_id' => ['required', Rule::exists('categories', 'id')->where('shop_id', $shopId)],
+            'brand_id' => ['nullable', Rule::exists('brands', 'id')->where('shop_id', $shopId)],
             'barcode' => 'nullable|string|max:100',
             'sku' => 'nullable|string|max:100',
             'cost_price' => 'required|numeric|min:0',

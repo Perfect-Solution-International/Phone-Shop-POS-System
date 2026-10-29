@@ -6,6 +6,7 @@ use App\Models\PhoneDevice;
 use App\Models\Platform\Shop;
 use App\Models\Product;
 use App\Models\RepairJob;
+use App\Models\SmsLog;
 use App\Models\SparePart;
 use App\Models\User;
 use App\Models\Warranty;
@@ -376,6 +377,32 @@ test('spare parts and customer directory endpoints function properly', function 
         'shop_id' => $shop->id,
         'phone' => '0765556677',
     ]);
+
+    // Update customer
+    $cust = Customer::withoutGlobalScopes()->where('phone', '0765556677')->first();
+    $this->actingAs($user)->put("/shop/customers/{$cust->id}", [
+        'name' => 'Mahesh Fernando Updated',
+        'phone' => '0765556688',
+        'email' => 'mahesh.updated@example.com',
+        'nic' => '199012345678',
+        'credit_limit' => 25000.00,
+        'address' => '123 Main Road, Kandy',
+    ])->assertRedirect('/shop/customers');
+
+    $this->assertDatabaseHas('customers', [
+        'id' => $cust->id,
+        'name' => 'Mahesh Fernando Updated',
+        'phone' => '0765556688',
+        'address' => '123 Main Road, Kandy',
+    ]);
+
+    // Delete customer
+    $this->actingAs($user)->delete("/shop/customers/{$cust->id}")
+        ->assertRedirect('/shop/customers');
+
+    $this->assertDatabaseMissing('customers', [
+        'id' => $cust->id,
+    ]);
 });
 
 test('public customer repair tracking page is publicly accessible and displays repair status', function (): void {
@@ -414,6 +441,16 @@ test('public customer repair tracking page is publicly accessible and displays r
     $response2 = $this->get('/track-repair?tracking_id=354321098765432');
     $response2->assertOk();
     $response2->assertSee('REP-PUB-TEST1');
+
+    // Query by Ticket ID number
+    $response3 = $this->get('/track-repair?tracking_id=' . $repair->id);
+    $response3->assertOk();
+    $response3->assertSee('REP-PUB-TEST1');
+
+    // Query by Customer Phone
+    $response4 = $this->get('/track-repair?tracking_id=0778889900');
+    $response4->assertOk();
+    $response4->assertSee('REP-PUB-TEST1');
 });
 
 test('shop staff can view sales directory and inspect completed sale details', function (): void {
@@ -495,3 +532,95 @@ test('shop staff can view sales directory and inspect completed sale details', f
     $jsonResponse->assertJsonPath('invoice_number', 'INV-20261023-TEST1');
     $jsonResponse->assertJsonPath('items.0.phone_device.imei_1', '358912345678901');
 });
+
+test('shop staff can register phone device with uploaded photo and manage image', function (): void {
+    \Illuminate\Support\Facades\Storage::fake('public');
+
+    $shop = Shop::factory()->create();
+    $user = User::factory()->create(['shop_id' => $shop->id]);
+    $user->assignRole('Shop Manager');
+
+    $image = \Illuminate\Http\UploadedFile::fake()->create('iphone-15.jpg', 200, 'image/jpeg');
+
+    // 1. Register with image
+    $response = $this->actingAs($user)->post('/shop/phones', [
+        'brand' => 'Apple',
+        'model' => 'iPhone 15 Pro',
+        'storage' => '256GB',
+        'ram' => '8GB',
+        'color' => 'Natural Titanium',
+        'condition' => 'new',
+        'imei_1' => '359123456789991',
+        'imei_2' => '359123456789992',
+        'purchase_cost' => 310000.00,
+        'selling_price' => 365000.00,
+        'image' => $image,
+    ]);
+
+    $response->assertRedirect('/shop/phones');
+    $phone = PhoneDevice::withoutGlobalScopes()->where('imei_1', '359123456789991')->firstOrFail();
+    expect($phone->image_path)->not->toBeNull();
+    expect(\Illuminate\Support\Facades\Storage::disk('public')->exists($phone->image_path))->toBeTrue();
+    expect($phone->image_url)->toContain('storage/' . $phone->image_path);
+
+    // 2. View in phones index
+    $indexResponse = $this->actingAs($user)->get('/shop/phones');
+    $indexResponse->assertOk();
+    $indexResponse->assertSee($phone->image_url);
+
+    // 3. Update with new image
+    $newImage = \Illuminate\Http\UploadedFile::fake()->create('iphone-15-alt.png', 200, 'image/png');
+    $oldPath = $phone->image_path;
+
+    $updateResponse = $this->actingAs($user)->put("/shop/phones/{$phone->id}", [
+        'brand' => 'Apple',
+        'model' => 'iPhone 15 Pro Max',
+        'storage' => '256GB',
+        'ram' => '8GB',
+        'color' => 'Natural Titanium',
+        'condition' => 'new',
+        'status' => 'in_stock',
+        'imei_1' => '359123456789991',
+        'purchase_cost' => 310000.00,
+        'selling_price' => 380000.00,
+        'image' => $newImage,
+    ]);
+
+    $updateResponse->assertRedirect('/shop/phones');
+    $phone = PhoneDevice::withoutGlobalScopes()->find($phone->id);
+    expect($phone->model)->toBe('iPhone 15 Pro Max');
+    expect(\Illuminate\Support\Facades\Storage::disk('public')->exists($oldPath))->toBeFalse();
+    expect(\Illuminate\Support\Facades\Storage::disk('public')->exists($phone->image_path))->toBeTrue();
+
+    // 4. Delete image via endpoint
+    $deleteImgResponse = $this->actingAs($user)->delete("/shop/phones/{$phone->id}/image");
+    $deleteImgResponse->assertRedirect();
+    $phone = PhoneDevice::withoutGlobalScopes()->find($phone->id);
+    expect($phone->image_path)->toBeNull();
+    expect($phone->image_url)->toBeNull();
+});
+
+test('shop staff can view notification history and send quick sms', function (): void {
+    $shop = Shop::factory()->create();
+    $user = User::factory()->create(['shop_id' => $shop->id]);
+    $user->assignRole('Shop Manager');
+
+    SmsLog::create([
+        'shop_id' => $shop->id,
+        'recipient_phone' => '0771234567',
+        'message' => 'Your phone repair is ready for pickup!',
+        'type' => 'repair_ready',
+        'status' => 'simulated',
+        'provider' => 'mock',
+    ]);
+
+    $response = $this->actingAs($user)->get('/shop/notifications');
+    $response->assertOk();
+    $response->assertViewIs('shop.notifications.index');
+    $response->assertSee('Notification Log History');
+    $response->assertSee('0771234567');
+    $response->assertSee('Your phone repair is ready for pickup!');
+    $response->assertSee('Simulated');
+    $response->assertSee('MOCK');
+});
+

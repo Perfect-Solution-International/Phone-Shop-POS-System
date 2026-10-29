@@ -12,6 +12,7 @@ use App\Services\Sales\PosCheckoutService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
 class PosViewController extends Controller
@@ -42,13 +43,14 @@ class PosViewController extends Controller
 
     public function checkout(Request $request, PosCheckoutService $checkoutService): RedirectResponse|JsonResponse
     {
+        $shopId = (int) auth()->user()?->shop_id;
         $validated = $request->validate([
-            'customer_id' => 'nullable|exists:customers,id',
+            'customer_id' => ['nullable', Rule::exists('customers', 'id')->where('shop_id', $shopId)],
             'discount_amount' => 'nullable|numeric|min:0',
             'notes' => 'nullable|string|max:500',
             'items' => 'required|array|min:1',
-            'items.*.product_id' => 'nullable|exists:products,id',
-            'items.*.phone_device_id' => 'nullable|exists:phone_devices,id',
+            'items.*.product_id' => ['nullable', Rule::exists('products', 'id')->where('shop_id', $shopId)],
+            'items.*.phone_device_id' => ['nullable', Rule::exists('phone_devices', 'id')->where('shop_id', $shopId)],
             'items.*.item_name' => 'nullable|string|max:255',
             'items.*.quantity' => 'required|integer|min:1',
             'items.*.unit_price' => 'required|numeric|min:0',
