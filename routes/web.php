@@ -203,6 +203,9 @@ Route::prefix('super-admin')->name('superadmin.')->middleware(['auth', 'superadm
     // Shops
     Route::get('/shops', [\App\Http\Controllers\SuperAdmin\ShopController::class, 'index'])->name('shops.index');
     Route::get('/shops/{shop}', [\App\Http\Controllers\SuperAdmin\ShopController::class, 'show'])->name('shops.show');
+    Route::get('/shops/{shop}/edit', [\App\Http\Controllers\SuperAdmin\ShopController::class, 'edit'])->name('shops.edit');
+    Route::put('/shops/{shop}', [\App\Http\Controllers\SuperAdmin\ShopController::class, 'update'])->name('shops.update');
+    Route::delete('/shops/{shop}', [\App\Http\Controllers\SuperAdmin\ShopController::class, 'destroy'])->name('shops.destroy');
     Route::post('/shops/{shop}/toggle-suspension', [\App\Http\Controllers\SuperAdmin\ShopController::class, 'toggleSuspension'])->name('shops.toggle-suspension');
     Route::post('/shops/{shop}/switch', function (\App\Models\Platform\Shop $shop) {
         session(['superadmin_active_shop_id' => $shop->id]);

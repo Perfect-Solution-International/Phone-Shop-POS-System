@@ -410,7 +410,7 @@
         }
 
         .shop-content {
-            padding: clamp(1rem, 2.5vw, 2rem);
+            padding: clamp(0.85rem, 1.6vw, 1.25rem);
             flex: 1;
         }
 

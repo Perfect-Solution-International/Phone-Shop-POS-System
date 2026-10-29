@@ -117,7 +117,7 @@
                     <th>Subscription</th>
                     <th>Email Status</th>
                     <th>Registered</th>
-                    <th style="text-align: right;">Actions</th>
+                    <th style="text-align: right; min-width: 180px;">Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -176,14 +176,15 @@
                             <div style="font-size: 0.8125rem; color: #334155;">{{ $owner->created_at->format('Y-m-d') }}</div>
                             <div style="font-size: 0.72rem; color: #64748b;">{{ $owner->created_at->diffForHumans() }}</div>
                         </td>
-                        <td style="text-align: right;">
-                            <div style="display: inline-flex; align-items: center; gap: 0.35rem; justify-content: flex-end;">
+                        <td style="text-align: right; white-space: nowrap;">
+                            <div class="owner-action-toolbar">
                                 <!-- Enter Store Action -->
                                 @if($owner->shop_id)
                                     <form method="POST" action="{{ route('superadmin.owners.access', $owner) }}" style="display: inline; margin: 0;">
                                         @csrf
-                                        <button type="submit" class="btn-action btn-primary" title="Access this owner's store" style="font-size: 0.775rem; padding: 0.3rem 0.65rem;">
-                                            Access Shop
+                                        <button type="submit" class="owner-btn-action owner-btn-primary" title="Access {{ $owner->shop->name ?? 'Shop Workspace' }}">
+                                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path><polyline points="10 17 15 12 10 7"></polyline><line x1="15" y1="12" x2="3" y2="12"></line></svg>
+                                            <span>Access</span>
                                         </button>
                                     </form>
                                 @endif
@@ -191,20 +192,20 @@
                                 <!-- Edit Button -->
                                 <button
                                     type="button"
-                                    class="btn-action btn-outline"
+                                    class="owner-btn-action owner-btn-secondary"
                                     onclick='openEditOwnerModal(@json($owner))'
                                     title="Edit owner credentials and details"
-                                    style="font-size: 0.775rem; padding: 0.3rem 0.65rem;"
                                 >
-                                    Edit
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                                    <span>Edit</span>
                                 </button>
 
                                 <!-- Delete Button -->
                                 <form method="POST" action="{{ route('superadmin.owners.destroy', $owner) }}" onsubmit="return confirm('Are you sure you want to delete owner \'{{ addslashes($owner->name) }}\' ({{ $owner->email }})?');" style="display: inline; margin: 0;">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="btn-action btn-danger" title="Delete owner account" style="font-size: 0.775rem; padding: 0.3rem 0.55rem;">
-                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                                    <button type="submit" class="owner-btn-action owner-btn-danger" title="Delete owner account">
+                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
                                     </button>
                                 </form>
                             </div>
@@ -470,6 +471,74 @@
         @keyframes modalFadeIn {
             from { opacity: 0; transform: scale(0.97); }
             to { opacity: 1; transform: scale(1); }
+        }
+
+        /* Owner Action Toolbar & Professional Buttons */
+        .owner-action-toolbar {
+            display: inline-flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 0.35rem;
+            white-space: nowrap;
+        }
+
+        .owner-btn-action {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.35rem;
+            padding: 0.32rem 0.65rem;
+            height: 30px;
+            border-radius: 7px;
+            font-size: 0.775rem;
+            font-weight: 600;
+            white-space: nowrap;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.15s ease;
+            box-sizing: border-box;
+            border: 1px solid transparent;
+            line-height: 1;
+        }
+
+        .owner-btn-primary {
+            background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
+            color: #ffffff;
+            border-color: rgba(79, 70, 229, 0.3);
+            box-shadow: 0 1px 2px rgba(79, 70, 229, 0.2);
+        }
+        .owner-btn-primary:hover {
+            background: linear-gradient(135deg, #4338ca 0%, #4f46e5 100%);
+            color: #ffffff;
+            transform: translateY(-1px);
+            box-shadow: 0 3px 8px rgba(79, 70, 229, 0.35);
+        }
+
+        .owner-btn-secondary {
+            background: #ffffff;
+            border-color: #cbd5e1;
+            color: #334155;
+        }
+        .owner-btn-secondary:hover {
+            background: #f8fafc;
+            border-color: #94a3b8;
+            color: #0f172a;
+            transform: translateY(-1px);
+        }
+
+        .owner-btn-danger {
+            width: 30px;
+            padding: 0;
+            background: #ffffff;
+            border-color: #fecaca;
+            color: #dc2626;
+        }
+        .owner-btn-danger:hover {
+            background: #ef4444;
+            border-color: #ef4444;
+            color: #ffffff;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 6px rgba(239, 68, 68, 0.3);
         }
     </style>
 

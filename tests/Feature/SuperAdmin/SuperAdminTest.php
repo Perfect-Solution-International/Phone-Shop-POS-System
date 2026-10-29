@@ -218,3 +218,72 @@ test('new shop registration automatically initializes 7-day free trial on defaul
     expect($sub->trial_ends_at)->not->toBeNull();
 });
 
+test('superadmin can edit and update registered shop details', function (): void {
+    $superAdmin = User::factory()->create(['shop_id' => null]);
+    $superAdmin->assignRole('Super Administrator');
+
+    $shop = Shop::factory()->create(['name' => 'Original Shop Name']);
+    $owner = User::factory()->create([
+        'shop_id' => $shop->id,
+        'name' => 'Original Owner',
+        'email' => 'origowner@test.com',
+    ]);
+    $plan = SubscriptionPlan::first();
+    Subscription::create([
+        'shop_id' => $shop->id,
+        'plan_id' => $plan->id,
+        'status' => 'trial',
+        'current_period_starts_at' => now(),
+        'current_period_ends_at' => now()->addDays(7),
+    ]);
+
+    $updateData = [
+        'name' => 'Updated Prime Shop',
+        'email' => 'prime@test.com',
+        'phone' => '0771234567',
+        'address' => '123 Galle Road, Colombo',
+        'business_reg_number' => 'PV-998877',
+        'owner_name' => 'Updated Owner Name',
+        'owner_email' => 'updatedowner@test.com',
+        'subscription_status' => 'active',
+    ];
+
+    $this->actingAs($superAdmin, 'web')
+        ->put("/super-admin/shops/{$shop->id}", $updateData)
+        ->assertRedirect('/super-admin/shops');
+
+    expect($shop->fresh()->name)->toBe('Updated Prime Shop');
+    expect($shop->fresh()->phone)->toBe('0771234567');
+    expect($shop->fresh()->business_reg_number)->toBe('PV-998877');
+    expect($owner->fresh()->name)->toBe('Updated Owner Name');
+    expect($owner->fresh()->email)->toBe('updatedowner@test.com');
+    expect($shop->subscription->fresh()->status)->toBe('active');
+});
+
+test('superadmin can delete a registered shop workspace and its data', function (): void {
+    $superAdmin = User::factory()->create(['shop_id' => null]);
+    $superAdmin->assignRole('Super Administrator');
+
+    $shop = Shop::factory()->create(['name' => 'Shop To Be Deleted']);
+    $owner = User::factory()->create([
+        'shop_id' => $shop->id,
+        'name' => 'Owner To Delete',
+    ]);
+    $plan = SubscriptionPlan::first();
+    Subscription::create([
+        'shop_id' => $shop->id,
+        'plan_id' => $plan->id,
+        'status' => 'trial',
+        'current_period_starts_at' => now(),
+        'current_period_ends_at' => now()->addDays(7),
+    ]);
+
+    $this->actingAs($superAdmin, 'web')
+        ->delete("/super-admin/shops/{$shop->id}")
+        ->assertRedirect('/super-admin/shops');
+
+    expect(Shop::find($shop->id))->toBeNull();
+    expect(User::find($owner->id))->toBeNull();
+});
+
+

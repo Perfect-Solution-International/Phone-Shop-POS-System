@@ -145,7 +145,7 @@
 
             <div class="grn-header-right" style="text-align: right;">
                 <div style="font-size: 0.72rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: #4f46e5;">Official Inbound Stock Document</div>
-                <h1 style="font-size: 1.45rem; font-weight: 900; color: #0f172a; margin: 0.2rem 0 0.35rem; letter-spacing: -0.01em;">GOODS RECEIVED NOTE</h1>
+                <h1 style="font-size: 1.45rem; font-weight: 900; color: #0f172a; margin: 0.2rem 0 0.35rem; letter-spacing: -0.01em;">GOODS RECEIVED NOTE (GRN)</h1>
                 
                 <div style="display: flex; justify-content: flex-end; align-items: center; gap: 0.5rem; margin-top: 0.35rem;">
                     <span style="font-size: 0.75rem; color: #64748b; font-weight: 700;">GRN REF:</span>
