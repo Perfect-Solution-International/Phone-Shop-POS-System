@@ -4,6 +4,26 @@
 @section('page-title', 'Expense Tracking & Accounts')
 
 @section('content')
+<style>
+    .combobox-item {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.8125rem;
+        color: #1e293b;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.12s ease;
+    }
+    .combobox-item:hover {
+        background: #eef2ff;
+        color: #4338ca;
+        font-weight: 600;
+    }
+    .combobox-item.selected {
+        background: #e0e7ff;
+        color: #3730a3;
+        font-weight: 700;
+    }
+</style>
 <div class="card" style="margin-bottom: 1.5rem;">
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; padding: 1.25rem 1.5rem;">
         <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 1rem;">
@@ -146,18 +166,41 @@
         <form action="{{ route('shop.expenses.store') }}" method="POST">
             @csrf
             <div class="modal-body">
-                <div class="form-group">
+                <div class="form-group" style="position: relative;">
                     <label>Expense Category *</label>
-                    <select name="category" class="form-control" required>
-                        <option value="rent">Shop Rent</option>
-                        <option value="electricity">Electricity / Water / Utilities</option>
-                        <option value="salaries">Staff Salaries &amp; Allowances</option>
-                        <option value="transport">Transport / Delivery &amp; Courier</option>
-                        <option value="internet">Internet, Telephone &amp; Software</option>
-                        <option value="supplies">Store Stationery &amp; Packaging</option>
-                        <option value="maintenance">Equipment &amp; Shop Maintenance</option>
-                        <option value="other">Other Operating Expense</option>
-                    </select>
+                    <div class="combobox-wrapper" style="position: relative;">
+                        <input 
+                            type="text" 
+                            name="category" 
+                            id="expense_category_input" 
+                            class="form-control" 
+                            required 
+                            placeholder="Select from list or type custom category..."
+                            value="Electricity / Water / Utilities"
+                            autocomplete="off"
+                            style="padding-right: 2.25rem;"
+                        >
+                        <button 
+                            type="button" 
+                            id="expense_category_toggle" 
+                            tabindex="-1"
+                            style="position: absolute; right: 0.5rem; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: #64748b; padding: 0.25rem; display: flex; align-items: center; justify-content: center;"
+                            title="Choose from list or type custom"
+                        >
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                        </button>
+
+                        <div id="expense_category_dropdown" class="combobox-dropdown" style="display: none; position: absolute; top: calc(100% + 4px); left: 0; right: 0; background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 8px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.12), 0 8px 10px -6px rgba(0,0,0,0.06); max-height: 220px; overflow-y: auto; z-index: 1050; padding: 0.35rem;">
+                            <div class="combobox-item" data-value="Shop Rent">Shop Rent</div>
+                            <div class="combobox-item" data-value="Electricity / Water / Utilities">Electricity / Water / Utilities</div>
+                            <div class="combobox-item" data-value="Staff Salaries &amp; Allowances">Staff Salaries &amp; Allowances</div>
+                            <div class="combobox-item" data-value="Transport / Delivery &amp; Courier">Transport / Delivery &amp; Courier</div>
+                            <div class="combobox-item" data-value="Internet, Telephone &amp; Software">Internet, Telephone &amp; Software</div>
+                            <div class="combobox-item" data-value="Store Stationery &amp; Packaging">Store Stationery &amp; Packaging</div>
+                            <div class="combobox-item" data-value="Equipment &amp; Shop Maintenance">Equipment &amp; Shop Maintenance</div>
+                            <div class="combobox-item" data-value="Other Operating Expense">Other Operating Expense</div>
+                        </div>
+                    </div>
                 </div>
                 <div class="form-group">
                     <label>Expense Title / Description *</label>
@@ -194,4 +237,82 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+    // Expense Category Combobox (Dropdown + Free Custom Typing)
+    const expCatInput = document.getElementById('expense_category_input');
+    const expCatToggle = document.getElementById('expense_category_toggle');
+    const expCatDropdown = document.getElementById('expense_category_dropdown');
+    const expCatItems = expCatDropdown ? expCatDropdown.querySelectorAll('.combobox-item') : [];
+
+    function openExpCatDropdown() {
+        if (!expCatDropdown) return;
+        expCatDropdown.style.display = 'block';
+        expCatItems.forEach(item => {
+            item.style.display = 'block';
+            if (item.getAttribute('data-value') === (expCatInput ? expCatInput.value : '')) {
+                item.classList.add('selected');
+            } else {
+                item.classList.remove('selected');
+            }
+        });
+    }
+
+    function closeExpCatDropdown() {
+        if (expCatDropdown) expCatDropdown.style.display = 'none';
+    }
+
+    if (expCatToggle) {
+        expCatToggle.addEventListener('click', function(e) {
+            e.stopPropagation();
+            if (expCatDropdown && expCatDropdown.style.display === 'block') {
+                closeExpCatDropdown();
+            } else {
+                openExpCatDropdown();
+                if (expCatInput) expCatInput.focus();
+            }
+        });
+    }
+
+    if (expCatInput) {
+        expCatInput.addEventListener('focus', function() {
+            openExpCatDropdown();
+        });
+
+        expCatInput.addEventListener('input', function() {
+            if (!expCatDropdown) return;
+            const query = expCatInput.value.trim().toLowerCase();
+            let matches = 0;
+            expCatItems.forEach(item => {
+                const text = item.getAttribute('data-value').toLowerCase();
+                if (text.includes(query) || query === '') {
+                    item.style.display = 'block';
+                    matches++;
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+            expCatDropdown.style.display = matches > 0 ? 'block' : 'none';
+        });
+    }
+
+    expCatItems.forEach(function(item) {
+        item.addEventListener('click', function(e) {
+            e.stopPropagation();
+            if (expCatInput) {
+                expCatInput.value = item.getAttribute('data-value');
+                expCatInput.focus();
+            }
+            closeExpCatDropdown();
+        });
+    });
+
+    window.addEventListener('click', function(e) {
+        if (!e.target.closest('.combobox-wrapper')) {
+            closeExpCatDropdown();
+        }
+    });
+</script>
+@endpush
 

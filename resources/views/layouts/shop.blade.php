@@ -617,9 +617,9 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(15, 23, 42, 0.6);
-            backdrop-filter: blur(2px);
-            z-index: 100;
+            background: rgba(15, 23, 42, 0.65);
+            backdrop-filter: blur(3px);
+            z-index: 1200;
             align-items: center;
             justify-content: center;
             padding: 1rem;
@@ -637,6 +637,64 @@
             max-height: 90vh;
             overflow-y: auto;
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Quick Search Modal & Filter Pills */
+        .search-filter-pill {
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            color: #475569;
+            font-size: 0.72rem;
+            font-weight: 650;
+            padding: 0.22rem 0.65rem;
+            border-radius: 9999px;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.15s ease;
+        }
+        .search-filter-pill:hover {
+            background: #f1f5f9;
+            color: #0f172a;
+        }
+        .search-filter-pill.active {
+            background: #4f46e5;
+            border-color: #4f46e5;
+            color: #ffffff;
+        }
+        .quick-search-result-item {
+            padding: 0.6rem 0.85rem;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            background: #ffffff;
+            margin-bottom: 0.45rem;
+            transition: all 0.15s ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+            color: inherit;
+        }
+        .quick-search-result-item:hover {
+            border-color: #c7d2fe;
+            background: #f8fafc;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+        }
+        .search-category-header {
+            font-size: 0.7rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #64748b;
+            margin: 0.75rem 0 0.4rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        @keyframes modalSpin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
         }
 
         .modal-header {
@@ -1176,10 +1234,10 @@
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
                     <span class="topbar-action-text"><strong class="topbar-branch-name">{{ session('active_outlet_name', auth()->user()->shop->mainOutlet->name ?? 'Main') }}</strong></span>
                 </a>
-                <a href="{{ route('public.repair-track') }}" target="_blank" class="btn btn-sm btn-secondary" title="Open Customer Repair Tracking Portal" style="display: inline-flex; align-items: center; gap: 0.35rem; border-radius: 9999px; font-size: 0.78rem; padding: 0.35rem 0.75rem;">
+                <button type="button" onclick="openGlobalSearchModal()" class="btn btn-sm btn-secondary topbar-search-btn" title="Quick Search &amp; Repair Tracking Portal" style="display: inline-flex; align-items: center; gap: 0.35rem; border-radius: 9999px; font-size: 0.78rem; padding: 0.35rem 0.75rem; cursor: pointer;">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                    <span class="topbar-action-text">Track Portal</span>
-                </a>
+                    <span class="topbar-action-text">Track &amp; Search</span>
+                </button>
             </div>
         </header>
 
@@ -1200,6 +1258,227 @@
 
             @yield('content')
         </main>
+    </div>
+
+    <!-- Global Quick Search & Live Repair Tracker Modal -->
+    <div id="quickSearchModal" class="modal-backdrop" style="z-index: 1200;">
+        <div class="modal-box search-modal-box" style="max-width: 680px; width: 95%; max-height: 88vh; display: flex; flex-direction: column; border-radius: 14px; overflow: hidden; background: #ffffff; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);">
+            <!-- Header -->
+            <div class="modal-header" style="background: #ffffff; border-bottom: 1px solid #e2e8f0; padding: 0.75rem 1.15rem; display: flex; align-items: center; justify-content: space-between;">
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <div style="background: #eef2ff; color: #4f46e5; width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                    </div>
+                    <div>
+                        <h3 style="margin: 0; font-size: 0.95rem; font-weight: 800; color: #0f172a;">Quick Search &amp; Live Tracking</h3>
+                        <p style="margin: 0; font-size: 0.7rem; color: #64748b;">Instant lookup for repairs, phones (IMEI), sales invoices &amp; customers</p>
+                    </div>
+                </div>
+                <button type="button" class="modal-close" onclick="closeModal('quickSearchModal')" style="width: 28px; height: 28px; border-radius: 6px; display: flex; align-items: center; justify-content: center; background: #f1f5f9; border: none; font-size: 1.1rem; color: #475569; cursor: pointer;">&times;</button>
+            </div>
+
+            <!-- Search Input Bar -->
+            <div style="padding: 0.75rem 1.15rem 0.55rem; background: #f8fafc; border-bottom: 1px solid #e2e8f0;">
+                <div style="position: relative;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2.2" style="position: absolute; left: 0.85rem; top: 50%; transform: translateY(-50%); pointer-events: none;"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                    <input 
+                        type="text" 
+                        id="globalSearchInput" 
+                        class="form-control" 
+                        placeholder="Search Job #, IMEI, Phone, Customer name, Invoice #..." 
+                        autocomplete="off"
+                        style="padding-left: 2.35rem; padding-right: 2.25rem; height: 38px; font-size: 0.85rem; border-radius: 8px; border: 1.5px solid #cbd5e1; box-shadow: 0 1px 2px rgba(0,0,0,0.03);"
+                    >
+                    <button 
+                        type="button" 
+                        id="globalSearchClearBtn" 
+                        onclick="clearGlobalSearch()" 
+                        style="display: none; position: absolute; right: 0.65rem; top: 50%; transform: translateY(-50%); background: none; border: none; font-size: 1.1rem; color: #94a3b8; cursor: pointer; padding: 0.2rem;"
+                    >&times;</button>
+                </div>
+                
+                <!-- Filter Pills -->
+                <div id="searchFilterPillsRow" style="display: flex; gap: 0.35rem; margin-top: 0.5rem; overflow-x: auto; padding-bottom: 0.2rem;">
+                    <button type="button" class="search-filter-pill active" onclick="setSearchFilter('all', this)">All</button>
+                    <button type="button" class="search-filter-pill" onclick="setSearchFilter('repairs', this)">Repairs (<span id="countRepairs">0</span>)</button>
+                    <button type="button" class="search-filter-pill" onclick="setSearchFilter('phones', this)">Phones &amp; IMEI (<span id="countPhones">0</span>)</button>
+                    <button type="button" class="search-filter-pill" onclick="setSearchFilter('sales', this)">Invoices (<span id="countSales">0</span>)</button>
+                    <button type="button" class="search-filter-pill" onclick="setSearchFilter('customers', this)">Customers (<span id="countCustomers">0</span>)</button>
+                </div>
+            </div>
+
+            <!-- Body Area: Scrollable -->
+            <div style="flex: 1; overflow-y: auto; padding: 1rem 1.15rem; min-height: 240px; max-height: 55vh;">
+                <!-- Live Repair Tracking Card View (Shown when tracking is active) -->
+                <div id="quickTrackLiveCard" style="display: none; margin-bottom: 1rem;">
+                    <div style="background: #ffffff; border: 1.5px solid #818cf8; border-radius: 10px; padding: 1rem; box-shadow: 0 4px 12px -2px rgba(79, 70, 229, 0.12);">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 0.5rem; flex-wrap: wrap;">
+                            <div>
+                                <div style="display: flex; align-items: center; gap: 0.4rem;">
+                                    <span class="badge" id="trackCardJobNo" style="background: #4f46e5; color: #ffffff; font-weight: 700; font-size: 0.75rem; padding: 0.2rem 0.5rem;">REP-0000</span>
+                                    <h4 id="trackCardDevice" style="margin: 0; font-size: 0.95rem; font-weight: 800; color: #0f172a;">Apple iPhone</h4>
+                                </div>
+                                <div style="font-size: 0.72rem; color: #64748b; margin-top: 0.25rem;">
+                                    Customer: <strong id="trackCardCustomer" style="color: #334155;">-</strong> &bull; Phone: <span id="trackCardPhone">-</span> &bull; IMEI: <span id="trackCardImei" style="font-family: monospace;">-</span>
+                                </div>
+                            </div>
+                            <div style="text-align: right;">
+                                <span id="trackCardStatusBadge" class="badge" style="background: #e0e7ff; color: #4338ca; font-size: 0.75rem; font-weight: 700; padding: 0.25rem 0.6rem;">Status</span>
+                                <div style="font-size: 0.68rem; color: #94a3b8; margin-top: 0.2rem;" id="trackCardDate">Received Oct 28</div>
+                            </div>
+                        </div>
+
+                        <!-- Progress Bar -->
+                        <div style="margin: 0.85rem 0 0.5rem;">
+                            <div style="display: flex; justify-content: space-between; font-size: 0.72rem; font-weight: 700; color: #475569; margin-bottom: 0.3rem;">
+                                <span>Repair Progress</span>
+                                <span id="trackCardPercent">0%</span>
+                            </div>
+                            <div style="background: #e2e8f0; border-radius: 9999px; height: 7px; overflow: hidden;">
+                                <div id="trackCardProgressBar" style="background: linear-gradient(90deg, #4f46e5, #06b6d4); height: 100%; width: 0%; transition: width 0.4s ease;"></div>
+                            </div>
+                        </div>
+
+                        <!-- Info Grid -->
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.65rem; background: #f8fafc; border-radius: 8px; padding: 0.65rem 0.85rem; margin-top: 0.75rem; font-size: 0.78rem;">
+                            <div>
+                                <span style="color: #64748b; font-size: 0.7rem; display: block;">Reported Issue:</span>
+                                <strong id="trackCardFault" style="color: #1e293b;">-</strong>
+                            </div>
+                            <div>
+                                <span style="color: #64748b; font-size: 0.7rem; display: block;">Technician Notes:</span>
+                                <span id="trackCardNotes" style="color: #475569;">-</span>
+                            </div>
+                            <div>
+                                <span style="color: #64748b; font-size: 0.7rem; display: block;">Estimated Cost:</span>
+                                <strong id="trackCardCost" style="color: #0f172a; font-family: monospace;">LKR 0.00</strong>
+                            </div>
+                            <div>
+                                <span style="color: #64748b; font-size: 0.7rem; display: block;">Balance Due:</span>
+                                <strong id="trackCardBalance" style="color: #b91c1c; font-family: monospace;">LKR 0.00</strong>
+                            </div>
+                        </div>
+
+                        <!-- Actions -->
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.85rem; gap: 0.5rem; flex-wrap: wrap;">
+                            <button type="button" onclick="hideQuickTrackCard()" class="btn btn-sm btn-secondary" style="font-size: 0.72rem; padding: 0.25rem 0.6rem; height: 28px;">&larr; Back to Results</button>
+                            <div style="display: flex; gap: 0.4rem;">
+                                <a id="trackCardShopLink" href="#" class="btn btn-sm btn-secondary" style="font-size: 0.72rem; padding: 0.25rem 0.65rem; height: 28px;">View in Pipeline</a>
+                                <a id="trackCardPublicLink" href="#" target="_blank" class="btn btn-sm btn-primary" style="font-size: 0.72rem; padding: 0.25rem 0.65rem; height: 28px;">Customer Tracking Link &rarr;</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Loading Spinner -->
+                <div id="quickSearchLoading" style="display: none; text-align: center; padding: 2rem 0; color: #64748b; font-size: 0.8125rem;">
+                    <div style="display: inline-block; width: 22px; height: 22px; border: 2.5px solid #e2e8f0; border-top-color: #4f46e5; border-radius: 50%; animation: modalSpin 0.8s linear infinite;"></div>
+                    <div style="margin-top: 0.5rem;">Searching shop records...</div>
+                </div>
+
+                <!-- Empty / Initial Helper View -->
+                <div id="quickSearchEmptyState">
+                    <!-- Dedicated Quick Repair Tracking Box -->
+                    <div style="background: linear-gradient(135deg, #f8fafc 0%, #eef2ff 100%); border: 1px solid #c7d2fe; border-radius: 10px; padding: 0.85rem 1rem; margin-bottom: 0.85rem;">
+                        <div style="display: flex; align-items: center; gap: 0.4rem; margin-bottom: 0.4rem;">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#4f46e5" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                            <strong style="color: #312e81; font-size: 0.8125rem;">Instant Customer Repair Tracking</strong>
+                        </div>
+                        <p style="margin: 0 0 0.6rem 0; font-size: 0.72rem; color: #475569;">
+                            Enter a Job # (e.g. REP-...), customer phone, or device IMEI to track repair status live:
+                        </p>
+                        <div style="display: flex; gap: 0.4rem;">
+                            <input type="text" id="quickDirectTrackInp" class="form-control" placeholder="Job #, IMEI, Phone, or NIC..." style="height: 32px; font-size: 0.78rem; border-radius: 6px;" onkeydown="if(event.key==='Enter') executeDirectTrack();">
+                            <button type="button" onclick="executeDirectTrack()" class="btn btn-primary btn-sm" style="height: 32px; font-size: 0.75rem; font-weight: 650; padding: 0.25rem 0.85rem; border-radius: 6px; white-space: nowrap;">Track Status</button>
+                        </div>
+                        <div id="directTrackError" style="display: none; color: #dc2626; font-size: 0.72rem; margin-top: 0.35rem; font-weight: 600;"></div>
+                    </div>
+
+                    <!-- Fast Navigation Shortcuts -->
+                    <div style="font-size: 0.7rem; font-weight: 750; text-transform: uppercase; color: #64748b; letter-spacing: 0.04em; margin-bottom: 0.5rem;">
+                        Quick Navigation Shortcuts
+                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(135px, 1fr)); gap: 0.45rem;">
+                        <a href="{{ route('shop.pos') }}" class="btn btn-secondary btn-sm" style="justify-content: flex-start; font-size: 0.75rem; padding: 0.45rem 0.65rem; border-radius: 8px;">
+                            <span>🛒 Launch POS Counter</span>
+                        </a>
+                        <a href="{{ route('shop.repairs') }}" class="btn btn-secondary btn-sm" style="justify-content: flex-start; font-size: 0.75rem; padding: 0.45rem 0.65rem; border-radius: 8px;">
+                            <span>🔧 Repair Pipeline</span>
+                        </a>
+                        <a href="{{ route('shop.phones') }}" class="btn btn-secondary btn-sm" style="justify-content: flex-start; font-size: 0.75rem; padding: 0.45rem 0.65rem; border-radius: 8px;">
+                            <span>📱 Phones Stock (IMEI)</span>
+                        </a>
+                        <a href="{{ route('shop.customers') }}" class="btn btn-secondary btn-sm" style="justify-content: flex-start; font-size: 0.75rem; padding: 0.45rem 0.65rem; border-radius: 8px;">
+                            <span>👥 Customer Directory</span>
+                        </a>
+                        <a href="{{ route('shop.sales') }}" class="btn btn-secondary btn-sm" style="justify-content: flex-start; font-size: 0.75rem; padding: 0.45rem 0.65rem; border-radius: 8px;">
+                            <span>📄 Sales Invoices</span>
+                        </a>
+                        <a href="{{ route('shop.cashbook') }}" class="btn btn-secondary btn-sm" style="justify-content: flex-start; font-size: 0.75rem; padding: 0.45rem 0.65rem; border-radius: 8px;">
+                            <span>💵 Daily Cashbook</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Dynamic Search Results -->
+                <div id="quickSearchResultsList" style="display: none;">
+                    <!-- Category: Repairs -->
+                    <div id="secRepairs" style="display: none;">
+                        <div class="search-category-header">
+                            <span>🔧 Repair Tickets</span>
+                            <a href="{{ route('shop.repairs') }}" style="font-size: 0.68rem; color: #4f46e5; text-decoration: none;">View All &rarr;</a>
+                        </div>
+                        <div id="listRepairs"></div>
+                    </div>
+
+                    <!-- Category: Phones -->
+                    <div id="secPhones" style="display: none;">
+                        <div class="search-category-header">
+                            <span>📱 Phone Devices &amp; IMEI</span>
+                            <a href="{{ route('shop.phones') }}" style="font-size: 0.68rem; color: #4f46e5; text-decoration: none;">View All &rarr;</a>
+                        </div>
+                        <div id="listPhones"></div>
+                    </div>
+
+                    <!-- Category: Sales Invoices -->
+                    <div id="secSales" style="display: none;">
+                        <div class="search-category-header">
+                            <span>📄 Sales Invoices</span>
+                            <a href="{{ route('shop.sales') }}" style="font-size: 0.68rem; color: #4f46e5; text-decoration: none;">View All &rarr;</a>
+                        </div>
+                        <div id="listSales"></div>
+                    </div>
+
+                    <!-- Category: Customers -->
+                    <div id="secCustomers" style="display: none;">
+                        <div class="search-category-header">
+                            <span>👥 Customers</span>
+                            <a href="{{ route('shop.customers') }}" style="font-size: 0.68rem; color: #4f46e5; text-decoration: none;">View All &rarr;</a>
+                        </div>
+                        <div id="listCustomers"></div>
+                    </div>
+
+                    <!-- No Results State -->
+                    <div id="searchNoResults" style="display: none; text-align: center; padding: 2rem 1rem; color: #94a3b8; font-size: 0.8125rem;">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-bottom: 0.4rem; color: #cbd5e1;"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                        <div style="font-weight: 700; color: #64748b;">No matching results found</div>
+                        <div style="font-size: 0.72rem; margin-top: 0.2rem;">Try searching by a different IMEI, customer phone number, or job number.</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="modal-footer" style="padding: 0.6rem 1.15rem; background: #f8fafc; border-top: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; font-size: 0.72rem; color: #64748b;">
+                <div style="display: flex; align-items: center; gap: 0.35rem;">
+                    <span class="badge" style="background: #e2e8f0; color: #475569; font-size: 0.65rem; padding: 0.1rem 0.35rem; font-family: monospace;">ESC</span>
+                    <span>to close</span>
+                </div>
+                <a href="{{ route('public.repair-track') }}" target="_blank" style="color: #4f46e5; font-weight: 700; text-decoration: none; display: inline-flex; align-items: center; gap: 0.25rem;">
+                    <span>Public Tracking Portal</span>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                </a>
+            </div>
+        </div>
     </div>
 
     <!-- Modal helper & Mobile Navigation script -->
@@ -1241,6 +1520,326 @@
                 });
             });
         });
+
+        // Global Quick Search & Live Tracking Engine
+        let searchTimeout = null;
+        let activeSearchFilter = 'all';
+
+        function openGlobalSearchModal() {
+            openModal('quickSearchModal');
+            setTimeout(function() {
+                const inp = document.getElementById('globalSearchInput');
+                if (inp) {
+                    inp.focus();
+                    inp.select();
+                }
+            }, 120);
+        }
+
+        window.addEventListener('keydown', function(e) {
+            // ESC key to close modal
+            if (e.key === 'Escape') {
+                closeModal('quickSearchModal');
+            }
+            // Ctrl + K or Cmd + K shortcut to open search
+            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+                e.preventDefault();
+                openGlobalSearchModal();
+            }
+        });
+
+        const globalSearchInp = document.getElementById('globalSearchInput');
+        const clearBtn = document.getElementById('globalSearchClearBtn');
+
+        if (globalSearchInp) {
+            globalSearchInp.addEventListener('input', function() {
+                const query = this.value.trim();
+                
+                if (clearBtn) clearBtn.style.display = query.length > 0 ? 'block' : 'none';
+
+                if (query.length < 2) {
+                    document.getElementById('quickSearchEmptyState').style.display = 'block';
+                    document.getElementById('quickSearchResultsList').style.display = 'none';
+                    document.getElementById('quickSearchLoading').style.display = 'none';
+                    resetCounts();
+                    return;
+                }
+
+                clearTimeout(searchTimeout);
+                document.getElementById('quickSearchEmptyState').style.display = 'none';
+                document.getElementById('quickTrackLiveCard').style.display = 'none';
+                document.getElementById('quickSearchLoading').style.display = 'block';
+                document.getElementById('quickSearchResultsList').style.display = 'none';
+
+                searchTimeout = setTimeout(function() {
+                    performGlobalSearch(query);
+                }, 240);
+            });
+        }
+
+        function clearGlobalSearch() {
+            if (globalSearchInp) {
+                globalSearchInp.value = '';
+                globalSearchInp.focus();
+            }
+            if (clearBtn) clearBtn.style.display = 'none';
+            document.getElementById('quickSearchEmptyState').style.display = 'block';
+            document.getElementById('quickSearchResultsList').style.display = 'none';
+            document.getElementById('quickTrackLiveCard').style.display = 'none';
+            document.getElementById('quickSearchLoading').style.display = 'none';
+            resetCounts();
+        }
+
+        function resetCounts() {
+            document.getElementById('countRepairs').innerText = '0';
+            document.getElementById('countPhones').innerText = '0';
+            document.getElementById('countSales').innerText = '0';
+            document.getElementById('countCustomers').innerText = '0';
+        }
+
+        function performGlobalSearch(query) {
+            fetch("{{ route('shop.quick-search') }}?q=" + encodeURIComponent(query), {
+                headers: { 'Accept': 'application/json' }
+            })
+            .then(res => res.json())
+            .then(res => {
+                document.getElementById('quickSearchLoading').style.display = 'none';
+                document.getElementById('quickSearchResultsList').style.display = 'block';
+
+                if (!res.success || res.total_count === 0) {
+                    document.getElementById('searchNoResults').style.display = 'block';
+                    document.getElementById('secRepairs').style.display = 'none';
+                    document.getElementById('secPhones').style.display = 'none';
+                    document.getElementById('secSales').style.display = 'none';
+                    document.getElementById('secCustomers').style.display = 'none';
+                    resetCounts();
+                    return;
+                }
+
+                document.getElementById('searchNoResults').style.display = 'none';
+
+                // Update Badges
+                const repCount = res.data.repairs ? res.data.repairs.length : 0;
+                const phoCount = res.data.phones ? res.data.phones.length : 0;
+                const salCount = res.data.sales ? res.data.sales.length : 0;
+                const cusCount = res.data.customers ? res.data.customers.length : 0;
+
+                document.getElementById('countRepairs').innerText = repCount;
+                document.getElementById('countPhones').innerText = phoCount;
+                document.getElementById('countSales').innerText = salCount;
+                document.getElementById('countCustomers').innerText = cusCount;
+
+                // Render Repairs
+                const listRepairs = document.getElementById('listRepairs');
+                listRepairs.innerHTML = '';
+                if (repCount > 0) {
+                    res.data.repairs.forEach(job => {
+                        listRepairs.innerHTML += `
+                            <div class="quick-search-result-item">
+                                <div style="display: flex; align-items: center; gap: 0.65rem;">
+                                    <span class="badge" style="background: #4f46e5; color: #ffffff; font-weight: 700; font-size: 0.72rem; padding: 0.2rem 0.45rem;">${job.job_number}</span>
+                                    <div>
+                                        <div style="font-weight: 750; font-size: 0.825rem; color: #0f172a;">${job.device}</div>
+                                        <div style="font-size: 0.7rem; color: #64748b;">Customer: <strong>${job.customer_name}</strong> &bull; ${job.customer_phone}</div>
+                                    </div>
+                                </div>
+                                <div class="item-action" style="display: flex; align-items: center; gap: 0.35rem;">
+                                    <span class="badge" style="background: #eef2ff; color: #4338ca; font-size: 0.68rem; font-weight: 650;">${job.status_label}</span>
+                                    <button type="button" onclick="executeTrackJob('${job.job_number}')" class="btn btn-sm btn-primary" style="font-size: 0.68rem; padding: 0.2rem 0.5rem; height: 26px;">Track Status</button>
+                                    <a href="${job.url}" class="btn btn-sm btn-secondary" style="font-size: 0.68rem; padding: 0.2rem 0.5rem; height: 26px;">Open &rarr;</a>
+                                </div>
+                            </div>
+                        `;
+                    });
+                }
+
+                // Render Phones
+                const listPhones = document.getElementById('listPhones');
+                listPhones.innerHTML = '';
+                if (phoCount > 0) {
+                    res.data.phones.forEach(phone => {
+                        const statusBadge = phone.status === 'in_stock' 
+                            ? `<span class="badge badge-success" style="font-size: 0.68rem;">In Stock</span>`
+                            : `<span class="badge badge-secondary" style="font-size: 0.68rem;">${phone.status}</span>`;
+
+                        listPhones.innerHTML += `
+                            <a href="${phone.url}" class="quick-search-result-item">
+                                <div style="display: flex; align-items: center; gap: 0.65rem;">
+                                    <div style="background: #f1f5f9; width: 32px; height: 32px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 0.85rem;">📱</div>
+                                    <div>
+                                        <div style="font-weight: 750; font-size: 0.825rem; color: #0f172a;">${phone.title} <span style="font-weight: 500; font-size: 0.72rem; color: #64748b;">${phone.specs}</span></div>
+                                        <div style="font-size: 0.7rem; color: #64748b; font-family: monospace;">IMEI 1: <strong>${phone.imei_1 || 'N/A'}</strong> ${phone.imei_2 ? ' &bull; IMEI 2: ' + phone.imei_2 : ''}</div>
+                                    </div>
+                                </div>
+                                <div class="item-action" style="display: flex; align-items: center; gap: 0.45rem;">
+                                    <strong style="font-size: 0.825rem; color: #166534; font-family: monospace;">LKR ${phone.selling_price}</strong>
+                                    ${statusBadge}
+                                    <span style="font-size: 0.75rem; color: #64748b;">&rarr;</span>
+                                </div>
+                            </a>
+                        `;
+                    });
+                }
+
+                // Render Sales
+                const listSales = document.getElementById('listSales');
+                listSales.innerHTML = '';
+                if (salCount > 0) {
+                    res.data.sales.forEach(sale => {
+                        listSales.innerHTML += `
+                            <a href="${sale.url}" class="quick-search-result-item">
+                                <div style="display: flex; align-items: center; gap: 0.65rem;">
+                                    <span class="badge" style="background: #f8fafc; border: 1px solid #cbd5e1; color: #334155; font-weight: 700; font-size: 0.72rem; padding: 0.2rem 0.45rem; font-family: monospace;">${sale.invoice_number}</span>
+                                    <div>
+                                        <div style="font-weight: 750; font-size: 0.825rem; color: #0f172a;">${sale.customer_name}</div>
+                                        <div style="font-size: 0.7rem; color: #64748b;">${sale.date} &bull; ${sale.payment_method}</div>
+                                    </div>
+                                </div>
+                                <div class="item-action" style="display: flex; align-items: center; gap: 0.45rem;">
+                                    <strong style="font-size: 0.825rem; color: #0f172a; font-family: monospace;">LKR ${sale.total_amount}</strong>
+                                    <span style="font-size: 0.75rem; color: #64748b;">&rarr;</span>
+                                </div>
+                            </a>
+                        `;
+                    });
+                }
+
+                // Render Customers
+                const listCustomers = document.getElementById('listCustomers');
+                listCustomers.innerHTML = '';
+                if (cusCount > 0) {
+                    res.data.customers.forEach(cust => {
+                        listCustomers.innerHTML += `
+                            <a href="${cust.url}" class="quick-search-result-item">
+                                <div style="display: flex; align-items: center; gap: 0.65rem;">
+                                    <div style="background: #eef2ff; color: #4f46e5; width: 32px; height: 32px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 0.85rem;">👤</div>
+                                    <div>
+                                        <div style="font-weight: 750; font-size: 0.825rem; color: #0f172a;">${cust.name}</div>
+                                        <div style="font-size: 0.7rem; color: #64748b;">Phone: <strong>${cust.phone || 'N/A'}</strong> ${cust.nic ? '&bull; NIC: ' + cust.nic : ''}</div>
+                                    </div>
+                                </div>
+                                <div class="item-action" style="display: flex; align-items: center; gap: 0.45rem;">
+                                    <span style="font-size: 0.72rem; color: #64748b;">Credit: <strong>LKR ${cust.balance}</strong></span>
+                                    <span style="font-size: 0.75rem; color: #64748b;">&rarr;</span>
+                                </div>
+                            </a>
+                        `;
+                    });
+                }
+
+                applyCurrentCategoryFilter();
+            })
+            .catch(err => {
+                console.error(err);
+                document.getElementById('quickSearchLoading').style.display = 'none';
+            });
+        }
+
+        function setSearchFilter(filter, el) {
+            activeSearchFilter = filter;
+            document.querySelectorAll('.search-filter-pill').forEach(btn => btn.classList.remove('active'));
+            if (el) el.classList.add('active');
+            applyCurrentCategoryFilter();
+        }
+
+        function applyCurrentCategoryFilter() {
+            const secRep = document.getElementById('secRepairs');
+            const secPho = document.getElementById('secPhones');
+            const secSal = document.getElementById('secSales');
+            const secCus = document.getElementById('secCustomers');
+
+            const hasRep = parseInt(document.getElementById('countRepairs').innerText || 0) > 0;
+            const hasPho = parseInt(document.getElementById('countPhones').innerText || 0) > 0;
+            const hasSal = parseInt(document.getElementById('countSales').innerText || 0) > 0;
+            const hasCus = parseInt(document.getElementById('countCustomers').innerText || 0) > 0;
+
+            secRep.style.display = (activeSearchFilter === 'all' || activeSearchFilter === 'repairs') && hasRep ? 'block' : 'none';
+            secPho.style.display = (activeSearchFilter === 'all' || activeSearchFilter === 'phones') && hasPho ? 'block' : 'none';
+            secSal.style.display = (activeSearchFilter === 'all' || activeSearchFilter === 'sales') && hasSal ? 'block' : 'none';
+            secCus.style.display = (activeSearchFilter === 'all' || activeSearchFilter === 'customers') && hasCus ? 'block' : 'none';
+        }
+
+        function executeDirectTrack() {
+            const inp = document.getElementById('quickDirectTrackInp');
+            const val = inp ? inp.value.trim() : '';
+            const errDiv = document.getElementById('directTrackError');
+            if (errDiv) errDiv.style.display = 'none';
+
+            if (!val) {
+                if (errDiv) {
+                    errDiv.innerText = 'Please enter a Job #, IMEI, phone or customer NIC.';
+                    errDiv.style.display = 'block';
+                }
+                return;
+            }
+            executeTrackJob(val);
+        }
+
+        function executeTrackJob(trackingId) {
+            const errDiv = document.getElementById('directTrackError');
+            if (errDiv) errDiv.style.display = 'none';
+
+            fetch("{{ route('shop.quick-search.track') }}?tracking_id=" + encodeURIComponent(trackingId), {
+                headers: { 'Accept': 'application/json' }
+            })
+            .then(res => res.json())
+            .then(res => {
+                if (!res.found) {
+                    if (errDiv) {
+                        errDiv.innerText = res.message || 'No repair ticket found.';
+                        errDiv.style.display = 'block';
+                    } else {
+                        alert(res.message);
+                    }
+                    return;
+                }
+
+                const job = res.job;
+                document.getElementById('trackCardJobNo').innerText = job.job_number;
+                document.getElementById('trackCardDevice').innerText = job.device;
+                document.getElementById('trackCardCustomer').innerText = job.customer_name;
+                document.getElementById('trackCardPhone').innerText = job.customer_phone;
+                document.getElementById('trackCardImei').innerText = job.imei;
+                
+                const badge = document.getElementById('trackCardStatusBadge');
+                badge.innerText = job.status_label;
+                badge.style.background = job.status_color + '22';
+                badge.style.color = job.status_color;
+
+                document.getElementById('trackCardDate').innerText = 'Received: ' + job.received_date;
+                document.getElementById('trackCardPercent').innerText = job.progress_percent + '% (' + job.status_label + ')';
+                document.getElementById('trackCardProgressBar').style.width = job.progress_percent + '%';
+                document.getElementById('trackCardProgressBar').style.background = job.status_color;
+
+                document.getElementById('trackCardFault').innerText = job.fault_description;
+                document.getElementById('trackCardNotes').innerText = job.technician_notes;
+                document.getElementById('trackCardCost').innerText = 'LKR ' + job.estimated_cost;
+                document.getElementById('trackCardBalance').innerText = 'LKR ' + job.balance_due;
+
+                document.getElementById('trackCardShopLink').href = job.shop_url;
+                document.getElementById('trackCardPublicLink').href = job.public_url;
+
+                document.getElementById('quickTrackLiveCard').style.display = 'block';
+                document.getElementById('quickSearchEmptyState').style.display = 'none';
+                document.getElementById('quickSearchResultsList').style.display = 'none';
+            })
+            .catch(err => {
+                console.error(err);
+                if (errDiv) {
+                    errDiv.innerText = 'Unable to track repair ticket. Please try again.';
+                    errDiv.style.display = 'block';
+                }
+            });
+        }
+
+        function hideQuickTrackCard() {
+            document.getElementById('quickTrackLiveCard').style.display = 'none';
+            if (globalSearchInp && globalSearchInp.value.trim().length >= 2) {
+                document.getElementById('quickSearchResultsList').style.display = 'block';
+            } else {
+                document.getElementById('quickSearchEmptyState').style.display = 'block';
+            }
+        }
     </script>
     @stack('scripts')
 </body>

@@ -50,6 +50,10 @@ Route::prefix('shop')->name('shop.')->middleware(['auth', 'verified', 'shop'])->
     Route::get('/', [\App\Http\Controllers\Shop\DashboardController::class, 'index'])->name('dashboard');
     Route::get('/dashboard', [\App\Http\Controllers\Shop\DashboardController::class, 'index'])->name('dashboard.index');
 
+    // Quick Search & Live Tracking API
+    Route::get('/quick-search', [\App\Http\Controllers\Shop\QuickSearchController::class, 'search'])->name('quick-search');
+    Route::get('/quick-search/track-repair', [\App\Http\Controllers\Shop\QuickSearchController::class, 'track'])->name('quick-search.track');
+
     // POS Counter & Checkout (Section 7)
     Route::get('/pos', [\App\Http\Controllers\Shop\PosViewController::class, 'index'])->name('pos');
     Route::post('/pos/checkout', [\App\Http\Controllers\Shop\PosViewController::class, 'checkout'])->name('pos.checkout');

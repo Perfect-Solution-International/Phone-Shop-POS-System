@@ -22,7 +22,7 @@ class ExpenseViewController extends Controller
         }
 
         if ($cat = $request->input('category')) {
-            $query->where('category', $cat);
+            $query->where('category', 'like', "%{$cat}%");
         }
 
         if ($date = $request->input('date')) {
@@ -53,7 +53,7 @@ class ExpenseViewController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $data = $request->validate([
-            'category' => ['required', 'string', 'in:rent,electricity,salaries,transport,internet,supplies,maintenance,other'],
+            'category' => ['required', 'string', 'max:100'],
             'title' => ['required', 'string', 'max:255'],
             'amount' => ['required', 'numeric', 'min:0.01'],
             'expense_date' => ['required', 'date'],

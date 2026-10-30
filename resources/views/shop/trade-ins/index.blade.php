@@ -10,6 +10,24 @@
             grid-template-columns: 1fr !important;
         }
     }
+    .combobox-item {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.8125rem;
+        color: #1e293b;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.12s ease;
+    }
+    .combobox-item:hover {
+        background: #eef2ff;
+        color: #4338ca;
+        font-weight: 600;
+    }
+    .combobox-item.selected {
+        background: #e0e7ff;
+        color: #3730a3;
+        font-weight: 700;
+    }
 </style>
 <!-- Metric Cards -->
 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
@@ -223,15 +241,37 @@
                 </div>
                 <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem; margin-bottom: 1rem;">
                     <div class="form-row">
-                        <div class="form-group">
+                        <div class="form-group" style="position: relative;">
                             <label>Screen Condition</label>
-                            <select name="screen_condition" class="form-control">
-                                <option value="Flawless / Mint">Flawless / Mint (No scratches)</option>
-                                <option value="Minor Scratches" selected>Minor Scratches (Normal wear)</option>
-                                <option value="Deep Scratches">Deep Scratches</option>
-                                <option value="Cracked Glass">Cracked Glass</option>
-                                <option value="Display Defect (Lines/Dots)">Display Defect (Lines/Black spots)</option>
-                            </select>
+                            <div class="combobox-wrapper" style="position: relative;">
+                                <input 
+                                    type="text" 
+                                    name="screen_condition" 
+                                    id="screen_condition_input" 
+                                    class="form-control" 
+                                    value="Minor Scratches (Normal wear)" 
+                                    placeholder="Select or type screen condition..."
+                                    autocomplete="off"
+                                    style="padding-right: 2.25rem;"
+                                >
+                                <button 
+                                    type="button" 
+                                    id="screen_condition_toggle" 
+                                    tabindex="-1"
+                                    style="position: absolute; right: 0.5rem; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: #64748b; padding: 0.25rem; display: flex; align-items: center; justify-content: center;"
+                                    title="Choose from list or type custom"
+                                >
+                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                                </button>
+
+                                <div id="screen_condition_dropdown" class="combobox-dropdown" style="display: none; position: absolute; top: calc(100% + 4px); left: 0; right: 0; background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 8px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.12), 0 8px 10px -6px rgba(0,0,0,0.06); max-height: 220px; overflow-y: auto; z-index: 1050; padding: 0.35rem;">
+                                    <div class="combobox-item" data-value="Flawless / Mint (No scratches)">Flawless / Mint (No scratches)</div>
+                                    <div class="combobox-item" data-value="Minor Scratches (Normal wear)">Minor Scratches (Normal wear)</div>
+                                    <div class="combobox-item" data-value="Deep Scratches">Deep Scratches</div>
+                                    <div class="combobox-item" data-value="Cracked Glass">Cracked Glass</div>
+                                    <div class="combobox-item" data-value="Display Defect (Lines/Black spots)">Display Defect (Lines/Black spots)</div>
+                                </div>
+                            </div>
                         </div>
                         <div class="form-group">
                             <label>Battery Health %</label>
@@ -350,6 +390,80 @@
         `;
         openModal('tradeInReceiptModal');
     }
+
+    // Screen Condition Combobox (Dropdown + Free Typeahead)
+    const screenInput = document.getElementById('screen_condition_input');
+    const screenToggle = document.getElementById('screen_condition_toggle');
+    const screenDropdown = document.getElementById('screen_condition_dropdown');
+    const screenItems = screenDropdown ? screenDropdown.querySelectorAll('.combobox-item') : [];
+
+    function openScreenDropdown() {
+        if (!screenDropdown) return;
+        screenDropdown.style.display = 'block';
+        screenItems.forEach(item => {
+            item.style.display = 'block';
+            if (item.getAttribute('data-value') === (screenInput ? screenInput.value : '')) {
+                item.classList.add('selected');
+            } else {
+                item.classList.remove('selected');
+            }
+        });
+    }
+
+    function closeScreenDropdown() {
+        if (screenDropdown) screenDropdown.style.display = 'none';
+    }
+
+    if (screenToggle) {
+        screenToggle.addEventListener('click', function(e) {
+            e.stopPropagation();
+            if (screenDropdown && screenDropdown.style.display === 'block') {
+                closeScreenDropdown();
+            } else {
+                openScreenDropdown();
+                if (screenInput) screenInput.focus();
+            }
+        });
+    }
+
+    if (screenInput) {
+        screenInput.addEventListener('focus', function() {
+            openScreenDropdown();
+        });
+
+        screenInput.addEventListener('input', function() {
+            if (!screenDropdown) return;
+            const query = screenInput.value.trim().toLowerCase();
+            let matches = 0;
+            screenItems.forEach(item => {
+                const text = item.getAttribute('data-value').toLowerCase();
+                if (text.includes(query) || query === '') {
+                    item.style.display = 'block';
+                    matches++;
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+            screenDropdown.style.display = matches > 0 ? 'block' : 'none';
+        });
+    }
+
+    screenItems.forEach(function(item) {
+        item.addEventListener('click', function(e) {
+            e.stopPropagation();
+            if (screenInput) {
+                screenInput.value = item.getAttribute('data-value');
+                screenInput.focus();
+            }
+            closeScreenDropdown();
+        });
+    });
+
+    window.addEventListener('click', function(e) {
+        if (!e.target.closest('.combobox-wrapper')) {
+            closeScreenDropdown();
+        }
+    });
 </script>
 @endpush
 @endsection
