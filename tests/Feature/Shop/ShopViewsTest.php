@@ -405,6 +405,40 @@ test('spare parts and customer directory endpoints function properly', function 
     ]);
 });
 
+test('customer profile can be created with password and gains customer portal login credentials', function (): void {
+    $shop = Shop::factory()->create();
+    $owner = User::factory()->create(['shop_id' => $shop->id]);
+    $owner->assignRole('Shop Owner');
+
+    $response = $this->actingAs($owner)->post('/shop/customers', [
+        'name' => 'Portal Customer',
+        'phone' => '0779998877',
+        'email' => 'portal.customer@test.com',
+        'nic' => '200012345678',
+        'password' => 'SecurePass123',
+        'password_confirmation' => 'SecurePass123',
+    ]);
+
+    $response->assertRedirect('/shop/customers');
+
+    $customer = Customer::withoutGlobalScopes()->where('email', 'portal.customer@test.com')->first();
+    expect($customer)->not->toBeNull();
+    expect(\Illuminate\Support\Facades\Hash::check('SecurePass123', $customer->password))->toBeTrue();
+
+    // Verify user account created
+    $user = User::where('email', 'portal.customer@test.com')->first();
+    expect($user)->not->toBeNull();
+    expect($user->hasRole('Customer'))->toBeTrue();
+
+    // Verify customer can login and gets redirected to portal
+    $loginResp = $this->postJson('/login', [
+        'email' => 'portal.customer@test.com',
+        'password' => 'SecurePass123',
+    ]);
+    $loginResp->assertOk();
+    $loginResp->assertJsonPath('redirect', route('customer.portal'));
+});
+
 test('public customer repair tracking page is publicly accessible and displays repair status', function (): void {
     $shop = Shop::factory()->create();
 
