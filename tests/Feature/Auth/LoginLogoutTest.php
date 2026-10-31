@@ -40,6 +40,8 @@ test('web form login with invalid credentials fails and keeps user as guest', fu
 });
 
 test('unverified user logging in is redirected safely to email verification notice', function (): void {
+    config(['auth.verification.enabled' => true]);
+
     $shop = Shop::factory()->create();
     $user = User::factory()->unverified()->create(['shop_id' => $shop->id, 'password' => bcrypt('StrongSecret123!')]);
     $user->assignRole('Administrator');

@@ -527,13 +527,13 @@
                     </div>
 
                     <h1 class="card-title">{{ $applicationName }}</h1>
-                    <p class="card-subtitle">Retail POS, IMEI Tracking, Repairs &amp; Portal</p>
+                    <p class="card-subtitle">Retail POS, IMEI Tracking &amp; Repair Center</p>
                 </header>
 
                 @auth
                     <div style="background-color: #eff6ff; border: 1px solid #bfdbfe; color: #1e40af; padding: 0.75rem 1rem; border-radius: 10px; margin-bottom: 1.25rem; font-size: 0.85rem; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;">
                         <span>Signed in as: <strong>{{ auth()->user()->email }}</strong></span>
-                        <a href="{{ auth()->user()->hasRole('Super Administrator') ? route('superadmin.dashboard') : (auth()->user()->hasRole('Customer') ? route('customer.portal') : route('shop.dashboard')) }}" style="font-weight: 600; color: #2563eb; text-decoration: underline;">Go to Dashboard &rarr;</a>
+                        <a href="{{ auth()->user()->hasRole('Super Administrator') ? route('superadmin.dashboard') : route('shop.dashboard') }}" style="font-weight: 600; color: #2563eb; text-decoration: underline;">Go to Dashboard &rarr;</a>
                     </div>
                 @endauth
 
@@ -668,20 +668,12 @@
                     </button>
                 </form>
 
-                <!-- Dedicated Registration & Customer Access Action Cards -->
+                <!-- Dedicated Registration Action Card -->
                 <div class="auth-actions-card">
                     <a href="{{ route('register') }}" class="action-cta-pill action-cta-register">
                         <div style="display: flex; align-items: center; gap: 0.5rem;">
                             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><line x1="20" y1="8" x2="20" y2="14"></line><line x1="23" y1="11" x2="17" y2="11"></line></svg>
                             <span>New Store Owner? <strong>Register Shop (7-Day Trial)</strong></span>
-                        </div>
-                        <span>&rarr;</span>
-                    </a>
-
-                    <a href="{{ route('public.repair-track') }}" class="action-cta-pill action-cta-track">
-                        <div style="display: flex; align-items: center; gap: 0.5rem;">
-                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                            <span>Customer? <strong>Track Repair Online (No Login)</strong></span>
                         </div>
                         <span>&rarr;</span>
                     </a>

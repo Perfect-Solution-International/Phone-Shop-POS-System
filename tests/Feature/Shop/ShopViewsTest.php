@@ -26,8 +26,9 @@ test('shop staff can access shop dashboard view with metrics', function (): void
     $response->assertOk();
     $response->assertViewIs('shop.dashboard.index');
     $response->assertViewHas('metrics');
-    $response->assertSee('Sales &amp; Sold Invoices', false);
-    $response->assertSee('Sold Phones (IMEI Archive)', false);
+    $response->assertSee('POS &amp; Sales', false);
+    $response->assertSee('Inventory &amp; Stock', false);
+    $response->assertSee('Cash &amp; Reports', false);
     $response->assertSee('shop-user-footer', false);
     $response->assertSee('shop-logout-btn', false);
     $response->assertSee('Sign out');
@@ -405,38 +406,30 @@ test('spare parts and customer directory endpoints function properly', function 
     ]);
 });
 
-test('customer profile can be created with password and gains customer portal login credentials', function (): void {
+test('customer profile can be registered easily without requiring portal password or user account', function (): void {
     $shop = Shop::factory()->create();
     $owner = User::factory()->create(['shop_id' => $shop->id]);
     $owner->assignRole('Shop Owner');
 
     $response = $this->actingAs($owner)->post('/shop/customers', [
-        'name' => 'Portal Customer',
+        'name' => 'Walkin Customer',
         'phone' => '0779998877',
-        'email' => 'portal.customer@test.com',
+        'email' => 'walkin.customer@test.com',
         'nic' => '200012345678',
-        'password' => 'SecurePass123',
-        'password_confirmation' => 'SecurePass123',
+        'address' => '123 Galle Road, Colombo',
+        'credit_limit' => 50000,
     ]);
 
     $response->assertRedirect('/shop/customers');
 
-    $customer = Customer::withoutGlobalScopes()->where('email', 'portal.customer@test.com')->first();
+    $customer = Customer::withoutGlobalScopes()->where('email', 'walkin.customer@test.com')->first();
     expect($customer)->not->toBeNull();
-    expect(\Illuminate\Support\Facades\Hash::check('SecurePass123', $customer->password))->toBeTrue();
+    expect($customer->name)->toBe('Walkin Customer');
+    expect($customer->phone)->toBe('0779998877');
 
-    // Verify user account created
-    $user = User::where('email', 'portal.customer@test.com')->first();
-    expect($user)->not->toBeNull();
-    expect($user->hasRole('Customer'))->toBeTrue();
-
-    // Verify customer can login and gets redirected to portal
-    $loginResp = $this->postJson('/login', [
-        'email' => 'portal.customer@test.com',
-        'password' => 'SecurePass123',
-    ]);
-    $loginResp->assertOk();
-    $loginResp->assertJsonPath('redirect', route('customer.portal'));
+    // Verify no user account created for customer
+    $user = User::where('email', 'walkin.customer@test.com')->first();
+    expect($user)->toBeNull();
 });
 
 test('public customer repair tracking page is publicly accessible and displays repair status', function (): void {

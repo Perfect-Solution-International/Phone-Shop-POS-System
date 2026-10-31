@@ -148,6 +148,93 @@
         </table>
     </div>
 
+    <!-- Branch Outlets & Approvals -->
+    <div class="data-card">
+        <div class="data-card-header">
+            <h2 class="data-card-title">Registered Branch Outlets ({{ $shop->outlets->count() }})</h2>
+        </div>
+        <table class="saas-table">
+            <thead>
+                <tr>
+                    <th>Branch</th>
+                    <th>Code</th>
+                    <th>Billing / Quota</th>
+                    <th>Address / City</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse ($shop->outlets as $outlet)
+                    @php
+                        $isCovered = $outlet->isCoveredByPlan();
+                    @endphp
+                    <tr>
+                        <td>
+                            <strong>{{ $outlet->name }}</strong>
+                            @if($outlet->is_main)
+                                <span style="display: block; font-size: 0.7rem; font-weight: 700; color: #4f46e5;">★ Main Branch</span>
+                            @endif
+                            @if($outlet->manager_email)
+                                <div style="font-size: 0.72rem; color: #64748b;">🔑 {{ $outlet->manager_email }}</div>
+                            @endif
+                        </td>
+                        <td><span style="font-family: monospace; font-size: 0.8125rem; background: #e0e7ff; color: #4338ca; padding: 0.15rem 0.45rem; border-radius: 4px;">{{ $outlet->code }}</span></td>
+                        <td>
+                            @if($isCovered)
+                                <span class="status-pill status-active" style="background: #ecfdf5; color: #047857; font-size: 0.7rem;">✓ Plan Quota (Free)</span>
+                            @elseif($outlet->payment_status === 'paid')
+                                <span class="status-pill status-active" style="background: #eff6ff; color: #1d4ed8; font-size: 0.7rem;">✓ Paid (LKR {{ number_format($outlet->additional_fee ?: 2500, 0) }})</span>
+                            @elseif($outlet->payment_status === 'pending_verification')
+                                <span class="status-pill status-trial" style="background: #fffbeb; color: #b45309; font-size: 0.7rem;">⏳ Slip Uploaded</span>
+                                @if($outlet->payment_receipt_url)
+                                    <a href="{{ $outlet->payment_receipt_url }}" target="_blank" style="font-size: 0.7rem; color: #2563eb; display: block;">View Slip ↗</a>
+                                @endif
+                            @else
+                                <span class="status-pill status-suspended" style="background: #fef2f2; color: #b91c1c; font-size: 0.7rem;">⚠️ LKR {{ number_format($outlet->additional_fee ?: 2500, 0) }} Unpaid</span>
+                            @endif
+                        </td>
+                        <td>{{ $outlet->address }}{{ $outlet->city ? ' (' . $outlet->city . ')' : '' }}</td>
+                        <td>
+                            @if($outlet->approval_status === 'pending')
+                                <span class="status-pill status-trial" style="background: #fef3c7; color: #92400e; border: 1px solid #fde68a;">⏳ Pending Approval</span>
+                            @elseif($outlet->approval_status === 'approved')
+                                <span class="status-pill status-active" style="background: #dcfce7; color: #166534; border: 1px solid #bbf7d0;">✓ Approved</span>
+                            @elseif($outlet->approval_status === 'rejected')
+                                <span class="status-pill status-suspended" style="background: #fee2e2; color: #991b1b; border: 1px solid #fecaca;">✕ Rejected</span>
+                            @endif
+                        </td>
+                        <td>
+                            @if($outlet->approval_status === 'pending')
+                                <div style="display: flex; gap: 0.4rem; align-items: center;">
+                                    <form method="POST" action="{{ route('superadmin.outlets.approve', $outlet->id) }}" style="margin: 0;">
+                                        @csrf
+                                        @if(! $isCovered && $outlet->payment_status === 'unpaid')
+                                            <input type="hidden" name="confirm_unpaid" value="1">
+                                            <button type="submit" class="btn-action btn-warning" onclick="return confirm('Branch exceeds quota and is UNPAID. Approve anyway?');" style="font-size: 0.72rem; padding: 0.3rem 0.55rem;" title="Override and approve">✓ Force Approve</button>
+                                        @else
+                                            <button type="submit" class="btn-action btn-success" style="font-size: 0.72rem; padding: 0.3rem 0.55rem;">✓ Approve</button>
+                                        @endif
+                                    </form>
+                                    <form method="POST" action="{{ route('superadmin.outlets.reject', $outlet->id) }}" style="margin: 0;">
+                                        @csrf
+                                        <button type="submit" class="btn-action btn-danger" style="font-size: 0.72rem; padding: 0.3rem 0.55rem;">✕ Reject</button>
+                                    </form>
+                                </div>
+                            @else
+                                <span style="font-size: 0.75rem; color: #64748b;">{{ ucfirst($outlet->approval_status) }}</span>
+                            @endif
+                        </td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="6" style="text-align: center; color: #94a3b8; padding: 2rem;">No branches registered for this store.</td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
+
     <!-- Payments Ledger -->
     <div class="data-card">
         <div class="data-card-header">

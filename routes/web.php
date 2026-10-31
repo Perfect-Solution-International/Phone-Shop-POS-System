@@ -110,6 +110,7 @@ Route::prefix('shop')->name('shop.')->middleware(['auth', 'verified', 'shop'])->
     Route::delete('/outlets/{outlet}', [\App\Http\Controllers\Shop\OutletController::class, 'destroy'])->name('outlets.destroy');
     Route::post('/outlets/{outlet}/switch', [\App\Http\Controllers\Shop\OutletController::class, 'switchOutlet'])->name('outlets.switch');
     Route::post('/outlets/{outlet}/toggle-main', [\App\Http\Controllers\Shop\OutletController::class, 'toggleMain'])->name('outlets.toggle-main');
+    Route::post('/outlets/{outlet}/pay', [\App\Http\Controllers\Shop\OutletController::class, 'payAdditionalBranchFee'])->name('outlets.pay');
 
     // Customer Directory (Section 15)
     Route::get('/customers', [\App\Http\Controllers\Shop\CustomerViewController::class, 'index'])->name('customers');
@@ -147,6 +148,11 @@ Route::prefix('shop')->name('shop.')->middleware(['auth', 'verified', 'shop'])->
     // Shop Settings & Invoicing Defaults (Section 26)
     Route::get('/settings', [\App\Http\Controllers\Shop\ShopSettingsController::class, 'index'])->name('settings');
     Route::put('/settings', [\App\Http\Controllers\Shop\ShopSettingsController::class, 'update'])->name('settings.update');
+
+    // User Profile & Account Security (Section 26)
+    Route::get('/profile', [\App\Http\Controllers\Shop\ProfileController::class, 'index'])->name('profile');
+    Route::put('/profile', [\App\Http\Controllers\Shop\ProfileController::class, 'update'])->name('profile.update');
+    Route::put('/profile/password', [\App\Http\Controllers\Shop\ProfileController::class, 'updatePassword'])->name('profile.password');
 
     // Reports & Analytics (Section 19)
     Route::get('/reports', [\App\Http\Controllers\Shop\ShopReportViewController::class, 'index'])->name('reports');
@@ -235,4 +241,9 @@ Route::prefix('super-admin')->name('superadmin.')->middleware(['auth', 'superadm
     Route::post('/payments/{payment}/approve', [\App\Http\Controllers\SuperAdmin\PaymentController::class, 'approve'])->name('payments.approve');
     Route::post('/payments/{payment}/reject', [\App\Http\Controllers\SuperAdmin\PaymentController::class, 'reject'])->name('payments.reject');
     Route::post('/payments/{payment}/refund', [\App\Http\Controllers\SuperAdmin\PaymentController::class, 'refund'])->name('payments.refund');
+
+    // Branch Outlets & Approvals
+    Route::get('/outlets/approvals', [\App\Http\Controllers\SuperAdmin\OutletApprovalController::class, 'index'])->name('outlets.approvals');
+    Route::post('/outlets/{outlet}/approve', [\App\Http\Controllers\SuperAdmin\OutletApprovalController::class, 'approve'])->name('outlets.approve');
+    Route::post('/outlets/{outlet}/reject', [\App\Http\Controllers\SuperAdmin\OutletApprovalController::class, 'reject'])->name('outlets.reject');
 });

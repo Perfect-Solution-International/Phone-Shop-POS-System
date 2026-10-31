@@ -4,6 +4,25 @@
 @section('page-title', 'Shop Profile & POS Settings')
 
 @section('content')
+<!-- Store Management Unified Sub-Navigation Tabs -->
+<div class="shop-subnav-tabs no-print" style="display: flex; gap: 0.45rem; margin-bottom: 1.1rem; border-bottom: 2px solid #e2e8f0; padding-bottom: 0.75rem; overflow-x: auto; align-items: center;">
+    <a href="{{ route('shop.outlets.index') }}" class="btn btn-sm {{ request()->routeIs('shop.outlets*') ? 'btn-primary' : 'btn-secondary' }}" style="border-radius: 8px; font-weight: 700; display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.45rem 0.85rem; text-decoration: none; white-space: nowrap;">
+        🏢 Outlets &amp; Branches
+    </a>
+    <a href="{{ route('shop.transfers.index') }}" class="btn btn-sm {{ request()->routeIs('shop.transfers*') ? 'btn-primary' : 'btn-secondary' }}" style="border-radius: 8px; font-weight: 700; display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.45rem 0.85rem; text-decoration: none; white-space: nowrap;">
+        🔄 Branch Transfers
+    </a>
+    <a href="{{ route('shop.staff') }}" class="btn btn-sm {{ request()->routeIs('shop.staff*') ? 'btn-primary' : 'btn-secondary' }}" style="border-radius: 8px; font-weight: 700; display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.45rem 0.85rem; text-decoration: none; white-space: nowrap;">
+        👔 Staff &amp; Payroll
+    </a>
+    <a href="{{ route('shop.subscription.index') }}" class="btn btn-sm {{ request()->routeIs('shop.subscription*') ? 'btn-primary' : 'btn-secondary' }}" style="border-radius: 8px; font-weight: 700; display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.45rem 0.85rem; text-decoration: none; white-space: nowrap;">
+        💳 Subscription &amp; Billing
+    </a>
+    <a href="{{ route('shop.settings') }}" class="btn btn-sm {{ request()->routeIs('shop.settings*') ? 'btn-primary' : 'btn-secondary' }}" style="border-radius: 8px; font-weight: 700; display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.45rem 0.85rem; text-decoration: none; white-space: nowrap;">
+        ⚙️ Store Settings
+    </a>
+</div>
+
 <div class="card" style="max-width: 860px; margin: 0 auto;">
     <div class="card-header">
         <div>

@@ -546,10 +546,216 @@
         .match-indicator {
             font-size: 0.72rem;
             margin-top: 0.35rem;
-            font-weight: 600;
+            font-weight: 650;
             display: flex;
             align-items: center;
             gap: 0.35rem;
+        }
+
+        /* Subscription Plans Grid */
+        .plans-selection-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+            gap: 0.85rem;
+            margin-bottom: 1.15rem;
+        }
+
+        .plan-card {
+            border: 2px solid var(--surface-border);
+            border-radius: var(--radius-md);
+            padding: 1rem;
+            background: #ffffff;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            user-select: none;
+        }
+
+        .plan-card:hover {
+            border-color: #cbd5e1;
+            background: #fafbfc;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+        }
+
+        .plan-card.selected {
+            border-color: var(--brand-indigo-600);
+            background: #f5f3ff;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.16);
+        }
+
+        .plan-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0.35rem;
+        }
+
+        .plan-card-title {
+            font-size: 0.95rem;
+            font-weight: 800;
+            color: #0f172a;
+            margin: 0;
+        }
+
+        .plan-check-icon {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            border: 2px solid #cbd5e1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #ffffff;
+            color: transparent;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+        }
+
+        .plan-card.selected .plan-check-icon {
+            border-color: var(--brand-indigo-600);
+            background: var(--brand-indigo-600);
+            color: #ffffff;
+        }
+
+        .plan-card-price-box {
+            margin: 0.25rem 0 0.5rem;
+        }
+
+        .plan-card-price {
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: var(--brand-indigo-600);
+        }
+
+        .plan-card-period {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .plan-trial-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            background: #ecfdf5;
+            color: #047857;
+            border: 1px solid #a7f3d0;
+            border-radius: 9999px;
+            font-size: 0.68rem;
+            font-weight: 700;
+            padding: 0.15rem 0.45rem;
+            margin-bottom: 0.5rem;
+            width: fit-content;
+        }
+
+        .plan-card-specs {
+            font-size: 0.75rem;
+            color: #334155;
+            margin-bottom: 0.65rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .plan-spec-item {
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+        }
+
+        .plan-spec-item svg {
+            color: #6366f1;
+            flex-shrink: 0;
+        }
+
+        .plan-feature-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.3rem;
+            margin-top: auto;
+            padding-top: 0.5rem;
+            border-top: 1px dashed #e2e8f0;
+        }
+
+        .plan-tag {
+            font-size: 0.65rem;
+            font-weight: 700;
+            background: #eef2ff;
+            color: #4338ca;
+            padding: 0.12rem 0.4rem;
+            border-radius: 4px;
+        }
+
+        .cycle-switcher-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            margin: 0 auto 1rem;
+            background: #f1f5f9;
+            border-radius: 9999px;
+            padding: 0.25rem 0.4rem;
+            width: fit-content;
+        }
+
+        .cycle-btn {
+            border: none;
+            background: transparent;
+            padding: 0.35rem 0.85rem;
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: #64748b;
+            border-radius: 9999px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .cycle-btn.active {
+            background: #ffffff;
+            color: #1e1b4b;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+        }
+
+        /* Card Details Box */
+        .card-details-box {
+            background: #f8fafc;
+            border: 1.5px solid #cbd5e1;
+            border-radius: var(--radius-md);
+            padding: 1.15rem 1.25rem;
+            margin-bottom: 1.15rem;
+        }
+
+        .trial-due-banner {
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            border-radius: var(--radius-sm);
+            padding: 0.75rem 0.85rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.6rem;
+            font-size: 0.8rem;
+            color: #1e40af;
+            line-height: 1.4;
+        }
+
+        .card-brand-pills {
+            display: flex;
+            gap: 0.35rem;
+            align-items: center;
+        }
+
+        .card-brand-badge {
+            font-size: 0.65rem;
+            font-weight: 800;
+            padding: 0.15rem 0.35rem;
+            border-radius: 4px;
+            border: 1px solid #cbd5e1;
+            background: #ffffff;
+            color: #475569;
         }
 
         /* Terms Row */
@@ -984,7 +1190,11 @@
                                     @error('email') aria-invalid="true" @enderror
                                 >
                             </div>
-                            <p id="email_help" class="field-help">We will send a verification link to confirm your ownership.</p>
+                            @if(config('auth.verification.enabled', false))
+                                <p id="email_help" class="field-help">We will send a verification link to confirm your ownership.</p>
+                            @else
+                                <p id="email_help" class="field-help">Instant access — email verification is currently optional.</p>
+                            @endif
                             @error('email')
                                 <p id="email_error" class="field-error" role="alert">
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
@@ -1245,6 +1455,218 @@
                             </ul>
                         </div>
 
+                        <!-- Section 3: Subscription Plan -->
+                        <div class="form-section-divider">
+                            <span>3. Choose Subscription Plan</span>
+                        </div>
+
+                        <!-- Billing Cycle Switcher -->
+                        <div class="cycle-switcher-wrapper">
+                            <button type="button" class="cycle-btn active" id="btnCycleMonthly" onclick="setBillingCycle('monthly')">
+                                Monthly Billing
+                            </button>
+                            <button type="button" class="cycle-btn" id="btnCycleAnnual" onclick="setBillingCycle('annual')">
+                                Annual Billing <span style="background: #10b981; color: #ffffff; font-size: 0.65rem; padding: 0.1rem 0.35rem; border-radius: 9999px; margin-left: 0.25rem;">Save ~15%</span>
+                            </button>
+                        </div>
+
+                        <input type="hidden" name="billing_cycle" id="billing_cycle_input" value="{{ old('billing_cycle', 'monthly') }}">
+                        <input type="hidden" name="plan_id" id="plan_id_input" value="{{ old('plan_id', $plans->firstWhere('slug', 'starter')?->id ?? $plans->first()?->id) }}">
+
+                        <!-- Plans Grid -->
+                        <div class="plans-selection-grid">
+                            @foreach ($plans as $plan)
+                                @php
+                                    $isSelected = old('plan_id', $plans->firstWhere('slug', 'starter')?->id ?? $plans->first()?->id) == $plan->id;
+                                @endphp
+                                <div class="plan-card {{ $isSelected ? 'selected' : '' }}" 
+                                     id="plan_card_{{ $plan->id }}" 
+                                     onclick="selectPlan({{ $plan->id }}, '{{ addslashes($plan->name) }}')">
+                                    <div class="plan-card-header">
+                                        <h4 class="plan-card-title">{{ $plan->name }}</h4>
+                                        <div class="plan-check-icon">
+                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                                        </div>
+                                    </div>
+
+                                    <div class="plan-card-price-box">
+                                        <span class="plan-card-price" id="price_display_{{ $plan->id }}" data-monthly="{{ $plan->monthly_price }}" data-annual="{{ $plan->annual_price ?? ($plan->monthly_price * 12) }}">
+                                            LKR {{ number_format($plan->monthly_price, 0) }}
+                                        </span>
+                                        <span class="plan-card-period" id="period_display_{{ $plan->id }}">/ month</span>
+                                    </div>
+
+                                    <div class="plan-trial-badge">
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                                        {{ $plan->trial_days ?: 7 }}-Day Free Trial
+                                    </div>
+
+                                    <div class="plan-card-specs">
+                                        <div class="plan-spec-item">
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>
+                                            <span><strong>{{ $plan->max_branches }}</strong> branch{{ $plan->max_branches > 1 ? 'es' : '' }}</span>
+                                        </div>
+                                        <div class="plan-spec-item">
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
+                                            <span>Up to <strong>{{ $plan->max_staff }}</strong> staff members</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="plan-feature-tags">
+                                        @if($plan->has_imei_tracking)<span class="plan-tag">IMEI</span>@endif
+                                        @if($plan->has_repair_management)<span class="plan-tag">Repairs</span>@endif
+                                        @if($plan->has_warranty_management)<span class="plan-tag">Warranty</span>@endif
+                                        @if($plan->has_multi_branch)<span class="plan-tag" style="background: #fdf2f8; color: #be185d;">Multi-Branch</span>@endif
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+
+                        @error('plan_id')
+                            <p class="field-error" style="margin-top: -0.5rem; margin-bottom: 1rem;" role="alert">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                                <span>{{ $message }}</span>
+                            </p>
+                        @enderror
+
+                        <!-- Section 4: Card Details for 7-Day Free Trial -->
+                        <div class="form-section-divider">
+                            <span>4. Payment Card — 7-Day Free Trial</span>
+                        </div>
+
+                        <div class="card-details-box">
+                            <div class="trial-due-banner">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink: 0; margin-top: 0.1rem;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                                <div>
+                                    <strong>7-Day Free Trial Activated:</strong>
+                                    You will <strong>NOT be charged today (LKR 0.00 due now)</strong>. Your card is saved securely to verify your retail workspace and will only be billed when your 7-day free trial ends, unless cancelled anytime.
+                                </div>
+                            </div>
+
+                            <!-- Cardholder Name -->
+                            <div class="form-group">
+                                <label for="cardholder_name" class="form-label">
+                                    <span>Cardholder Name <span class="required-mark">*</span></span>
+                                </label>
+                                <div class="input-wrapper">
+                                    <span class="input-icon-prefix" aria-hidden="true">
+                                        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                                    </span>
+                                    <input
+                                        id="cardholder_name"
+                                        name="cardholder_name"
+                                        type="text"
+                                        class="form-input @error('cardholder_name') is-invalid @enderror"
+                                        value="{{ old('cardholder_name') }}"
+                                        placeholder="Name as printed on card"
+                                        required
+                                        autocomplete="cc-name"
+                                    >
+                                </div>
+                                @error('cardholder_name')
+                                    <p class="field-error" role="alert">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                                        <span>{{ $message }}</span>
+                                    </p>
+                                @enderror
+                            </div>
+
+                            <!-- Card Number -->
+                            <div class="form-group">
+                                <label for="card_number" class="form-label">
+                                    <span>Card Number <span class="required-mark">*</span></span>
+                                    <div class="card-brand-pills">
+                                        <span class="card-brand-badge">VISA</span>
+                                        <span class="card-brand-badge">MC</span>
+                                        <span class="card-brand-badge">AMEX</span>
+                                    </div>
+                                </label>
+                                <div class="input-wrapper">
+                                    <span class="input-icon-prefix" aria-hidden="true">
+                                        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
+                                    </span>
+                                    <input
+                                        id="card_number"
+                                        name="card_number"
+                                        type="text"
+                                        class="form-input @error('card_number') is-invalid @enderror"
+                                        value="{{ old('card_number') }}"
+                                        placeholder="4242 •••• •••• 4242"
+                                        required
+                                        maxlength="23"
+                                        autocomplete="cc-number"
+                                        oninput="formatCardNumber(this)"
+                                    >
+                                </div>
+                                @error('card_number')
+                                    <p class="field-error" role="alert">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                                        <span>{{ $message }}</span>
+                                    </p>
+                                @enderror
+                            </div>
+
+                            <!-- Expiry & CVV -->
+                            <div class="form-grid" style="margin-bottom: 0;">
+                                <div class="form-group" style="margin-bottom: 0;">
+                                    <label for="card_expiry" class="form-label">
+                                        <span>Expiry Date <span class="required-mark">*</span></span>
+                                    </label>
+                                    <div class="input-wrapper">
+                                        <span class="input-icon-prefix" aria-hidden="true">
+                                            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                                        </span>
+                                        <input
+                                            id="card_expiry"
+                                            name="card_expiry"
+                                            type="text"
+                                            class="form-input @error('card_expiry') is-invalid @enderror"
+                                            value="{{ old('card_expiry') }}"
+                                            placeholder="MM/YY"
+                                            required
+                                            maxlength="5"
+                                            autocomplete="cc-exp"
+                                            oninput="formatCardExpiry(this)"
+                                        >
+                                    </div>
+                                    @error('card_expiry')
+                                        <p class="field-error" role="alert">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                                            <span>{{ $message }}</span>
+                                        </p>
+                                    @enderror
+                                </div>
+
+                                <div class="form-group" style="margin-bottom: 0;">
+                                    <label for="card_cvv" class="form-label">
+                                        <span>CVV / CVC <span class="required-mark">*</span></span>
+                                    </label>
+                                    <div class="input-wrapper">
+                                        <span class="input-icon-prefix" aria-hidden="true">
+                                            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                                        </span>
+                                        <input
+                                            id="card_cvv"
+                                            name="card_cvv"
+                                            type="password"
+                                            class="form-input @error('card_cvv') is-invalid @enderror"
+                                            value="{{ old('card_cvv') }}"
+                                            placeholder="123"
+                                            required
+                                            maxlength="4"
+                                            autocomplete="cc-csc"
+                                        >
+                                    </div>
+                                    @error('card_cvv')
+                                        <p class="field-error" role="alert">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                                            <span>{{ $message }}</span>
+                                        </p>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- Terms & Privacy Policy Acceptance -->
                         <label class="terms-row" for="terms">
                             <input
@@ -1413,6 +1835,74 @@
 
         passwordInput.addEventListener('input', updatePasswordStrength);
         confirmInput.addEventListener('input', checkMatch);
+
+        // Subscription Plan & Card Interactivity
+        function selectPlan(planId, planName) {
+            document.querySelectorAll('.plan-card').forEach(el => el.classList.remove('selected'));
+            const card = document.getElementById('plan_card_' + planId);
+            if (card) card.classList.add('selected');
+            document.getElementById('plan_id_input').value = planId;
+        }
+
+        function setBillingCycle(cycle) {
+            const btnMonthly = document.getElementById('btnCycleMonthly');
+            const btnAnnual = document.getElementById('btnCycleAnnual');
+            const cycleInput = document.getElementById('billing_cycle_input');
+
+            if (cycle === 'annual') {
+                btnAnnual.classList.add('active');
+                btnMonthly.classList.remove('active');
+                cycleInput.value = 'annual';
+            } else {
+                btnMonthly.classList.add('active');
+                btnAnnual.classList.remove('active');
+                cycleInput.value = 'monthly';
+            }
+
+            document.querySelectorAll('.plan-card-price').forEach(el => {
+                const monthly = parseFloat(el.getAttribute('data-monthly')) || 0;
+                const annual = parseFloat(el.getAttribute('data-annual')) || (monthly * 12);
+                const planId = el.id.replace('price_display_', '');
+                const periodEl = document.getElementById('period_display_' + planId);
+
+                if (cycle === 'annual') {
+                    el.textContent = 'LKR ' + Number(annual).toLocaleString(undefined, {minimumFractionDigits: 0});
+                    if (periodEl) periodEl.textContent = '/ year';
+                } else {
+                    el.textContent = 'LKR ' + Number(monthly).toLocaleString(undefined, {minimumFractionDigits: 0});
+                    if (periodEl) periodEl.textContent = '/ month';
+                }
+            });
+        }
+
+        function formatCardNumber(input) {
+            let val = input.value.replace(/\D/g, '');
+            let formatted = val.match(/.{1,4}/g)?.join(' ') || val;
+            input.value = formatted.substring(0, 19);
+        }
+
+        function formatCardExpiry(input) {
+            let val = input.value.replace(/\D/g, '');
+            if (val.length >= 2) {
+                input.value = val.substring(0, 2) + '/' + val.substring(2, 4);
+            } else {
+                input.value = val;
+            }
+        }
+
+        // Auto-fill cardholder name from owner full name if untouched
+        const nameInput = document.getElementById('name');
+        const cardholderInput = document.getElementById('cardholder_name');
+        if (nameInput && cardholderInput) {
+            nameInput.addEventListener('input', function() {
+                if (!cardholderInput.dataset.touched) {
+                    cardholderInput.value = nameInput.value;
+                }
+            });
+            cardholderInput.addEventListener('input', function() {
+                cardholderInput.dataset.touched = 'true';
+            });
+        }
 
         // Form Submit Loading Indicator
         const form = document.getElementById('registrationForm');

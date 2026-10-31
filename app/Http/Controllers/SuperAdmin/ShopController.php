@@ -47,7 +47,7 @@ class ShopController extends Controller
 
     public function show(Shop $shop): View|JsonResponse
     {
-        $shop->load(['users', 'subscriptions.plan', 'subscriptionPayments.plan', 'setting']);
+        $shop->load(['users', 'subscriptions.plan', 'subscriptionPayments.plan', 'setting', 'outlets']);
         $plans = SubscriptionPlan::where('is_active', true)->orderBy('name')->get();
 
         if (request()->wantsJson()) {

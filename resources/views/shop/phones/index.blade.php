@@ -4,6 +4,31 @@
 @section('page-title', request('status') === 'sold' ? 'Sold Phone Devices (IMEI Sales Archive)' : 'Serialized Phone Inventory (Dual IMEI)')
 
 @section('content')
+<!-- Inventory & Stock Unified Sub-Navigation Tabs -->
+<div class="shop-subnav-tabs no-print" style="display: flex; gap: 0.45rem; margin-bottom: 1.1rem; border-bottom: 2px solid #e2e8f0; padding-bottom: 0.75rem; overflow-x: auto; align-items: center;">
+    <a href="{{ route('shop.phones') }}" class="btn btn-sm {{ request()->routeIs('shop.phones*') && request('status') !== 'sold' ? 'btn-primary' : 'btn-secondary' }}" style="border-radius: 8px; font-weight: 700; display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.45rem 0.85rem; text-decoration: none; white-space: nowrap;">
+        📱 Dual IMEI Phones
+    </a>
+    <a href="{{ route('shop.products') }}" class="btn btn-sm {{ request()->routeIs('shop.products*') ? 'btn-primary' : 'btn-secondary' }}" style="border-radius: 8px; font-weight: 700; display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.45rem 0.85rem; text-decoration: none; white-space: nowrap;">
+        🎧 Products &amp; Accessories
+    </a>
+    <a href="{{ route('shop.spare-parts') }}" class="btn btn-sm {{ request()->routeIs('shop.spare-parts*') ? 'btn-primary' : 'btn-secondary' }}" style="border-radius: 8px; font-weight: 700; display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.45rem 0.85rem; text-decoration: none; white-space: nowrap;">
+        🔩 Spare Parts
+    </a>
+    <a href="{{ route('shop.trade-ins.index') }}" class="btn btn-sm {{ request()->routeIs('shop.trade-ins*') ? 'btn-primary' : 'btn-secondary' }}" style="border-radius: 8px; font-weight: 700; display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.45rem 0.85rem; text-decoration: none; white-space: nowrap;">
+        🔄 Used Trade-Ins
+    </a>
+    <a href="{{ route('shop.labels.index') }}" class="btn btn-sm {{ request()->routeIs('shop.labels*') ? 'btn-primary' : 'btn-secondary' }}" style="border-radius: 8px; font-weight: 700; display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.45rem 0.85rem; text-decoration: none; white-space: nowrap;">
+        🏷️ Barcode &amp; IMEI Labels
+    </a>
+    <a href="{{ route('shop.phones', ['status' => 'sold']) }}" class="btn btn-sm {{ request()->routeIs('shop.phones*') && request('status') === 'sold' ? 'btn-primary' : 'btn-secondary' }}" style="border-radius: 8px; font-weight: 700; display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.45rem 0.85rem; text-decoration: none; white-space: nowrap;">
+        📦 Sold Phones Archive
+    </a>
+    <a href="{{ route('shop.purchases') }}" class="btn btn-sm {{ request()->routeIs('shop.purchases*') || request()->routeIs('shop.inventory.grns*') || request()->routeIs('shop.suppliers*') ? 'btn-primary' : 'btn-secondary' }}" style="border-radius: 8px; font-weight: 700; display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.45rem 0.85rem; text-decoration: none; white-space: nowrap;">
+        🚚 Purchases &amp; Suppliers
+    </a>
+</div>
+
 <div class="card">
     <div class="card-header" style="flex-wrap: wrap; gap: 1rem;">
         <form method="GET" action="{{ route('shop.phones') }}" style="display: flex; gap: 0.75rem; flex: 1; flex-wrap: wrap;">

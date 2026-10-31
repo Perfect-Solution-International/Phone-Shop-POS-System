@@ -4,6 +4,25 @@
 @section('page-title', 'Customer Directory & Credit Balances')
 
 @section('content')
+<!-- Store Management Unified Sub-Navigation Tabs -->
+<div class="shop-subnav-tabs no-print" style="display: flex; gap: 0.45rem; margin-bottom: 1.1rem; border-bottom: 2px solid #e2e8f0; padding-bottom: 0.75rem; overflow-x: auto; align-items: center;">
+    <a href="{{ route('shop.outlets.index') }}" class="btn btn-sm {{ request()->routeIs('shop.outlets*') ? 'btn-primary' : 'btn-secondary' }}" style="border-radius: 8px; font-weight: 700; display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.45rem 0.85rem; text-decoration: none; white-space: nowrap;">
+        🏢 Outlets &amp; Branches
+    </a>
+    <a href="{{ route('shop.transfers.index') }}" class="btn btn-sm {{ request()->routeIs('shop.transfers*') ? 'btn-primary' : 'btn-secondary' }}" style="border-radius: 8px; font-weight: 700; display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.45rem 0.85rem; text-decoration: none; white-space: nowrap;">
+        🔄 Branch Transfers
+    </a>
+    <a href="{{ route('shop.staff') }}" class="btn btn-sm {{ request()->routeIs('shop.staff*') ? 'btn-primary' : 'btn-secondary' }}" style="border-radius: 8px; font-weight: 700; display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.45rem 0.85rem; text-decoration: none; white-space: nowrap;">
+        👔 Staff &amp; Payroll
+    </a>
+    <a href="{{ route('shop.subscription.index') }}" class="btn btn-sm {{ request()->routeIs('shop.subscription*') ? 'btn-primary' : 'btn-secondary' }}" style="border-radius: 8px; font-weight: 700; display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.45rem 0.85rem; text-decoration: none; white-space: nowrap;">
+        💳 Subscription &amp; Billing
+    </a>
+    <a href="{{ route('shop.settings') }}" class="btn btn-sm {{ request()->routeIs('shop.settings*') ? 'btn-primary' : 'btn-secondary' }}" style="border-radius: 8px; font-weight: 700; display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.45rem 0.85rem; text-decoration: none; white-space: nowrap;">
+        ⚙️ Store Settings
+    </a>
+</div>
+
 <div class="card">
     <div class="card-header" style="flex-wrap: wrap; gap: 1rem;">
         <form method="GET" action="{{ route('shop.customers') }}" style="display: flex; gap: 0.75rem; flex: 1; flex-wrap: wrap;">
@@ -143,28 +162,6 @@
                     </div>
                 </div>
 
-                <div class="form-row">
-                    <div class="form-group" style="position: relative;">
-                        <label>Portal Login Password</label>
-                        <div style="position: relative;">
-                            <input type="password" name="password" id="addCustPassword" class="form-control" placeholder="e.g. Pass1234" style="padding-right: 2.25rem;">
-                            <button type="button" onclick="togglePasswordVisibility('addCustPassword', this)" style="position: absolute; right: 0.5rem; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: #94a3b8; padding: 0.2rem;" title="Show/Hide Password">
-                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                            </button>
-                        </div>
-                        <span style="font-size: 0.72rem; color: #64748b; margin-top: 0.2rem; display: block;">Optional for customer portal login</span>
-                    </div>
-                    <div class="form-group" style="position: relative;">
-                        <label>Confirm Password</label>
-                        <div style="position: relative;">
-                            <input type="password" name="password_confirmation" id="addCustPasswordConfirm" class="form-control" placeholder="Repeat password" style="padding-right: 2.25rem;">
-                            <button type="button" onclick="togglePasswordVisibility('addCustPasswordConfirm', this)" style="position: absolute; right: 0.5rem; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: #94a3b8; padding: 0.2rem;" title="Show/Hide Password">
-                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
                 <div class="form-group">
                     <label>Postal / Residence Address</label>
                     <textarea name="address" class="form-control" rows="2" placeholder="Street, City"></textarea>
@@ -213,28 +210,6 @@
                     <div class="form-group">
                         <label>Credit Limit (LKR)</label>
                         <input type="number" step="0.01" name="credit_limit" id="editCustCreditLimit" class="form-control" value="0.00">
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group" style="position: relative;">
-                        <label>New Portal Password</label>
-                        <div style="position: relative;">
-                            <input type="password" name="password" id="editCustPassword" class="form-control" placeholder="Leave blank to keep unchanged" style="padding-right: 2.25rem;">
-                            <button type="button" onclick="togglePasswordVisibility('editCustPassword', this)" style="position: absolute; right: 0.5rem; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: #94a3b8; padding: 0.2rem;" title="Show/Hide Password">
-                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                            </button>
-                        </div>
-                        <span style="font-size: 0.72rem; color: #64748b; margin-top: 0.2rem; display: block;">Leave blank if not changing</span>
-                    </div>
-                    <div class="form-group" style="position: relative;">
-                        <label>Confirm New Password</label>
-                        <div style="position: relative;">
-                            <input type="password" name="password_confirmation" id="editCustPasswordConfirm" class="form-control" placeholder="Repeat new password" style="padding-right: 2.25rem;">
-                            <button type="button" onclick="togglePasswordVisibility('editCustPasswordConfirm', this)" style="position: absolute; right: 0.5rem; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: #94a3b8; padding: 0.2rem;" title="Show/Hide Password">
-                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                            </button>
-                        </div>
                     </div>
                 </div>
 
@@ -333,21 +308,7 @@
         document.getElementById('editCustNic').value = c.nic || '';
         document.getElementById('editCustCreditLimit').value = c.credit_limit || '0.00';
         document.getElementById('editCustAddress').value = c.address || '';
-        if (document.getElementById('editCustPassword')) document.getElementById('editCustPassword').value = '';
-        if (document.getElementById('editCustPasswordConfirm')) document.getElementById('editCustPasswordConfirm').value = '';
         openModal('editCustomerModal');
-    }
-
-    function togglePasswordVisibility(inputId, btn) {
-        const input = document.getElementById(inputId);
-        if (!input) return;
-        if (input.type === 'password') {
-            input.type = 'text';
-            btn.style.color = '#4f46e5';
-        } else {
-            input.type = 'password';
-            btn.style.color = '#94a3b8';
-        }
     }
 
     function openSettleDebtModal(c) {

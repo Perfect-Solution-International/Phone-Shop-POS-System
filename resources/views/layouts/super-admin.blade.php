@@ -663,13 +663,19 @@
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
                 <span>Dashboard</span>
             </a>
-            <a href="{{ route('superadmin.shops.index') }}" class="saas-nav-link {{ request()->routeIs('superadmin.shops.*') ? 'active' : '' }}">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>
-                <span>Registered Shops</span>
-            </a>
-            <a href="{{ route('superadmin.owners.index') }}" class="saas-nav-link {{ request()->routeIs('superadmin.owners.*') ? 'active' : '' }}">
+            <a href="{{ route('superadmin.owners.index') }}" class="saas-nav-link {{ request()->routeIs('superadmin.owners.*') || request()->routeIs('superadmin.shops.*') ? 'active' : '' }}">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-                <span>Shop Owners</span>
+                <span>Shop Owners &amp; Stores</span>
+            </a>
+            <a href="{{ route('superadmin.outlets.approvals') }}" class="saas-nav-link {{ request()->routeIs('superadmin.outlets.*') ? 'active' : '' }}">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                <span>Branch Approvals</span>
+                @php
+                    $pendingBranchesCount = \App\Models\Outlet::withoutGlobalScopes()->where('approval_status', 'pending')->count();
+                @endphp
+                @if ($pendingBranchesCount > 0)
+                    <span class="saas-badge-pill" style="background: #f59e0b;">{{ $pendingBranchesCount }}</span>
+                @endif
             </a>
             <a href="{{ route('superadmin.plans.index') }}" class="saas-nav-link {{ request()->routeIs('superadmin.plans.*') ? 'active' : '' }}">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>

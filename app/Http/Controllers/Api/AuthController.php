@@ -53,6 +53,25 @@ class AuthController extends Controller
         $request->session()->regenerate();
         $user = $request->user('web');
 
+        // Automatically bind branch session if user is an assigned branch manager
+        if ($user && $user->shop_id !== null) {
+            $assignedOutlet = null;
+            if ($user->outlet_id) {
+                $assignedOutlet = \App\Models\Outlet::withoutGlobalScopes()->find($user->outlet_id);
+            }
+            if (! $assignedOutlet) {
+                $assignedOutlet = \App\Models\Outlet::withoutGlobalScopes()->where('manager_user_id', $user->id)->first();
+            }
+
+            if ($assignedOutlet && ($assignedOutlet->approval_status ?? 'approved') === 'approved') {
+                session([
+                    'active_outlet_id' => $assignedOutlet->id,
+                    'active_outlet_name' => $assignedOutlet->name,
+                    'active_outlet_code' => $assignedOutlet->code,
+                ]);
+            }
+        }
+
         if ($request->wantsJson()) {
             return response()->json(['user' => $this->profile($user), 'redirect' => $this->destination($user)]);
         }
@@ -150,7 +169,7 @@ class AuthController extends Controller
             return route('customer.portal');
         }
 
-        if (! $user->hasVerifiedEmail()) {
+        if (config('auth.verification.enabled', false) && ! $user->hasVerifiedEmail()) {
             return route('verification.notice');
         }
 
