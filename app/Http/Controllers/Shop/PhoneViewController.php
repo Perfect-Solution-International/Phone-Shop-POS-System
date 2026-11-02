@@ -65,71 +65,16 @@ class PhoneViewController extends Controller
             'supplier_id' => ['nullable', Rule::exists('suppliers', 'id')->where('shop_id', auth()->user()->shop_id)],
             'image' => 'nullable|image|mimes:jpeg,png,jpg,webp,gif|max:5120',
             'notes' => 'nullable|string|max:500',
-            'quantity' => 'nullable|integer|min:1|max:500',
         ]);
-
-        $quantity = (int) ($validated['quantity'] ?? 1);
-        unset($validated['quantity']);
 
         if ($request->hasFile('image')) {
             $validated['image_path'] = $request->file('image')->store('phones', 'public');
         }
 
         $validated['status'] = 'in_stock';
-        $shopId = (int) auth()->user()->shop_id;
-
-        // Register first device
         PhoneDevice::create($validated);
 
-        // If quantity > 1, register remaining batch units with unique IMEIs
-        $baseImei1 = $validated['imei_1'];
-        $baseImei2 = $validated['imei_2'] ?? null;
-        $baseSerial = $validated['serial_number'] ?? null;
-
-        for ($i = 2; $i <= $quantity; $i++) {
-            $extra = $validated;
-
-            if (is_numeric($baseImei1) && strlen($baseImei1) >= 8) {
-                $candidateImei1 = bcadd($baseImei1, (string) ($i - 1));
-            } else {
-                $candidateImei1 = $baseImei1 . '-' . $i;
-            }
-
-            $suffix = 1;
-            while (PhoneDevice::where('shop_id', $shopId)->where('imei_1', $candidateImei1)->exists()) {
-                $candidateImei1 = $baseImei1 . '-B' . $i . ($suffix > 1 ? "-{$suffix}" : '');
-                $suffix++;
-            }
-            $extra['imei_1'] = $candidateImei1;
-
-            if (! empty($baseImei2)) {
-                if (is_numeric($baseImei2) && strlen($baseImei2) >= 8) {
-                    $candidateImei2 = bcadd($baseImei2, (string) ($i - 1));
-                } else {
-                    $candidateImei2 = $baseImei2 . '-' . $i;
-                }
-                $suffix2 = 1;
-                while (PhoneDevice::where('shop_id', $shopId)->where('imei_2', $candidateImei2)->exists()) {
-                    $candidateImei2 = $baseImei2 . '-B' . $i . ($suffix2 > 1 ? "-{$suffix2}" : '');
-                    $suffix2++;
-                }
-                $extra['imei_2'] = $candidateImei2;
-            } else {
-                $extra['imei_2'] = null;
-            }
-
-            if (! empty($baseSerial)) {
-                $extra['serial_number'] = $baseSerial . '-' . $i;
-            }
-
-            PhoneDevice::create($extra);
-        }
-
-        $message = $quantity > 1
-            ? "{$quantity} units of {$validated['brand']} {$validated['model']} registered to stock successfully!"
-            : 'Phone device registered successfully with Dual IMEI!';
-
-        return redirect()->route('shop.phones')->with('success', $message);
+        return redirect()->route('shop.phones')->with('success', 'Phone device registered successfully with Dual IMEI!');
     }
 
     public function update(Request $request, PhoneDevice $phone): RedirectResponse

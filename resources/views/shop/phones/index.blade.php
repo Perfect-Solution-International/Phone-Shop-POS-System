@@ -340,24 +340,18 @@
 
                 <div class="form-row">
                     <div class="form-group">
-                        <label>Stock Quantity *</label>
-                        <input type="number" name="quantity" class="form-control" value="1" min="1" max="500" required>
-                        <small style="font-size: 0.72rem; color: #64748b; margin-top: 3px; display: block;">Default is 1 unit. Enter more to register multiple units in stock.</small>
-                    </div>
-                    <div class="form-group">
                         <label>Serial Number (Optional)</label>
                         <input type="text" name="serial_number" class="form-control" placeholder="Device Serial Number">
                     </div>
-                </div>
-
-                <div class="form-group">
-                    <label>Supplier (Optional)</label>
-                    <select name="supplier_id" class="form-control">
-                        <option value="">No Supplier / Store Direct</option>
-                        @foreach($suppliers as $sup)
-                            <option value="{{ $sup->id }}">{{ $sup->name }}</option>
-                        @endforeach
-                    </select>
+                    <div class="form-group">
+                        <label>Supplier (Optional)</label>
+                        <select name="supplier_id" class="form-control">
+                            <option value="">No Supplier / Store Direct</option>
+                            @foreach($suppliers as $sup)
+                                <option value="{{ $sup->id }}">{{ $sup->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
                 </div>
 
                 <!-- Device Image Upload -->
