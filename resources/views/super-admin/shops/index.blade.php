@@ -136,7 +136,7 @@
 
                                         <div class="shop-dropdown-divider"></div>
 
-                                        <form method="POST" action="{{ route('superadmin.shops.destroy', $shop->id) }}" onsubmit="return confirm('⚠️ WARNING: Are you sure you want to PERMANENTLY DELETE shop \'{{ addslashes($shop->name) }}\'? All related data, inventory, sales, and accounts will be completely erased. This action CANNOT be undone!');" style="margin: 0;">
+                                        <form method="POST" action="{{ route('superadmin.shops.destroy', $shop->id) }}" onsubmit="return confirm('WARNING: Are you sure you want to PERMANENTLY DELETE shop \'{{ addslashes($shop->name) }}\'? All related data, inventory, sales, and accounts will be completely erased. This action CANNOT be undone!');" style="margin: 0;">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="shop-dropdown-item item-delete">

@@ -23,7 +23,7 @@ class OwnerController extends Controller
     public function index(Request $request): View|JsonResponse
     {
         $query = User::role('Shop Owner')
-            ->with(['shop.subscription.plan', 'roles']);
+            ->with(['shop.subscription.plan', 'shop.outlets', 'roles']);
 
         if ($search = $request->input('search')) {
             $query->where(function ($q) use ($search) {
@@ -54,8 +54,11 @@ class OwnerController extends Controller
         $unverifiedOwners = $totalOwners - $verifiedOwners;
         $totalShops = Shop::count();
 
+        // All active plans for dropdown selection
+        $plans = SubscriptionPlan::where('is_active', true)->orderBy('monthly_price')->get();
+
         // All shops for dropdown assignment
-        $shops = Shop::orderBy('name')->get(['id', 'name']);
+        $shops = Shop::orderBy('name')->get(['id', 'name', 'address']);
 
         if ($request->wantsJson()) {
             return response()->json([
@@ -67,6 +70,7 @@ class OwnerController extends Controller
         return view('super-admin.owners.index', compact(
             'owners',
             'shops',
+            'plans',
             'totalOwners',
             'verifiedOwners',
             'unverifiedOwners',
@@ -84,24 +88,44 @@ class OwnerController extends Controller
             'email' => 'required|string|email|max:255|unique:users,email',
             'phone' => 'nullable|string|max:50',
             'password' => 'required|string|min:8|confirmed',
-            'shop_assignment_type' => 'required|in:existing,new',
+            'shop_assignment_type' => 'nullable|in:existing,new',
             'shop_id' => 'required_if:shop_assignment_type,existing|nullable|exists:shops,id',
-            'new_shop_name' => 'required_if:shop_assignment_type,new|nullable|string|max:255',
+            'shop_name' => 'nullable|string|max:255',
+            'new_shop_name' => 'nullable|string|max:255',
+            'plan_id' => 'nullable|exists:subscription_plans,id',
             'business_address' => 'nullable|string|max:255',
             'is_verified' => 'nullable|boolean',
+            'payment_method' => 'nullable|in:card,bank_transfer,trial',
+            'cardholder_name' => 'nullable|string|max:100',
+            'card_number' => 'nullable|string|max:30',
+            'card_expiry' => 'nullable|string|max:10',
+            'card_cvv' => 'nullable|string|max:4',
+            'reference_number' => 'required_if:payment_method,bank_transfer|nullable|string|max:100',
+            'receipt' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:5120',
         ]);
 
-        $shopId = null;
+        $assignmentType = $validated['shop_assignment_type'] ?? 'new';
+        $targetShopName = $validated['shop_name'] ?? $validated['new_shop_name'] ?? null;
 
-        if ($validated['shop_assignment_type'] === 'new' && ! empty($validated['new_shop_name'])) {
-            // Provision new shop workspace via onboarding service
+        if ($assignmentType === 'new' || ($assignmentType !== 'existing' && ! empty($targetShopName))) {
+            $shopName = $targetShopName ?: ($validated['name'] . "'s Phone Shop");
+
+            // Provision new shop workspace via onboarding service directly under this owner
             $onboardResult = $onboardingService->onboard([
-                'shop_name' => $validated['new_shop_name'],
+                'shop_name' => $shopName,
                 'name' => $validated['name'],
                 'email' => $validated['email'],
                 'phone' => $validated['phone'] ?? null,
                 'password' => $validated['password'],
                 'business_address' => $validated['business_address'] ?? null,
+                'plan_id' => $validated['plan_id'] ?? null,
+                'payment_method' => $validated['payment_method'] ?? 'card',
+                'cardholder_name' => $validated['cardholder_name'] ?? null,
+                'card_number' => $validated['card_number'] ?? null,
+                'card_expiry' => $validated['card_expiry'] ?? null,
+                'card_cvv' => $validated['card_cvv'] ?? null,
+                'reference_number' => $validated['reference_number'] ?? null,
+                'receipt' => $request->file('receipt'),
             ]);
 
             $user = $onboardResult['user'];
@@ -111,14 +135,18 @@ class OwnerController extends Controller
 
             SystemActivity::log(
                 'owner.created',
-                "Super Admin provisioned new shop '{$validated['new_shop_name']}' and created owner '{$user->name}' ({$user->email})",
+                "Super Admin registered new Shop Owner '{$user->name}' ({$user->email}) and auto-provisioned store '{$shopName}'",
                 $user->shop_id,
                 auth()->id(),
                 ['user_id' => $user->id, 'shop_id' => $user->shop_id]
             );
 
+            $statusMsg = ($validated['payment_method'] ?? '') === 'bank_transfer'
+                ? "Shop Owner '{$user->name}' registered successfully! Bank deposit slip submitted and is now awaiting verification under Bank Approvals."
+                : "Shop Owner '{$user->name}' registered successfully with store '{$shopName}' under their account!";
+
             return redirect()->route('superadmin.owners.index')
-                ->with('status', "Shop Owner '{$user->name}' and new store '{$validated['new_shop_name']}' created successfully!");
+                ->with('status', $statusMsg);
         }
 
         // Assign to existing shop
@@ -157,19 +185,40 @@ class OwnerController extends Controller
             'name' => 'required|string|max:255',
             'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
             'phone' => 'nullable|string|max:50',
-            'shop_id' => 'required|exists:shops,id',
+            'shop_id' => 'nullable|exists:shops,id',
+            'shop_name' => 'nullable|string|max:255',
+            'business_address' => 'nullable|string|max:255',
             'password' => 'nullable|string|min:8|confirmed',
             'is_verified' => 'nullable|boolean',
         ]);
 
-        $shop = Shop::findOrFail($validated['shop_id']);
+        $shop = null;
+        if (! empty($validated['shop_id'])) {
+            $shop = Shop::findOrFail($validated['shop_id']);
+        } elseif ($user->shop) {
+            $shop = $user->shop;
+        }
 
         $updateData = [
             'name' => $validated['name'],
             'email' => $validated['email'],
             'phone' => $validated['phone'] ?? null,
-            'shop_id' => $shop->id,
         ];
+
+        if ($shop) {
+            $updateData['shop_id'] = $shop->id;
+
+            $shopUpdate = [];
+            if (! empty($validated['shop_name'])) {
+                $shopUpdate['name'] = $validated['shop_name'];
+            }
+            if (isset($validated['business_address'])) {
+                $shopUpdate['address'] = $validated['business_address'];
+            }
+            if (! empty($shopUpdate)) {
+                $shop->update($shopUpdate);
+            }
+        }
 
         if (! empty($validated['password'])) {
             $updateData['password'] = Hash::make($validated['password']);
@@ -188,13 +237,13 @@ class OwnerController extends Controller
         SystemActivity::log(
             'owner.updated',
             "Super Admin updated details for Shop Owner '{$user->name}' ({$user->email})",
-            $shop->id,
+            $user->shop_id,
             auth()->id(),
-            ['user_id' => $user->id, 'shop_id' => $shop->id]
+            ['user_id' => $user->id, 'shop_id' => $user->shop_id]
         );
 
         return redirect()->route('superadmin.owners.index')
-            ->with('status', "Shop Owner '{$user->name}' updated successfully!");
+            ->with('status', "Shop Owner '{$user->name}' and store details updated successfully!");
     }
 
     /**

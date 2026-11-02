@@ -12,6 +12,7 @@ class Customer extends Model
     use BelongsToTenant, HasFactory;
 
     protected $fillable = [
+        'shop_id',
         'name',
         'phone',
         'email',

@@ -4,9 +4,13 @@ namespace App\Http\Controllers\Shop;
 
 use App\Http\Controllers\Controller;
 use App\Models\Outlet;
+use App\Models\Platform\SubscriptionPayment;
+use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use Illuminate\View\View;
 
 class OutletController extends Controller
@@ -31,20 +35,37 @@ class OutletController extends Controller
                 'manager_name' => $request->user()->name,
                 'is_main' => true,
                 'is_active' => true,
+                'approval_status' => 'approved',
+                'approved_at' => now(),
             ]);
         }
 
         $outlets = Outlet::orderByDesc('is_main')->orderBy('name')->get();
 
         // Calculate branch quota from subscription plan
-        $plan = $shop?->activeSubscription?->plan;
-        $maxBranches = $plan ? (int) $plan->max_branches : 3;
+        $subscription = $shop?->activeSubscription ?? $shop?->subscription;
+        $plan = $subscription?->plan;
+        $isTrial = ($subscription?->status === 'trial');
+        $maxBranches = $isTrial ? max(5, (int) ($plan?->max_branches ?? 1)) : ($plan ? (int) $plan->max_branches : 1);
         $usedBranches = $outlets->count();
-        $canAddMore = $usedBranches < $maxBranches;
+        $approvedCount = $outlets->where('approval_status', 'approved')->count();
+        $remainingPlanSlots = max(0, $maxBranches - $approvedCount);
+        $canAddMore = true; // Always allow adding branches; covered if slots remain, or as paid add-on
+        $additionalBranchFee = 2500.00;
 
         $activeOutletId = session('active_outlet_id', $outlets->firstWhere('is_main', true)?->id ?? $outlets->first()?->id);
 
-        return view('shop.outlets.index', compact('outlets', 'maxBranches', 'usedBranches', 'canAddMore', 'activeOutletId'));
+        return view('shop.outlets.index', compact(
+            'outlets',
+            'maxBranches',
+            'usedBranches',
+            'approvedCount',
+            'remainingPlanSlots',
+            'canAddMore',
+            'additionalBranchFee',
+            'plan',
+            'activeOutletId'
+        ));
     }
 
     /**
@@ -52,13 +73,17 @@ class OutletController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
-        $shop = $request->user()->shop;
-        $plan = $shop?->activeSubscription?->plan;
-        $maxBranches = $plan ? (int) $plan->max_branches : 3;
+        abort_unless(
+            $request->user()->can('branches.manage') || $request->user()->hasRole(['Shop Owner', 'Administrator', 'Super Administrator']),
+            403,
+            'Only store owners and administrators can create new branches.'
+        );
 
-        if (Outlet::count() >= $maxBranches) {
-            return redirect()->back()->with('error', "You have reached your subscription plan limit of {$maxBranches} branch outlet(s). Upgrade your subscription plan to add more outlets.");
-        }
+        $shop = $request->user()->shop;
+        $subscription = $shop?->activeSubscription ?? $shop?->subscription;
+        $plan = $subscription?->plan;
+        $isTrial = ($subscription?->status === 'trial');
+        $maxBranches = $isTrial ? max(5, (int) ($plan?->max_branches ?? 1)) : ($plan ? (int) $plan->max_branches : 1);
 
         $validated = $request->validate([
             'name' => 'required|string|max:150',
@@ -68,11 +93,24 @@ class OutletController extends Controller
             'address' => 'required|string|max:255',
             'city' => 'nullable|string|max:100',
             'manager_name' => 'nullable|string|max:150',
+            'manager_email' => 'nullable|email|max:150',
+            'manager_password' => 'nullable|string|min:6',
             'is_main' => 'nullable|boolean',
             'is_active' => 'nullable|boolean',
             'receipt_header' => 'nullable|string|max:255',
             'receipt_footer' => 'nullable|string|max:255',
         ]);
+
+        $managerEmail = ! empty($validated['manager_email']) ? strtolower(trim($validated['manager_email'])) : null;
+        $managerPassword = $validated['manager_password'] ?? null;
+        unset($validated['manager_password']);
+
+        if ($managerEmail) {
+            $existingUser = User::where('email', $managerEmail)->first();
+            if ($existingUser && $existingUser->shop_id !== $shop->id) {
+                return redirect()->back()->with('error', "User with email '{$managerEmail}' is already registered under another store workspace.");
+            }
+        }
 
         if (empty($validated['code'])) {
             $nextNum = Outlet::count() + 1;
@@ -86,18 +124,82 @@ class OutletController extends Controller
             return redirect()->back()->with('error', "An outlet with code '{$validated['code']}' already exists in your shop.");
         }
 
-        $isMain = $request->boolean('is_main');
-        if ($isMain) {
-            Outlet::where('is_main', true)->update(['is_main' => false]);
+        $isFirst = (Outlet::count() === 0);
+        $approvedCount = Outlet::withoutGlobalScopes()
+            ->where('shop_id', $shop->id)
+            ->where('approval_status', 'approved')
+            ->count();
+        $isWithinPlanQuota = ($approvedCount < $maxBranches);
+
+        if ($isFirst) {
             $validated['is_main'] = true;
+            $validated['is_active'] = true;
+            $validated['approval_status'] = 'approved';
+            $validated['approved_at'] = now();
+            $validated['billing_type'] = 'included';
+            $validated['payment_status'] = 'paid';
+            $validated['additional_fee'] = 0.00;
         } else {
             $validated['is_main'] = false;
+            $validated['is_active'] = false; // Remains inactive until approved
+            $validated['approval_status'] = 'pending';
+            $validated['approved_at'] = null;
+            $validated['approved_by'] = null;
+
+            if ($isWithinPlanQuota) {
+                $validated['billing_type'] = 'included';
+                $validated['payment_status'] = 'paid';
+                $validated['additional_fee'] = 0.00;
+            } else {
+                $validated['billing_type'] = 'additional';
+                $validated['payment_status'] = 'unpaid';
+                $validated['additional_fee'] = 2500.00;
+            }
         }
 
-        $validated['is_active'] = $request->has('is_active') ? $request->boolean('is_active') : true;
         $validated['shop_id'] = $shop->id;
 
         $outlet = Outlet::create($validated);
+
+        // Provision Branch Manager Login Account if manager email provided
+        if ($managerEmail) {
+            $existingUser = User::where('email', $managerEmail)->first();
+            $managerData = [
+                'shop_id' => $shop->id,
+                'outlet_id' => $outlet->id,
+                'name' => $validated['manager_name'] ?: ($outlet->name . ' Manager'),
+                'phone' => $validated['phone'] ?? null,
+                'email_verified_at' => now(),
+            ];
+
+            if (! empty($managerPassword)) {
+                $managerData['password'] = Hash::make($managerPassword);
+            } elseif (! $existingUser) {
+                $managerData['password'] = Hash::make('Manager123!');
+            }
+
+            $managerUser = User::updateOrCreate(
+                ['email' => $managerEmail],
+                $managerData
+            );
+
+            if (! $managerUser->hasRole('Shop Manager')) {
+                $managerUser->assignRole('Shop Manager');
+            }
+
+            $outlet->update([
+                'manager_user_id' => $managerUser->id,
+                'manager_email' => $managerEmail,
+            ]);
+        }
+
+        if ($outlet->approval_status === 'pending') {
+            if ($outlet->billing_type === 'included') {
+                return redirect()->route('shop.outlets.index')->with('success', "Branch '{$outlet->name}' ({$outlet->code}) submitted successfully! It is covered under your {$plan?->name} quota ({$approvedCount}/{$maxBranches} used) — pending Super Admin approval without extra payment.");
+            } else {
+                return redirect()->route('shop.outlets.index')->with('success', "Branch '{$outlet->name}' ({$outlet->code}) submitted! Your {$plan?->name} quota of {$maxBranches} branch(es) is already in use. This additional branch requires payment of LKR 2,500.00 before Super Admin approval.");
+            }
+        }
 
         return redirect()->route('shop.outlets.index')->with('success', "Outlet '{$outlet->name}' ({$outlet->code}) created successfully!");
     }
@@ -107,6 +209,12 @@ class OutletController extends Controller
      */
     public function update(Request $request, Outlet $outlet): RedirectResponse
     {
+        abort_unless(
+            $request->user()->can('branches.manage') || $request->user()->hasRole(['Shop Owner', 'Administrator', 'Super Administrator']),
+            403,
+            'Only store owners and administrators can update branches.'
+        );
+
         $validated = $request->validate([
             'name' => 'required|string|max:150',
             'code' => 'required|string|max:50',
@@ -115,11 +223,51 @@ class OutletController extends Controller
             'address' => 'required|string|max:255',
             'city' => 'nullable|string|max:100',
             'manager_name' => 'nullable|string|max:150',
+            'manager_email' => 'nullable|email|max:150',
+            'manager_password' => 'nullable|string|min:6',
             'is_main' => 'nullable|boolean',
             'is_active' => 'nullable|boolean',
             'receipt_header' => 'nullable|string|max:255',
             'receipt_footer' => 'nullable|string|max:255',
         ]);
+
+        $managerEmail = ! empty($validated['manager_email']) ? strtolower(trim($validated['manager_email'])) : null;
+        $managerPassword = $validated['manager_password'] ?? null;
+        unset($validated['manager_password']);
+
+        if ($managerEmail) {
+            $existingUser = User::where('email', $managerEmail)->first();
+            if ($existingUser && $existingUser->shop_id !== $outlet->shop_id) {
+                return redirect()->back()->with('error', "User with email '{$managerEmail}' is already registered under another store workspace.");
+            }
+
+            $userData = [
+                'shop_id' => $outlet->shop_id,
+                'outlet_id' => $outlet->id,
+                'name' => $validated['manager_name'] ?: ($outlet->name . ' Manager'),
+                'phone' => $validated['phone'] ?? null,
+                'email_verified_at' => now(),
+            ];
+            if (! empty($managerPassword)) {
+                $userData['password'] = Hash::make($managerPassword);
+            } elseif (! $existingUser) {
+                $userData['password'] = Hash::make('Manager123!');
+            }
+
+            $managerUser = User::updateOrCreate(
+                ['email' => $managerEmail],
+                $userData
+            );
+
+            if (! $managerUser->hasRole('Shop Manager')) {
+                $managerUser->assignRole('Shop Manager');
+            }
+
+            $validated['manager_user_id'] = $managerUser->id;
+            $validated['manager_email'] = $managerEmail;
+        } else {
+            $validated['manager_email'] = null;
+        }
 
         $validated['code'] = strtoupper(trim($validated['code']));
 
@@ -160,8 +308,14 @@ class OutletController extends Controller
     /**
      * Delete an outlet.
      */
-    public function destroy(Outlet $outlet): RedirectResponse
+    public function destroy(Request $request, Outlet $outlet): RedirectResponse
     {
+        abort_unless(
+            $request->user()->can('branches.manage') || $request->user()->hasRole(['Shop Owner', 'Administrator', 'Super Administrator']),
+            403,
+            'Only store owners and administrators can delete branches.'
+        );
+
         if ($outlet->is_main) {
             return redirect()->back()->with('error', 'Cannot delete the primary Main Branch of your shop.');
         }
@@ -182,6 +336,15 @@ class OutletController extends Controller
      */
     public function switchOutlet(Request $request, Outlet $outlet): JsonResponse|RedirectResponse
     {
+        if ($outlet->approval_status !== 'approved') {
+            $msg = "Cannot switch to branch '{$outlet->name}' because it is pending Super Admin approval.";
+            if ($request->wantsJson() || $request->ajax()) {
+                return response()->json(['success' => false, 'message' => $msg], 422);
+            }
+
+            return redirect()->back()->with('error', $msg);
+        }
+
         session([
             'active_outlet_id' => $outlet->id,
             'active_outlet_name' => $outlet->name,
@@ -200,11 +363,102 @@ class OutletController extends Controller
     /**
      * Set this outlet as the primary/main branch.
      */
-    public function toggleMain(Outlet $outlet): RedirectResponse
+    public function toggleMain(Request $request, Outlet $outlet): RedirectResponse
     {
+        abort_unless(
+            $request->user()->can('branches.manage') || $request->user()->hasRole(['Shop Owner', 'Administrator', 'Super Administrator']),
+            403,
+            'Only store owners and administrators can designate the primary main branch.'
+        );
+
+        if ($outlet->approval_status !== 'approved') {
+            return redirect()->back()->with('error', "Cannot set '{$outlet->name}' as Main Branch because it is pending Super Admin approval.");
+        }
+
         Outlet::where('is_main', true)->update(['is_main' => false]);
         $outlet->update(['is_main' => true]);
 
         return redirect()->route('shop.outlets.index')->with('success', "Outlet '{$outlet->name}' is now set as the Main Branch.");
+    }
+
+    /**
+     * Pay the additional branch fee via Card or Bank Transfer deposit.
+     */
+    public function payAdditionalBranchFee(Request $request, Outlet $outlet): RedirectResponse
+    {
+        $validated = $request->validate([
+            'payment_method' => 'required|in:card,bank_transfer',
+            'cardholder_name' => 'required_if:payment_method,card|nullable|string|max:100',
+            'card_number' => 'required_if:payment_method,card|nullable|string|max:20',
+            'card_expiry' => 'required_if:payment_method,card|nullable|string|max:7',
+            'card_cvv' => 'required_if:payment_method,card|nullable|string|max:4',
+            'reference_number' => 'required_if:payment_method,bank_transfer|nullable|string|max:100',
+            'receipt' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:5120',
+        ]);
+
+        $fee = (float) ($outlet->additional_fee ?: 2500.00);
+        $shop = $request->user()->shop;
+
+        if ($validated['payment_method'] === 'card') {
+            $last4 = substr(preg_replace('/[^0-9]/', '', (string) ($validated['card_number'] ?? '0000')), -4) ?: '4242';
+            $txnId = 'TXN-OUTLET-CARD-' . strtoupper(Str::random(10));
+
+            $outlet->update([
+                'payment_status' => 'paid',
+                'payment_method' => 'card',
+                'payment_reference' => 'CARD-' . $last4 . ' (' . $txnId . ')',
+                'paid_at' => now(),
+            ]);
+
+            SubscriptionPayment::create([
+                'shop_id' => $shop->id,
+                'plan_id' => $shop->activeSubscription?->plan_id ?? $shop->subscription?->plan_id,
+                'amount' => $fee,
+                'discount_amount' => 0.00,
+                'refunded_amount' => 0.00,
+                'payment_method' => 'card',
+                'billing_cycle' => 'monthly',
+                'status' => 'approved',
+                'transaction_id' => $txnId,
+                'reference_number' => 'CARD-' . $last4 . ' (Branch: ' . $outlet->code . ')',
+                'verified_at' => now(),
+                'verified_by' => auth()->id(),
+            ]);
+
+            return redirect()->route('shop.outlets.index')
+                ->with('success', "Payment of LKR " . number_format($fee, 2) . " for branch '{$outlet->name}' successful! Super Admin can now verify and approve your branch.");
+        } else {
+            $receiptUrl = null;
+            if ($request->hasFile('receipt')) {
+                $path = $request->file('receipt')->store('receipts', 'public');
+                $receiptUrl = '/storage/' . $path;
+            }
+
+            $ref = $validated['reference_number'] ?? 'DEP-' . strtoupper(Str::random(8));
+
+            $outlet->update([
+                'payment_status' => 'pending_verification',
+                'payment_method' => 'bank_transfer',
+                'payment_reference' => $ref,
+                'payment_receipt_url' => $receiptUrl,
+            ]);
+
+            SubscriptionPayment::create([
+                'shop_id' => $shop->id,
+                'plan_id' => $shop->activeSubscription?->plan_id ?? $shop->subscription?->plan_id,
+                'amount' => $fee,
+                'discount_amount' => 0.00,
+                'refunded_amount' => 0.00,
+                'payment_method' => 'bank_transfer',
+                'billing_cycle' => 'monthly',
+                'status' => 'pending',
+                'transaction_id' => 'TXN-OUTLET-BANK-' . strtoupper(Str::random(10)),
+                'reference_number' => $ref . ' (Branch: ' . $outlet->code . ')',
+                'receipt_url' => $receiptUrl,
+            ]);
+
+            return redirect()->route('shop.outlets.index')
+                ->with('success', "Bank transfer slip uploaded for branch '{$outlet->name}'. Super Admin will verify the slip and approve your branch.");
+        }
     }
 }

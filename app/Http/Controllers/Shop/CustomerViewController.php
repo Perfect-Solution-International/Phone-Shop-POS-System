@@ -34,7 +34,9 @@ class CustomerViewController extends Controller
             $query->where('balance', '>', 0);
         }
 
-        $customers = $query->latest()->paginate(20)->withQueryString();
+        /** @var \Illuminate\Pagination\LengthAwarePaginator $customers */
+        $customers = $query->latest()->paginate(20);
+        $customers->withQueryString();
 
         return view('shop.customers.index', compact('customers'));
     }
@@ -48,34 +50,9 @@ class CustomerViewController extends Controller
             'nic' => 'nullable|string|max:50',
             'address' => 'nullable|string|max:500',
             'credit_limit' => 'nullable|numeric|min:0',
-            'password' => 'nullable|string|min:6|confirmed',
         ]);
 
-        $customerData = collect($validated)->except(['password', 'password_confirmation'])->toArray();
-        if (! empty($validated['password'])) {
-            $customerData['password'] = Hash::make($validated['password']);
-        }
-
-        $customer = Customer::create($customerData);
-
-        // If email and password provided, link/create User account with Customer portal role
-        if (! empty($validated['email']) && ! empty($validated['password'])) {
-            $shopId = auth()->user()->shop_id ?? session('superadmin_active_shop_id');
-            $user = User::updateOrCreate(
-                ['email' => $validated['email']],
-                [
-                    'name' => $validated['name'],
-                    'phone' => $validated['phone'],
-                    'password' => Hash::make($validated['password']),
-                    'shop_id' => $shopId,
-                    'email_verified_at' => now(),
-                ]
-            );
-
-            if (! $user->hasRole('Customer')) {
-                $user->assignRole('Customer');
-            }
-        }
+        Customer::create($validated);
 
         return redirect()->route('shop.customers')->with('success', 'Customer profile registered successfully!');
     }
@@ -89,34 +66,9 @@ class CustomerViewController extends Controller
             'nic' => 'nullable|string|max:50',
             'address' => 'nullable|string|max:500',
             'credit_limit' => 'nullable|numeric|min:0',
-            'password' => 'nullable|string|min:6|confirmed',
         ]);
 
-        $updateData = collect($validated)->except(['password', 'password_confirmation'])->toArray();
-        if (! empty($validated['password'])) {
-            $updateData['password'] = Hash::make($validated['password']);
-        }
-
-        $customer->update($updateData);
-
-        // If password was updated and email exists, also update the linked User account
-        if (! empty($validated['password']) && ! empty($customer->email)) {
-            $shopId = auth()->user()->shop_id ?? session('superadmin_active_shop_id');
-            $user = User::updateOrCreate(
-                ['email' => $customer->email],
-                [
-                    'name' => $customer->name,
-                    'phone' => $customer->phone,
-                    'password' => Hash::make($validated['password']),
-                    'shop_id' => $shopId,
-                    'email_verified_at' => now(),
-                ]
-            );
-
-            if (! $user->hasRole('Customer')) {
-                $user->assignRole('Customer');
-            }
-        }
+        $customer->update($validated);
 
         if (! empty($validated['nic'])) {
             RepairJob::withoutGlobalScopes()->where('customer_id', $customer->id)->update([
@@ -216,7 +168,7 @@ class CustomerViewController extends Controller
         });
 
         $remainingDebt = max(0, $currentBalance - $amount);
-        return redirect()->route('shop.customers')
+        return redirect()->back()
             ->with('success', "Debt payment of LKR " . number_format($amount, 2) . " received successfully from '{$customer->name}'! Remaining Debt: LKR " . number_format($remainingDebt, 2));
     }
 }

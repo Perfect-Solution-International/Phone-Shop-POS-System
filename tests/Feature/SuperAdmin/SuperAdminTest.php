@@ -196,6 +196,9 @@ test('superadmin can reject bank transfer payments with reason', function (): vo
 });
 
 test('new shop registration automatically initializes 7-day free trial on default plan', function (): void {
+    $plan = \App\Models\Platform\SubscriptionPlan::where('slug', 'starter')->first()
+        ?? \App\Models\Platform\SubscriptionPlan::first();
+
     $payload = [
         'shop_name' => 'Nexus Mobile Care',
         'name' => 'Sunil Shantha',
@@ -204,9 +207,18 @@ test('new shop registration automatically initializes 7-day free trial on defaul
         'password' => 'StrongPass1234!',
         'password_confirmation' => 'StrongPass1234!',
         'terms' => '1',
+        'plan_id' => $plan ? $plan->id : 1,
+        'cardholder_name' => 'Sunil Shantha',
+        'card_number' => '4242424242424242',
+        'card_expiry' => '12/28',
+        'card_cvv' => '123',
     ];
 
-    $this->post('/register', $payload)->assertRedirect(route('verification.notice'));
+    $expectedDestination = config('auth.verification.enabled', false)
+        ? route('verification.notice')
+        : route('shop.dashboard');
+
+    $this->post('/register', $payload)->assertRedirect($expectedDestination);
 
     $shop = Shop::where('name', 'Nexus Mobile Care')->first();
     expect($shop)->not->toBeNull();

@@ -112,6 +112,7 @@ return [
     */
 
     'verification' => [
+        'enabled' => (bool) env('AUTH_VERIFICATION_ENABLED', false), // Email verification is paused by default
         'expire' => (int) env('AUTH_VERIFICATION_EXPIRE', 60),
     ],
 

@@ -41,6 +41,23 @@ class ProductViewController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $shopId = (int) auth()->user()?->shop_id;
+
+        // Auto-handle category so shop user is never blocked
+        $categoryId = $request->input('category_id');
+        if ($request->filled('new_category')) {
+            $newCat = Category::firstOrCreate(
+                ['shop_id' => $shopId, 'name' => trim($request->input('new_category'))],
+                ['slug' => Str::slug(trim($request->input('new_category'))).'-'.$shopId]
+            );
+            $request->merge(['category_id' => $newCat->id]);
+        } elseif (empty($categoryId)) {
+            $defaultCat = Category::firstOrCreate(
+                ['shop_id' => $shopId, 'name' => 'General Accessories'],
+                ['slug' => 'general-accessories-'.$shopId]
+            );
+            $request->merge(['category_id' => $defaultCat->id]);
+        }
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'category_id' => ['required', Rule::exists('categories', 'id')->where('shop_id', $shopId)],
@@ -78,6 +95,23 @@ class ProductViewController extends Controller
     public function update(Request $request, Product $product): RedirectResponse
     {
         $shopId = (int) auth()->user()?->shop_id;
+
+        // Auto-handle category so shop user is never blocked
+        $categoryId = $request->input('category_id');
+        if ($request->filled('new_category')) {
+            $newCat = Category::firstOrCreate(
+                ['shop_id' => $shopId, 'name' => trim($request->input('new_category'))],
+                ['slug' => Str::slug(trim($request->input('new_category'))).'-'.$shopId]
+            );
+            $request->merge(['category_id' => $newCat->id]);
+        } elseif (empty($categoryId)) {
+            $defaultCat = Category::firstOrCreate(
+                ['shop_id' => $shopId, 'name' => 'General Accessories'],
+                ['slug' => 'general-accessories-'.$shopId]
+            );
+            $request->merge(['category_id' => $defaultCat->id]);
+        }
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'category_id' => ['required', Rule::exists('categories', 'id')->where('shop_id', $shopId)],

@@ -523,17 +523,29 @@
 
                     <div class="brand-kicker-pill">
                         <span class="brand-kicker-dot"></span>
-                        <span>Enterprise POS &amp; SaaS Cloud</span>
+                        <span id="brandKickerText">Enterprise POS &amp; SaaS Cloud</span>
                     </div>
 
                     <h1 class="card-title">{{ $applicationName }}</h1>
-                    <p class="card-subtitle">Retail POS, IMEI Tracking, Repairs &amp; Portal</p>
+                    <p class="card-subtitle" id="cardSubtitle">Retail POS, IMEI Tracking &amp; Repair Center</p>
                 </header>
+
+                <!-- Interactive Portal Mode Switcher -->
+                <div class="portal-mode-toggle" style="display: flex; background: #f1f5f9; padding: 4px; border-radius: 12px; margin-bottom: 1.35rem; gap: 4px; border: 1px solid #e2e8f0;">
+                    <button type="button" id="btnModeOwner" class="mode-tab-btn" onclick="switchLoginMode('owner')" style="flex: 1; padding: 0.65rem 0.5rem; border: none; border-radius: 9px; font-size: 0.8125rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.4rem; transition: all 0.2s ease;">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                        <span>Store Owner &amp; Admin</span>
+                    </button>
+                    <button type="button" id="btnModeStaff" class="mode-tab-btn" onclick="switchLoginMode('staff')" style="flex: 1; padding: 0.65rem 0.5rem; border: none; border-radius: 9px; font-size: 0.8125rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.4rem; transition: all 0.2s ease;">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                        <span>Staff &amp; Cashier Portal</span>
+                    </button>
+                </div>
 
                 @auth
                     <div style="background-color: #eff6ff; border: 1px solid #bfdbfe; color: #1e40af; padding: 0.75rem 1rem; border-radius: 10px; margin-bottom: 1.25rem; font-size: 0.85rem; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;">
                         <span>Signed in as: <strong>{{ auth()->user()->email }}</strong></span>
-                        <a href="{{ auth()->user()->hasRole('Super Administrator') ? route('superadmin.dashboard') : (auth()->user()->hasRole('Customer') ? route('customer.portal') : route('shop.dashboard')) }}" style="font-weight: 600; color: #2563eb; text-decoration: underline;">Go to Dashboard &rarr;</a>
+                        <a href="{{ auth()->user()->hasRole('Super Administrator') ? route('superadmin.dashboard') : route('shop.dashboard') }}" style="font-weight: 600; color: #2563eb; text-decoration: underline;">Go to Dashboard &rarr;</a>
                     </div>
                 @endauth
 
@@ -584,7 +596,7 @@
                     <div class="form-group">
                         <div class="form-label-row">
                             <label for="email" class="form-label">
-                                Email address <span class="required-star">*</span>
+                                <span id="emailLabelText">Email address</span> <span class="required-star">*</span>
                             </label>
                         </div>
                         <div class="input-shell">
@@ -654,6 +666,17 @@
                         <span class="remember-label">Keep me signed in on this device</span>
                     </label>
 
+                    <!-- Role Routing Information Box (Staff Portal) -->
+                    <div id="staffRoleHint" style="display: none; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 9px; padding: 0.75rem 0.85rem; margin-bottom: 1.15rem; font-size: 0.78rem; color: #166534; line-height: 1.45;">
+                        <div style="font-weight: 700; margin-bottom: 0.25rem; display: flex; align-items: center; gap: 0.35rem;">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                            Direct Role-Based Portal Routing:
+                        </div>
+                        &bull; <strong>Cashier:</strong> Automatically opens the live <strong>POS Counter</strong>.<br>
+                        &bull; <strong>Technician:</strong> Automatically opens the <strong>Repair Pipeline Workbench</strong>.<br>
+                        &bull; <strong>Stock Manager:</strong> Opens <strong>Inventory &amp; Phone Stock</strong>.
+                    </div>
+
                     <!-- Submit Hero Button -->
                     <button type="submit" id="loginSubmitBtn" class="fallback-btn">
                         <svg id="loginSpinner" class="btn-spinner" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
@@ -668,23 +691,21 @@
                     </button>
                 </form>
 
-                <!-- Dedicated Registration & Customer Access Action Cards -->
+                <!-- Dedicated Registration / Portal Info Action Card -->
                 <div class="auth-actions-card">
-                    <a href="{{ route('register') }}" class="action-cta-pill action-cta-register">
-                        <div style="display: flex; align-items: center; gap: 0.5rem;">
-                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><line x1="20" y1="8" x2="20" y2="14"></line><line x1="23" y1="11" x2="17" y2="11"></line></svg>
-                            <span>New Store Owner? <strong>Register Shop (7-Day Trial)</strong></span>
-                        </div>
-                        <span>&rarr;</span>
-                    </a>
-
-                    <a href="{{ route('public.repair-track') }}" class="action-cta-pill action-cta-track">
-                        <div style="display: flex; align-items: center; gap: 0.5rem;">
-                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                            <span>Customer? <strong>Track Repair Online (No Login)</strong></span>
-                        </div>
-                        <span>&rarr;</span>
-                    </a>
+                    <div id="ownerCtaBlock">
+                        <a href="{{ route('register') }}" class="action-cta-pill action-cta-register">
+                            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><line x1="20" y1="8" x2="20" y2="14"></line><line x1="23" y1="11" x2="17" y2="11"></line></svg>
+                                <span>New Store Owner? <strong>Register Shop (7-Day Trial)</strong></span>
+                            </div>
+                            <span>&rarr;</span>
+                        </a>
+                    </div>
+                    <div id="staffCtaBlock" style="display: none; background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 8px; padding: 0.75rem 0.85rem; font-size: 0.78rem; color: #64748b; text-align: center;">
+                        <span style="font-weight: 600; color: #334155;">Need Staff Login Credentials?</span><br>
+                        Contact your Store Owner to create your account under <strong>Store Management &gt; Staff HRM</strong>.
+                    </div>
                 </div>
             </main>
         </div>
@@ -699,6 +720,72 @@
     </div>
 
     <script>
+        function switchLoginMode(mode) {
+            const btnOwner = document.getElementById('btnModeOwner');
+            const btnStaff = document.getElementById('btnModeStaff');
+            const kickerText = document.getElementById('brandKickerText');
+            const cardSubtitle = document.getElementById('cardSubtitle');
+            const emailInput = document.getElementById('email');
+            const emailLabelText = document.getElementById('emailLabelText');
+            const staffHint = document.getElementById('staffRoleHint');
+            const submitText = document.getElementById('loginSubmitText');
+            const ownerCta = document.getElementById('ownerCtaBlock');
+            const staffCta = document.getElementById('staffCtaBlock');
+
+            if (mode === 'staff') {
+                if (btnStaff) {
+                    btnStaff.style.background = '#ffffff';
+                    btnStaff.style.color = '#0284c7';
+                    btnStaff.style.boxShadow = '0 2px 4px rgba(0,0,0,0.08)';
+                }
+                if (btnOwner) {
+                    btnOwner.style.background = 'transparent';
+                    btnOwner.style.color = '#64748b';
+                    btnOwner.style.boxShadow = 'none';
+                }
+
+                if (kickerText) kickerText.textContent = 'Staff Terminal & POS Portal';
+                if (cardSubtitle) cardSubtitle.textContent = 'Cashiers, Technicians & Store Personnel Sign-In';
+                if (emailLabelText) emailLabelText.textContent = 'Staff Email Address';
+                if (emailInput && (!emailInput.value || emailInput.value === 'owner@yourshop.com')) {
+                    emailInput.placeholder = 'cashier@yourshop.com or staff@example.com';
+                }
+                if (staffHint) staffHint.style.display = 'block';
+                if (submitText) submitText.textContent = 'Sign In to Staff Workspace';
+                if (ownerCta) ownerCta.style.display = 'none';
+                if (staffCta) staffCta.style.display = 'block';
+            } else {
+                if (btnOwner) {
+                    btnOwner.style.background = '#ffffff';
+                    btnOwner.style.color = '#4f46e5';
+                    btnOwner.style.boxShadow = '0 2px 4px rgba(0,0,0,0.08)';
+                }
+                if (btnStaff) {
+                    btnStaff.style.background = 'transparent';
+                    btnStaff.style.color = '#64748b';
+                    btnStaff.style.boxShadow = 'none';
+                }
+
+                if (kickerText) kickerText.textContent = 'Enterprise POS & SaaS Cloud';
+                if (cardSubtitle) cardSubtitle.textContent = 'Retail POS, IMEI Tracking & Repair Center';
+                if (emailLabelText) emailLabelText.textContent = 'Email address';
+                if (emailInput && (!emailInput.value || emailInput.value.includes('staff'))) {
+                    emailInput.placeholder = 'owner@yourshop.com';
+                }
+                if (staffHint) staffHint.style.display = 'none';
+                if (submitText) submitText.textContent = 'Sign In to Workspace';
+                if (ownerCta) ownerCta.style.display = 'block';
+                if (staffCta) staffCta.style.display = 'none';
+            }
+        }
+
+        const initialMode = "{{ $initialMode ?? 'owner' }}";
+        if (initialMode === 'staff') {
+            switchLoginMode('staff');
+        } else {
+            switchLoginMode('owner');
+        }
+
         function toggleFallbackPassword(inputId, btn) {
             const input = document.getElementById(inputId);
             const eyeOpen = document.getElementById('eyeIconOpen');

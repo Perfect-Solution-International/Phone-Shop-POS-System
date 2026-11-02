@@ -35,7 +35,7 @@ class StockTransferViewController extends Controller
 
         // In-stock phones available for transfer
         $availablePhones = PhoneDevice::where('shop_id', $shopId)
-            ->where('status', 'In Stock')
+            ->whereIn('status', ['in_stock', 'In Stock'])
             ->orderBy('brand')
             ->orderBy('model')
             ->get();

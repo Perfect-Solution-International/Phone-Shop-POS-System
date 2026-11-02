@@ -4,6 +4,8 @@
 @section('page-title', request('status') === 'sold' ? 'Sold Phone Devices (IMEI Sales Archive)' : 'Serialized Phone Inventory (Dual IMEI)')
 
 @section('content')
+@include('shop.partials.inventory-subnav')
+
 <div class="card">
     <div class="card-header" style="flex-wrap: wrap; gap: 1rem;">
         <form method="GET" action="{{ route('shop.phones') }}" style="display: flex; gap: 0.75rem; flex: 1; flex-wrap: wrap;">
@@ -118,16 +120,41 @@
                         @if($phone->status === 'in_stock')
                             <span class="badge badge-success">In Stock</span>
                         @elseif($phone->status === 'sold')
-                            <span class="badge badge-info">Sold</span>
-                            @if($phone->sale)
-                                <div style="font-size: 0.72rem; color: #4338ca; margin-top: 2px;">
+                            <span class="badge badge-danger" style="font-size: 0.75rem; font-weight: 800;">✓ Sold (Stock Deducted)</span>
+                            @if($phone->sale && $phone->sale->customer)
+                                <div style="margin-top: 4px; padding: 0.35rem 0.5rem; background: #eff6ff; border-radius: 6px; border: 1px solid #bfdbfe; font-size: 0.75rem; line-height: 1.35; display: flex; flex-direction: column; gap: 0.15rem;">
+                                    <div style="font-weight: 800; color: #1e40af; display: inline-flex; align-items: center; gap: 0.25rem;">
+                                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                                        <span>{{ $phone->sale->customer->name }}</span>
+                                    </div>
+                                    <div style="font-size: 0.7rem; color: #2563eb; font-weight: 600; display: inline-flex; align-items: center; gap: 0.25rem;">
+                                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                                        <span>{{ $phone->sale->customer->phone }}</span>
+                                    </div>
+                                    @if($phone->sale->customer->nic)
+                                        <div style="font-size: 0.68rem; color: #64748b; display: inline-flex; align-items: center; gap: 0.25rem;">
+                                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="4" width="18" height="16" rx="2"></rect><line x1="7" y1="8" x2="17" y2="8"></line><line x1="7" y1="12" x2="13" y2="12"></line></svg>
+                                            <span>{{ $phone->sale->customer->nic }}</span>
+                                        </div>
+                                    @endif
+                                    <div style="font-size: 0.68rem; color: #4338ca; font-family: monospace; margin-top: 2px;">
+                                        <a href="{{ route('shop.sales.show', $phone->sale) }}" target="_blank" style="text-decoration: underline; color: inherit;">
+                                            #{{ $phone->sale->invoice_number }}
+                                        </a>
+                                    </div>
+                                </div>
+                            @elseif($phone->sale)
+                                <div style="font-size: 0.7rem; color: #4338ca; margin-top: 2px;">
                                     <a href="{{ route('shop.sales.show', $phone->sale) }}" target="_blank" style="text-decoration: underline; color: inherit; font-family: monospace;">
-                                        {{ $phone->sale->invoice_number }}
+                                        #{{ $phone->sale->invoice_number }}
                                     </a>
                                 </div>
                             @endif
                             @if($phone->sold_at)
-                                <div style="font-size: 0.68rem; color: #64748b;">{{ \Carbon\Carbon::parse($phone->sold_at)->format('M d, Y') }}</div>
+                                <div style="font-size: 0.68rem; color: #64748b; margin-top: 2px; display: inline-flex; align-items: center; gap: 0.25rem;">
+                                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                                    <span>{{ \Carbon\Carbon::parse($phone->sold_at)->format('M d, Y') }}</span>
+                                </div>
                             @endif
                         @else
                             <span class="badge badge-warning">{{ ucfirst($phone->status) }}</span>

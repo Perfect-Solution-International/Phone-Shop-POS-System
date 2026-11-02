@@ -72,6 +72,12 @@ class PosCheckoutService
                         throw new InvalidArgumentException("Device with IMEI {$device->imei_1} ({$device->model}) is already marked as '{$device->status}' and cannot be sold.");
                     }
 
+                    $activeOutlet = $payload['outlet_id'] ?? session('active_outlet_id') ?? auth()->user()?->outlet_id;
+                    if ($activeOutlet && $device->outlet_id && (int) $device->outlet_id !== (int) $activeOutlet) {
+                        $outletName = $device->outlet?->name ?? "Outlet #{$device->outlet_id}";
+                        throw new InvalidArgumentException("Device with IMEI {$device->imei_1} belongs to '{$outletName}' and cannot be sold from this branch.");
+                    }
+
                     $phonesToMarkSold[] = $device;
                 } elseif (! empty($item['product_id'])) {
                     // Standard product quantity check
@@ -160,6 +166,7 @@ class PosCheckoutService
 
             // 4. Create Sale Record
             $sale = Sale::create([
+                'outlet_id' => $payload['outlet_id'] ?? (session('active_outlet_id') ?: auth()->user()?->outlet_id),
                 'customer_id' => $payload['customer_id'] ?? null,
                 'user_id' => $cashierId,
                 'invoice_number' => $invoiceNumber,

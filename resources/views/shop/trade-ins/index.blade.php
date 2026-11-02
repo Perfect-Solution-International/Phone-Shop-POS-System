@@ -4,6 +4,8 @@
 @section('page-title', 'Used Phone Buying & Trade-Ins')
 
 @section('content')
+@include('shop.partials.inventory-subnav')
+
 <style>
     @media (max-width: 640px) {
         .tradein-checklist-grid {

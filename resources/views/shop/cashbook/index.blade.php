@@ -98,6 +98,22 @@
     }
 </style>
 
+<!-- Cash & Reports Unified Sub-Navigation Tabs -->
+<div class="shop-subnav-tabs no-print" style="display: flex; gap: 0.5rem; margin-bottom: 1.1rem; border-bottom: 2px solid #e2e8f0; padding-bottom: 0.75rem; overflow-x: auto; align-items: center;">
+    <a href="{{ route('shop.cashbook') }}" class="btn btn-sm {{ request()->routeIs('shop.cashbook*') ? 'btn-primary' : 'btn-secondary' }}" style="border-radius: 8px; font-weight: 700; display: inline-flex; align-items: center; gap: 0.45rem; padding: 0.45rem 0.9rem; text-decoration: none; white-space: nowrap;">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+        Daily Cashbook &amp; Drawer
+    </a>
+    <a href="{{ route('shop.reports') }}" class="btn btn-sm {{ request()->routeIs('shop.reports*') ? 'btn-primary' : 'btn-secondary' }}" style="border-radius: 8px; font-weight: 700; display: inline-flex; align-items: center; gap: 0.45rem; padding: 0.45rem 0.9rem; text-decoration: none; white-space: nowrap;">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+        Financial &amp; Performance Reports
+    </a>
+    <a href="{{ route('shop.expenses') }}" class="btn btn-sm {{ request()->routeIs('shop.expenses*') ? 'btn-primary' : 'btn-secondary' }}" style="border-radius: 8px; font-weight: 700; display: inline-flex; align-items: center; gap: 0.45rem; padding: 0.45rem 0.9rem; text-decoration: none; white-space: nowrap;">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="2" y="4" width="20" height="16" rx="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line></svg>
+        Operating Expenses
+    </a>
+</div>
+
 <!-- Filter Date Bar -->
 <div class="card cashbook-filter-bar">
     <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.65rem 1rem; padding: 0.6rem 0.95rem;">
@@ -230,7 +246,45 @@
                     @empty
                     @endforelse
 
-                    @if($cashSales->isEmpty() && $repairAdvances->isEmpty())
+                    @forelse($repairDeliveries as $repDel)
+                    <tr>
+                        <td>
+                            <div style="display: flex; align-items: center; gap: 0.4rem;">
+                                <span class="badge" style="background: #0284c7; color: #ffffff; font-size: 0.65rem; padding: 0.15rem 0.4rem;">Repair Delivery</span>
+                                <span style="font-size: 0.78rem; font-weight: 600; color: #1e293b;">{{ $repDel->customer->name ?? 'Customer' }}</span>
+                            </div>
+                            <div style="font-size: 0.7rem; color: #64748b; margin-top: 2px;">{{ $repDel->brand }} {{ $repDel->model }} (Final Settlement)</div>
+                        </td>
+                        <td style="font-family: monospace; font-size: 0.78rem; color: #4f46e5;">
+                            {{ $repDel->job_number }}
+                        </td>
+                        <td style="text-align: right; font-weight: 700; color: #166534; font-family: monospace; font-size: 0.8125rem;">
+                            LKR {{ number_format(max(0, (float) $repDel->final_cost - (float) $repDel->advance_amount), 2) }}
+                        </td>
+                    </tr>
+                    @empty
+                    @endforelse
+
+                    @forelse($debtPayments as $dp)
+                    <tr>
+                        <td>
+                            <div style="display: flex; align-items: center; gap: 0.4rem;">
+                                <span class="badge badge-warning" style="font-size: 0.65rem; padding: 0.15rem 0.4rem;">Debt Settlement</span>
+                                <span style="font-size: 0.78rem; font-weight: 600; color: #1e293b;">{{ $dp->customer->name ?? 'Customer' }}</span>
+                            </div>
+                            <div style="font-size: 0.7rem; color: #64748b; margin-top: 2px;">{{ $dp->notes ?? 'Customer outstanding debt payment' }}</div>
+                        </td>
+                        <td style="font-family: monospace; font-size: 0.78rem; color: #4f46e5;">
+                            {{ $dp->reference ?? 'Counter Receipt' }}
+                        </td>
+                        <td style="text-align: right; font-weight: 700; color: #166534; font-family: monospace; font-size: 0.8125rem;">
+                            LKR {{ number_format($dp->amount, 2) }}
+                        </td>
+                    </tr>
+                    @empty
+                    @endforelse
+
+                    @if($cashSales->isEmpty() && $repairAdvances->isEmpty() && $repairDeliveries->isEmpty() && $debtPayments->isEmpty())
                     <tr>
                         <td colspan="3" style="text-align: center; padding: 1.25rem; color: #94a3b8; font-size: 0.8125rem;">
                             No cash received on this date.

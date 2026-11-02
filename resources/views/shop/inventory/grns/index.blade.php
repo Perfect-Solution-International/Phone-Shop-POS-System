@@ -4,6 +4,8 @@
 @section('page-title', 'Goods Received Notes & Inbound Stock Receiving')
 
 @section('content')
+@include('shop.partials.inventory-subnav')
+
 <div class="metrics-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
     <div class="card" style="padding: 1.25rem; border-left: 4px solid #4f46e5;">
         <span style="font-size: 0.8125rem; color: #64748b; font-weight: 600;">TOTAL GRNS PROCESSED</span>

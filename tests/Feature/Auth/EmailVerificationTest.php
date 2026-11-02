@@ -13,10 +13,14 @@ use Laravel\Sanctum\Sanctum;
 
 beforeEach(function (): void {
     $this->seed(DatabaseSeeder::class);
+    config(['auth.verification.enabled' => true]);
 });
 
 test('verification notification is sent upon shop registration', function (): void {
     Notification::fake();
+
+    $plan = \App\Models\Platform\SubscriptionPlan::where('slug', 'starter')->first()
+        ?? \App\Models\Platform\SubscriptionPlan::first();
 
     $payload = [
         'shop_name' => 'Verify Phone Shop',
@@ -26,6 +30,11 @@ test('verification notification is sent upon shop registration', function (): vo
         'password' => 'StrongSecret123!',
         'password_confirmation' => 'StrongSecret123!',
         'terms' => '1',
+        'plan_id' => $plan ? $plan->id : 1,
+        'cardholder_name' => 'Kasun Silva',
+        'card_number' => '4242424242424242',
+        'card_expiry' => '12/28',
+        'card_cvv' => '123',
     ];
 
     $this->post('/register', $payload);
@@ -195,4 +204,45 @@ test('unverified api user is blocked from accessing protected shop resources', f
 
     $response->assertForbidden();
     $response->assertJsonPath('message', 'Your email address is not verified.');
+});
+
+test('when email verification is paused, unverified user can access protected shop routes directly', function (): void {
+    config(['auth.verification.enabled' => false]);
+
+    $shop = Shop::factory()->create();
+    $user = User::factory()->unverified()->create(['shop_id' => $shop->id]);
+    $user->assignRole('Shop Owner');
+
+    $response = $this->actingAs($user, 'web')->get('/shop/dashboard');
+
+    $response->assertOk();
+    $response->assertViewIs('shop.dashboard.index');
+});
+
+test('when email verification is paused, newly registered owner lands directly on dashboard without notice', function (): void {
+    config(['auth.verification.enabled' => false]);
+
+    $plan = \App\Models\Platform\SubscriptionPlan::where('slug', 'starter')->first()
+        ?? \App\Models\Platform\SubscriptionPlan::first();
+
+    $payload = [
+        'shop_name' => 'Instant Access Shop',
+        'name' => 'Nuwan Perera',
+        'phone' => '+94779876543',
+        'email' => 'nuwan@instantshop.test',
+        'password' => 'StrongSecret123!',
+        'password_confirmation' => 'StrongSecret123!',
+        'terms' => '1',
+        'plan_id' => $plan ? $plan->id : 1,
+        'cardholder_name' => 'Nuwan Perera',
+        'card_number' => '4242424242424242',
+        'card_expiry' => '12/28',
+        'card_cvv' => '123',
+    ];
+
+    $response = $this->post('/register', $payload);
+
+    $user = User::where('email', 'nuwan@instantshop.test')->firstOrFail();
+    expect($user->hasVerifiedEmail())->toBeTrue();
+    $response->assertRedirect(route('shop.dashboard'));
 });

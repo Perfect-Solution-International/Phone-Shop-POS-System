@@ -91,6 +91,104 @@ test('super admin can add a new shop owner and auto-provision a new shop workspa
     expect($newOwner->hasRole('Shop Owner'))->toBeTrue();
 });
 
+test('super admin can register owner and store with credit card payment', function (): void {
+    $superAdmin = User::factory()->create();
+    $superAdmin->assignRole('Super Administrator');
+
+    $plan = \App\Models\Platform\SubscriptionPlan::first();
+
+    $response = $this->actingAs($superAdmin, 'web')
+        ->post(route('superadmin.owners.store'), [
+            'name' => 'Dilshan Silva',
+            'email' => 'dilshan@cardtest.test',
+            'phone' => '0719876543',
+            'password' => 'Secret1234!',
+            'password_confirmation' => 'Secret1234!',
+            'shop_assignment_type' => 'new',
+            'shop_name' => 'Dilshan Mobile Hub',
+            'business_address' => 'Galle Road, Colombo',
+            'plan_id' => $plan->id,
+            'payment_method' => 'card',
+            'cardholder_name' => 'Dilshan Silva',
+            'card_number' => '4242424242424242',
+            'card_expiry' => '11/27',
+            'card_cvv' => '999',
+            'is_verified' => '1',
+        ]);
+
+    $response->assertRedirect(route('superadmin.owners.index'));
+
+    $newShop = Shop::where('name', 'Dilshan Mobile Hub')->first();
+    expect($newShop)->not->toBeNull();
+
+    $sub = \App\Models\Platform\Subscription::where('shop_id', $newShop->id)->first();
+    expect($sub)->not->toBeNull();
+    expect($sub->status)->toBe('active');
+    expect($sub->card_last4)->toBe('4242');
+
+    $payment = \App\Models\Platform\SubscriptionPayment::where('shop_id', $newShop->id)->first();
+    expect($payment)->not->toBeNull();
+    expect($payment->status)->toBe('approved');
+    expect($payment->payment_method)->toBe('card');
+});
+
+test('super admin can register owner and store with bank slip and it appears in bank approvals', function (): void {
+    \Illuminate\Support\Facades\Storage::fake('public');
+
+    $superAdmin = User::factory()->create();
+    $superAdmin->assignRole('Super Administrator');
+
+    $plan = \App\Models\Platform\SubscriptionPlan::first();
+    $file = \Illuminate\Http\UploadedFile::fake()->create('boc_slip.png', 300, 'image/png');
+
+    $response = $this->actingAs($superAdmin, 'web')
+        ->post(route('superadmin.owners.store'), [
+            'name' => 'Kavindu Bandara',
+            'email' => 'kavindu@banktest.test',
+            'phone' => '0772223344',
+            'password' => 'Secret1234!',
+            'password_confirmation' => 'Secret1234!',
+            'shop_assignment_type' => 'new',
+            'shop_name' => 'Kavindu Cellular Store',
+            'business_address' => 'Kandy Road, Kurunegala',
+            'plan_id' => $plan->id,
+            'payment_method' => 'bank_transfer',
+            'reference_number' => 'BOC-TXN-778899',
+            'receipt' => $file,
+            'is_verified' => '1',
+        ]);
+
+    $response->assertRedirect(route('superadmin.owners.index'));
+
+    $newShop = Shop::where('name', 'Kavindu Cellular Store')->first();
+    expect($newShop)->not->toBeNull();
+
+    $subPayment = \App\Models\Platform\SubscriptionPayment::where('shop_id', $newShop->id)
+        ->where('payment_method', 'bank_transfer')
+        ->first();
+    expect($subPayment)->not->toBeNull();
+    expect($subPayment->status)->toBe('pending');
+    expect($subPayment->reference_number)->toBe('BOC-TXN-778899');
+    expect($subPayment->receipt_url)->not->toBeNull();
+
+    // Verify it appears in Bank Approvals page
+    $approvalsResponse = $this->actingAs($superAdmin, 'web')
+        ->get(route('superadmin.payments.approvals'));
+    $approvalsResponse->assertOk()
+        ->assertSee('BOC-TXN-778899')
+        ->assertSee('Kavindu Cellular Store')
+        ->assertSee('View Slip / Receipt');
+
+    // Approve the payment as Super Admin
+    $approveResponse = $this->actingAs($superAdmin, 'web')
+        ->post(route('superadmin.payments.approve', $subPayment->id));
+    $approveResponse->assertRedirect();
+
+    expect($subPayment->fresh()->status)->toBe('approved');
+    $sub = \App\Models\Platform\Subscription::where('shop_id', $newShop->id)->first();
+    expect($sub->status)->toBe('active');
+});
+
 test('super admin cannot create owner with duplicate email', function (): void {
     $superAdmin = User::factory()->create();
     $superAdmin->assignRole('Super Administrator');

@@ -35,7 +35,7 @@
             <button type="button" class="btn-action btn-outline" onclick='openEditShopModal(@json($shopData))' style="color: #4338ca; border-color: #c7d2fe;">
                 Edit Shop Details
             </button>
-            <form method="POST" action="{{ route('superadmin.shops.destroy', $shop->id) }}" style="display: inline; margin: 0;" onsubmit="return confirm('⚠️ WARNING: Are you sure you want to PERMANENTLY DELETE shop \'{{ addslashes($shop->name) }}\'? All related data, inventory, sales, and accounts will be completely erased. This action CANNOT be undone!');">
+            <form method="POST" action="{{ route('superadmin.shops.destroy', $shop->id) }}" style="display: inline; margin: 0;" onsubmit="return confirm('WARNING: Are you sure you want to PERMANENTLY DELETE shop \'{{ addslashes($shop->name) }}\'? All related data, inventory, sales, and accounts will be completely erased. This action CANNOT be undone!');">
                 @csrf
                 @method('DELETE')
                 <button type="submit" class="btn-action btn-danger" style="background: #991b1b; border-color: #991b1b;">Delete Shop</button>
@@ -144,6 +144,105 @@
                         <td>{{ $u->created_at->format('M d, Y') }}</td>
                     </tr>
                 @endforeach
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Branch Outlets & Approvals -->
+    <div class="data-card">
+        <div class="data-card-header">
+            <h2 class="data-card-title">Registered Branch Outlets ({{ $shop->outlets->count() }})</h2>
+        </div>
+        <table class="saas-table">
+            <thead>
+                <tr>
+                    <th>Branch</th>
+                    <th>Code</th>
+                    <th>Billing / Quota</th>
+                    <th>Address / City</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse ($shop->outlets as $outlet)
+                    @php
+                        $isCovered = $outlet->isCoveredByPlan();
+                    @endphp
+                    <tr>
+                        <td>
+                            <strong>{{ $outlet->name }}</strong>
+                            @if($outlet->is_main)
+                                <span style="display: inline-flex; align-items: center; gap: 0.25rem; font-size: 0.7rem; font-weight: 700; color: #4f46e5;">
+                                    <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                                    <span>Main Branch</span>
+                                </span>
+                            @endif
+                            @if($outlet->manager_email)
+                                <div style="font-size: 0.72rem; color: #64748b; display: inline-flex; align-items: center; gap: 0.25rem;">
+                                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="7.5" cy="15.5" r="5.5"></circle><path d="m21 2-9.6 9.6"></path><path d="m15.5 7.5 3 3"></path><path d="M18.5 4.5 20 6"></path></svg>
+                                    <span>{{ $outlet->manager_email }}</span>
+                                </div>
+                            @endif
+                        </td>
+                        <td><span style="font-family: monospace; font-size: 0.8125rem; background: #e0e7ff; color: #4338ca; padding: 0.15rem 0.45rem; border-radius: 4px;">{{ $outlet->code }}</span></td>
+                        <td>
+                            @if($isCovered)
+                                <span class="status-pill status-active" style="background: #ecfdf5; color: #047857; font-size: 0.7rem;">✓ Plan Quota (Free)</span>
+                            @elseif($outlet->payment_status === 'paid')
+                                <span class="status-pill status-active" style="background: #eff6ff; color: #1d4ed8; font-size: 0.7rem;">✓ Paid (LKR {{ number_format($outlet->additional_fee ?: 2500, 0) }})</span>
+                            @elseif($outlet->payment_status === 'pending_verification')
+                                <span class="status-pill status-trial" style="background: #fffbeb; color: #b45309; font-size: 0.7rem; display: inline-flex; align-items: center; gap: 0.25rem;">
+                                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                                    <span>Slip Uploaded</span>
+                                </span>
+                                @if($outlet->payment_receipt_url)
+                                    <a href="{{ $outlet->payment_receipt_url }}" target="_blank" style="font-size: 0.7rem; color: #2563eb; display: block;">View Slip ↗</a>
+                                @endif
+                            @else
+                                <span class="status-pill status-suspended" style="background: #fef2f2; color: #b91c1c; font-size: 0.7rem; display: inline-flex; align-items: center; gap: 0.25rem;">
+                                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                                    <span>LKR {{ number_format($outlet->additional_fee ?: 2500, 0) }} Unpaid</span>
+                                </span>
+                            @endif
+                        </td>
+                        <td>{{ $outlet->address }}{{ $outlet->city ? ' (' . $outlet->city . ')' : '' }}</td>
+                        <td>
+                            @if($outlet->approval_status === 'pending')
+                                <span class="status-pill status-trial" style="background: #fef3c7; color: #92400e; border: 1px solid #fde68a;">⏳ Pending Approval</span>
+                            @elseif($outlet->approval_status === 'approved')
+                                <span class="status-pill status-active" style="background: #dcfce7; color: #166534; border: 1px solid #bbf7d0;">✓ Approved</span>
+                            @elseif($outlet->approval_status === 'rejected')
+                                <span class="status-pill status-suspended" style="background: #fee2e2; color: #991b1b; border: 1px solid #fecaca;">✕ Rejected</span>
+                            @endif
+                        </td>
+                        <td>
+                            @if($outlet->approval_status === 'pending')
+                                <div style="display: flex; gap: 0.4rem; align-items: center;">
+                                    <form method="POST" action="{{ route('superadmin.outlets.approve', $outlet->id) }}" style="margin: 0;">
+                                        @csrf
+                                        @if(! $isCovered && $outlet->payment_status === 'unpaid')
+                                            <input type="hidden" name="confirm_unpaid" value="1">
+                                            <button type="submit" class="btn-action btn-warning" onclick="return confirm('Branch exceeds quota and is UNPAID. Approve anyway?');" style="font-size: 0.72rem; padding: 0.3rem 0.55rem;" title="Override and approve">✓ Force Approve</button>
+                                        @else
+                                            <button type="submit" class="btn-action btn-success" style="font-size: 0.72rem; padding: 0.3rem 0.55rem;">✓ Approve</button>
+                                        @endif
+                                    </form>
+                                    <form method="POST" action="{{ route('superadmin.outlets.reject', $outlet->id) }}" style="margin: 0;">
+                                        @csrf
+                                        <button type="submit" class="btn-action btn-danger" style="font-size: 0.72rem; padding: 0.3rem 0.55rem;">✕ Reject</button>
+                                    </form>
+                                </div>
+                            @else
+                                <span style="font-size: 0.75rem; color: #64748b;">{{ ucfirst($outlet->approval_status) }}</span>
+                            @endif
+                        </td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="6" style="text-align: center; color: #94a3b8; padding: 2rem;">No branches registered for this store.</td>
+                    </tr>
+                @endforelse
             </tbody>
         </table>
     </div>

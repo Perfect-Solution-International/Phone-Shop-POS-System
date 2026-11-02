@@ -108,6 +108,48 @@ class StaffManagementTest extends TestCase
         ]);
     }
 
+    public function test_manager_can_register_employee_when_user_account_email_already_exists(): void
+    {
+        [$shop, $manager] = $this->createShopAndManager();
+
+        // Simulate pre-existing user with same email in another shop or orphaned
+        $preUser = User::create([
+            'shop_id' => 999,
+            'name' => 'Existing Staff',
+            'email' => 'duplicate_staff@example.com',
+            'password' => bcrypt('OldPass123!'),
+        ]);
+        $preUser->assignRole('Cashier');
+
+        $res = $this->actingAs($manager)->post('/shop/staff/employees', [
+            'name' => 'Duplicate Staff Resolved',
+            'email' => 'duplicate_staff@example.com',
+            'phone' => '0771122334',
+            'position' => 'Cashier',
+            'basic_salary' => 50000.00,
+            'joined_on' => now()->toDateString(),
+            'create_user_account' => 1,
+            'user_role' => 'Cashier',
+            'password' => 'NewPass123!',
+        ]);
+
+        $res->assertRedirect(route('shop.staff', ['tab' => 'employees']));
+
+        $this->assertDatabaseHas('employees', [
+            'shop_id' => $shop->id,
+            'name' => 'Duplicate Staff Resolved',
+            'email' => 'duplicate_staff@example.com',
+            'user_id' => $preUser->id,
+        ]);
+
+        $this->assertDatabaseHas('users', [
+            'id' => $preUser->id,
+            'shop_id' => $shop->id,
+            'name' => 'Duplicate Staff Resolved',
+            'email' => 'duplicate_staff@example.com',
+        ]);
+    }
+
     public function test_attendance_clock_in_and_clock_out(): void
     {
         [$shop, $manager] = $this->createShopAndManager();

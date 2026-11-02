@@ -8,6 +8,9 @@
     .stock-qty-low { color: #b91c1c; }
     .stock-qty-normal { color: #15803d; }
 </style>
+
+@include('shop.partials.inventory-subnav')
+
 <div class="card">
     <div class="card-header" style="flex-wrap: wrap; gap: 1rem;">
         <form method="GET" action="{{ route('shop.spare-parts') }}" style="display: flex; gap: 0.75rem; flex: 1; flex-wrap: wrap;">
