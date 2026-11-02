@@ -9,11 +9,13 @@ use Illuminate\Support\Facades\Route;
 // Public entry & health check
 Route::get('/', [AuthController::class, 'entry'])->name('home');
 Route::get('/up', fn () => response()->json(['status' => 'ok']))->name('health');
-Route::get('/track-repair', [\App\Http\Controllers\PublicRepairTrackingController::class, 'show'])->name('public.repair-track');
-Route::post('/track-repair/approve', [\App\Http\Controllers\PublicRepairTrackingController::class, 'approveEstimate'])->name('public.repair-track.approve');
+Route::get('/track-repair', [\App\Http\Controllers\PublicRepairTrackingController::class, 'show'])->middleware('throttle:30,1')->name('public.repair-track');
+Route::post('/track-repair/approve', [\App\Http\Controllers\PublicRepairTrackingController::class, 'approveEstimate'])->middleware('throttle:15,1')->name('public.repair-track.approve');
 
 // Authentication (Login / Logout)
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
+Route::get('/staff/login', [AuthController::class, 'showLogin'])->name('staff.login');
+Route::get('/staff', fn () => redirect()->route('login', ['type' => 'staff']));
 Route::post('/login', [AuthController::class, 'browserLogin'])->middleware('throttle:login')->name('login.store');
 Route::match(['get', 'post'], '/logout', [AuthController::class, 'logout'])->name('logout');
 
@@ -39,6 +41,7 @@ Route::view('/app/{path?}', 'layouts.master')->middleware(['auth', 'verified'])-
 // Customer Care Portal (Repairs, Warranties, Invoices)
 Route::prefix('portal')->name('customer.')->middleware(['auth', 'verified', 'shop'])->group(function (): void {
     Route::get('/', [\App\Http\Controllers\CustomerPortal\PortalController::class, 'index'])->name('portal');
+    Route::post('/buy', [\App\Http\Controllers\CustomerPortal\PortalController::class, 'buy'])->name('buy');
     Route::get('/repairs/{repair}', [\App\Http\Controllers\CustomerPortal\PortalController::class, 'repair'])->name('repairs.show');
     Route::post('/repairs/{repair}/estimate/approve', [\App\Http\Controllers\CustomerPortal\PortalController::class, 'approveEstimate'])->name('repairs.estimate.approve');
     Route::post('/repairs/{repair}/estimate/decline', [\App\Http\Controllers\CustomerPortal\PortalController::class, 'declineEstimate'])->name('repairs.estimate.decline');
@@ -49,6 +52,10 @@ Route::prefix('portal')->name('customer.')->middleware(['auth', 'verified', 'sho
 Route::prefix('shop')->name('shop.')->middleware(['auth', 'verified', 'shop'])->group(function (): void {
     Route::get('/', [\App\Http\Controllers\Shop\DashboardController::class, 'index'])->name('dashboard');
     Route::get('/dashboard', [\App\Http\Controllers\Shop\DashboardController::class, 'index'])->name('dashboard.index');
+
+    // Quick Search & Live Tracking API
+    Route::get('/quick-search', [\App\Http\Controllers\Shop\QuickSearchController::class, 'search'])->name('quick-search');
+    Route::get('/quick-search/track-repair', [\App\Http\Controllers\Shop\QuickSearchController::class, 'track'])->name('quick-search.track');
 
     // POS Counter & Checkout (Section 7)
     Route::get('/pos', [\App\Http\Controllers\Shop\PosViewController::class, 'index'])->name('pos');
@@ -61,6 +68,7 @@ Route::prefix('shop')->name('shop.')->middleware(['auth', 'verified', 'shop'])->
     Route::post('/phones', [\App\Http\Controllers\Shop\PhoneViewController::class, 'store'])->name('phones.store');
     Route::put('/phones/{phone}', [\App\Http\Controllers\Shop\PhoneViewController::class, 'update'])->name('phones.update');
     Route::delete('/phones/{phone}', [\App\Http\Controllers\Shop\PhoneViewController::class, 'destroy'])->name('phones.destroy');
+    Route::delete('/phones/{phone}/image', [\App\Http\Controllers\Shop\PhoneViewController::class, 'deleteImage'])->name('phones.delete-image');
 
     // Phone Repairs & 8-Stage Pipeline (Section 12)
     Route::get('/repairs', [\App\Http\Controllers\Shop\RepairViewController::class, 'index'])->name('repairs');
@@ -105,10 +113,14 @@ Route::prefix('shop')->name('shop.')->middleware(['auth', 'verified', 'shop'])->
     Route::delete('/outlets/{outlet}', [\App\Http\Controllers\Shop\OutletController::class, 'destroy'])->name('outlets.destroy');
     Route::post('/outlets/{outlet}/switch', [\App\Http\Controllers\Shop\OutletController::class, 'switchOutlet'])->name('outlets.switch');
     Route::post('/outlets/{outlet}/toggle-main', [\App\Http\Controllers\Shop\OutletController::class, 'toggleMain'])->name('outlets.toggle-main');
+    Route::post('/outlets/{outlet}/pay', [\App\Http\Controllers\Shop\OutletController::class, 'payAdditionalBranchFee'])->name('outlets.pay');
 
     // Customer Directory (Section 15)
     Route::get('/customers', [\App\Http\Controllers\Shop\CustomerViewController::class, 'index'])->name('customers');
     Route::post('/customers', [\App\Http\Controllers\Shop\CustomerViewController::class, 'store'])->name('customers.store');
+    Route::put('/customers/{customer}', [\App\Http\Controllers\Shop\CustomerViewController::class, 'update'])->name('customers.update');
+    Route::delete('/customers/{customer}', [\App\Http\Controllers\Shop\CustomerViewController::class, 'destroy'])->name('customers.destroy');
+    Route::post('/customers/{customer}/settle-debt', [\App\Http\Controllers\Shop\CustomerViewController::class, 'settleDebt'])->name('customers.settle-debt');
 
     // Purchasing & Suppliers (Section 10)
     Route::get('/suppliers', [\App\Http\Controllers\Shop\SupplierViewController::class, 'index'])->name('suppliers');
@@ -139,6 +151,11 @@ Route::prefix('shop')->name('shop.')->middleware(['auth', 'verified', 'shop'])->
     // Shop Settings & Invoicing Defaults (Section 26)
     Route::get('/settings', [\App\Http\Controllers\Shop\ShopSettingsController::class, 'index'])->name('settings');
     Route::put('/settings', [\App\Http\Controllers\Shop\ShopSettingsController::class, 'update'])->name('settings.update');
+
+    // User Profile & Account Security (Section 26)
+    Route::get('/profile', [\App\Http\Controllers\Shop\ProfileController::class, 'index'])->name('profile');
+    Route::put('/profile', [\App\Http\Controllers\Shop\ProfileController::class, 'update'])->name('profile.update');
+    Route::put('/profile/password', [\App\Http\Controllers\Shop\ProfileController::class, 'updatePassword'])->name('profile.password');
 
     // Reports & Analytics (Section 19)
     Route::get('/reports', [\App\Http\Controllers\Shop\ShopReportViewController::class, 'index'])->name('reports');
@@ -199,6 +216,9 @@ Route::prefix('super-admin')->name('superadmin.')->middleware(['auth', 'superadm
     // Shops
     Route::get('/shops', [\App\Http\Controllers\SuperAdmin\ShopController::class, 'index'])->name('shops.index');
     Route::get('/shops/{shop}', [\App\Http\Controllers\SuperAdmin\ShopController::class, 'show'])->name('shops.show');
+    Route::get('/shops/{shop}/edit', [\App\Http\Controllers\SuperAdmin\ShopController::class, 'edit'])->name('shops.edit');
+    Route::put('/shops/{shop}', [\App\Http\Controllers\SuperAdmin\ShopController::class, 'update'])->name('shops.update');
+    Route::delete('/shops/{shop}', [\App\Http\Controllers\SuperAdmin\ShopController::class, 'destroy'])->name('shops.destroy');
     Route::post('/shops/{shop}/toggle-suspension', [\App\Http\Controllers\SuperAdmin\ShopController::class, 'toggleSuspension'])->name('shops.toggle-suspension');
     Route::post('/shops/{shop}/switch', function (\App\Models\Platform\Shop $shop) {
         session(['superadmin_active_shop_id' => $shop->id]);
@@ -224,4 +244,9 @@ Route::prefix('super-admin')->name('superadmin.')->middleware(['auth', 'superadm
     Route::post('/payments/{payment}/approve', [\App\Http\Controllers\SuperAdmin\PaymentController::class, 'approve'])->name('payments.approve');
     Route::post('/payments/{payment}/reject', [\App\Http\Controllers\SuperAdmin\PaymentController::class, 'reject'])->name('payments.reject');
     Route::post('/payments/{payment}/refund', [\App\Http\Controllers\SuperAdmin\PaymentController::class, 'refund'])->name('payments.refund');
+
+    // Branch Outlets & Approvals
+    Route::get('/outlets/approvals', [\App\Http\Controllers\SuperAdmin\OutletApprovalController::class, 'index'])->name('outlets.approvals');
+    Route::post('/outlets/{outlet}/approve', [\App\Http\Controllers\SuperAdmin\OutletApprovalController::class, 'approve'])->name('outlets.approve');
+    Route::post('/outlets/{outlet}/reject', [\App\Http\Controllers\SuperAdmin\OutletApprovalController::class, 'reject'])->name('outlets.reject');
 });

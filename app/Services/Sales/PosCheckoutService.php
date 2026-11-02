@@ -72,14 +72,26 @@ class PosCheckoutService
                         throw new InvalidArgumentException("Device with IMEI {$device->imei_1} ({$device->model}) is already marked as '{$device->status}' and cannot be sold.");
                     }
 
+                    $activeOutlet = $payload['outlet_id'] ?? session('active_outlet_id') ?? auth()->user()?->outlet_id;
+                    if ($activeOutlet && $device->outlet_id && (int) $device->outlet_id !== (int) $activeOutlet) {
+                        $outletName = $device->outlet?->name ?? "Outlet #{$device->outlet_id}";
+                        throw new InvalidArgumentException("Device with IMEI {$device->imei_1} belongs to '{$outletName}' and cannot be sold from this branch.");
+                    }
+
                     $phonesToMarkSold[] = $device;
                 } elseif (! empty($item['product_id'])) {
                     // Standard product quantity check
                     /** @var Product|null $product */
                     $product = Product::where('id', $item['product_id'])->lockForUpdate()->first();
-                    if ($product) {
-                        $productsToDecrement[] = ['product' => $product, 'qty' => $qty];
+                    if (! $product) {
+                        throw new InvalidArgumentException("Product ID #{$item['product_id']} does not exist in inventory.");
                     }
+
+                    if ($product->stock_quantity < $qty) {
+                        throw new InvalidArgumentException("Insufficient stock for product '{$product->name}'. Available: {$product->stock_quantity}, Requested: {$qty}.");
+                    }
+
+                    $productsToDecrement[] = ['product' => $product, 'qty' => $qty];
                 }
 
                 $saleItemsToInsert[] = [
@@ -108,8 +120,45 @@ class PosCheckoutService
 
             // Determine sale payment status
             $status = 'completed';
+            $customer = null;
+            $effectivePaid = min($totalPaid, $totalAmount);
+
+            if ($totalPaid > $totalAmount) {
+                $changeDue = $totalPaid - $totalAmount;
+                foreach ($paymentsData as &$p) {
+                    if ($p['payment_method'] === 'cash') {
+                        $p['amount'] = max(0.00, (float) $p['amount'] - $changeDue);
+                        break;
+                    }
+                }
+                unset($p);
+            }
+
             if ($totalPaid < $totalAmount) {
                 $status = $totalPaid > 0 ? 'partial' : 'credit';
+
+                if (empty($payload['customer_id'])) {
+                    throw new InvalidArgumentException('Credit / Partial payment sale requires a registered customer to record the outstanding balance. Please select or register a customer profile.');
+                }
+
+                $customer = Customer::where('id', $payload['customer_id'])->lockForUpdate()->first();
+                if (! $customer) {
+                    throw new InvalidArgumentException('Selected customer could not be found.');
+                }
+
+                $due = $totalAmount - $totalPaid;
+
+                // Enforce customer credit limit if configured
+                if ($customer->credit_limit !== null && (float) $customer->credit_limit > 0) {
+                    $projectedBalance = (float) $customer->balance + $due;
+                    if ($projectedBalance > (float) $customer->credit_limit) {
+                        $limitFmt = number_format($customer->credit_limit, 2);
+                        $currentFmt = number_format($customer->balance, 2);
+                        $dueFmt = number_format($due, 2);
+                        $maxAllowed = number_format(max(0, (float) $customer->credit_limit - (float) $customer->balance), 2);
+                        throw new InvalidArgumentException("Customer credit limit exceeded! Limit: LKR {$limitFmt}, Current Debt: LKR {$currentFmt}, New Debt: LKR {$dueFmt}. Max allowed new credit: LKR {$maxAllowed}.");
+                    }
+                }
             }
 
             // 3. Generate sequential invoice number
@@ -117,6 +166,7 @@ class PosCheckoutService
 
             // 4. Create Sale Record
             $sale = Sale::create([
+                'outlet_id' => $payload['outlet_id'] ?? (session('active_outlet_id') ?: auth()->user()?->outlet_id),
                 'customer_id' => $payload['customer_id'] ?? null,
                 'user_id' => $cashierId,
                 'invoice_number' => $invoiceNumber,
@@ -125,7 +175,7 @@ class PosCheckoutService
                 'discount_amount' => $discountAmount,
                 'tax_amount' => $taxAmount,
                 'total_amount' => $totalAmount,
-                'paid_amount' => $totalPaid,
+                'paid_amount' => $effectivePaid,
                 'payment_method' => $primaryMethod,
                 'status' => $status,
                 'notes' => $payload['notes'] ?? null,
@@ -168,9 +218,9 @@ class PosCheckoutService
             }
 
             // 9. Update customer balance if credit sale
-            if (! empty($payload['customer_id']) && $totalPaid < $totalAmount) {
+            if ($customer && $totalPaid < $totalAmount) {
                 $due = $totalAmount - $totalPaid;
-                Customer::where('id', $payload['customer_id'])->increment('balance', $due);
+                $customer->increment('balance', $due);
             }
 
             return $sale->load(['items.phoneDevice', 'items.product', 'payments', 'customer', 'cashier']);

@@ -1,7 +1,7 @@
 @extends('layouts.shop')
 
 @section('title', 'Sandbox Payment Gateway')
-@section('page_title', 'Sandbox Payment Gateway Simulator')
+@section('page-title', 'Sandbox Payment Gateway Simulator')
 
 @section('content')
 <div style="max-width: 800px; margin: 0 auto; padding: 1.5rem 0;">
@@ -43,7 +43,9 @@
         <!-- 1. Success Simulation -->
         <div class="card" style="border: 1.5px solid #bbf7d0; background: #f0fdf4; border-radius: 10px; padding: 1.25rem;">
             <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem;">
-                <span style="width: 32px; height: 32px; border-radius: 50%; background: #22c55e; color: white; display: flex; align-items: center; justify-content: center; font-weight: 700;">✓</span>
+                <span style="width: 32px; height: 32px; border-radius: 50%; background: #22c55e; color: white; display: flex; align-items: center; justify-content: center;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                </span>
                 <h4 style="margin: 0; font-size: 1rem; color: #166534;">Simulate Successful Payment</h4>
             </div>
             <p style="font-size: 0.8125rem; color: #15803d; margin-bottom: 1rem;">
@@ -60,7 +62,9 @@
         <!-- 2. Failure Simulation -->
         <div class="card" style="border: 1.5px solid #fecaca; background: #fef2f2; border-radius: 10px; padding: 1.25rem;">
             <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem;">
-                <span style="width: 32px; height: 32px; border-radius: 50%; background: #ef4444; color: white; display: flex; align-items: center; justify-content: center; font-weight: 700;">✕</span>
+                <span style="width: 32px; height: 32px; border-radius: 50%; background: #ef4444; color: white; display: flex; align-items: center; justify-content: center;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </span>
                 <h4 style="margin: 0; font-size: 1rem; color: #991b1b;">Simulate Gateway Failure</h4>
             </div>
             <p style="font-size: 0.8125rem; color: #b91c1c; margin-bottom: 1rem;">
@@ -77,7 +81,9 @@
         <!-- 3. Security Tampered Signature -->
         <div class="card" style="border: 1.5px solid #fed7aa; background: #fff7ed; border-radius: 10px; padding: 1.25rem;">
             <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem;">
-                <span style="width: 32px; height: 32px; border-radius: 50%; background: #f97316; color: white; display: flex; align-items: center; justify-content: center; font-weight: 700;">⚠</span>
+                <span style="width: 32px; height: 32px; border-radius: 50%; background: #f97316; color: white; display: flex; align-items: center; justify-content: center;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                </span>
                 <h4 style="margin: 0; font-size: 1rem; color: #9a3412;">Tampered Signature Attack</h4>
             </div>
             <p style="font-size: 0.8125rem; color: #c2410c; margin-bottom: 1rem;">
@@ -94,7 +100,9 @@
         <!-- 4. Duplicate Webhook Simulation -->
         <div class="card" style="border: 1.5px solid #e2e8f0; background: #f8fafc; border-radius: 10px; padding: 1.25rem;">
             <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem;">
-                <span style="width: 32px; height: 32px; border-radius: 50%; background: #64748b; color: white; display: flex; align-items: center; justify-content: center; font-weight: 700;">↺</span>
+                <span style="width: 32px; height: 32px; border-radius: 50%; background: #64748b; color: white; display: flex; align-items: center; justify-content: center;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
+                </span>
                 <h4 style="margin: 0; font-size: 1rem; color: #334155;">Simulate Duplicate Callback</h4>
             </div>
             <p style="font-size: 0.8125rem; color: #475569; margin-bottom: 1rem;">

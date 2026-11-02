@@ -105,10 +105,10 @@ class StaffViewController extends Controller
             'position' => ['required', 'string', 'max:100'],
             'department' => ['nullable', 'string', 'max:100'],
             'basic_salary' => ['nullable', 'numeric', 'min:0'],
-            'outlet_id' => ['nullable', 'exists:outlets,id'],
+            'outlet_id' => ['nullable', Rule::exists('outlets', 'id')->where('shop_id', $shopId)],
             'joined_on' => ['required', 'date'],
             'create_user_account' => ['nullable', 'boolean'],
-            'user_role' => ['nullable', 'string', 'in:Shop Manager,Cashier,Technician'],
+            'user_role' => ['nullable', 'string', 'in:Shop Manager,Cashier,Technician,Stock Manager'],
             'password' => ['nullable', 'string', 'min:6'],
         ]);
 
@@ -116,19 +116,49 @@ class StaffViewController extends Controller
 
         $userId = null;
         if (! empty($data['create_user_account'])) {
-            $user = User::create([
-                'shop_id' => $shopId,
-                'name' => $data['name'],
-                'email' => $data['email'],
-                'phone' => $data['phone'] ?? null,
-                'password' => Hash::make($data['password'] ?? 'Password123!'),
-                'email_verified_at' => now(),
-            ]);
+            $existingUser = User::where('email', $data['email'])->first();
+            if ($existingUser) {
+                if ($existingUser->hasRole('Super Administrator')) {
+                    return back()->withInput()->withErrors([
+                        'email' => 'This email address is reserved for a Platform Super Administrator.',
+                    ]);
+                }
+                if ($existingUser->hasRole('Shop Owner') && $existingUser->shop_id !== $shopId) {
+                    return back()->withInput()->withErrors([
+                        'email' => 'This email address is already registered to a Store Owner of another shop.',
+                    ]);
+                }
 
-            if (! empty($data['user_role'])) {
-                $user->assignRole($data['user_role']);
+                $updateData = [
+                    'shop_id' => $shopId,
+                    'name' => $data['name'],
+                    'phone' => $data['phone'] ?? $existingUser->phone,
+                    'email_verified_at' => $existingUser->email_verified_at ?? now(),
+                ];
+                if (! empty($data['password'])) {
+                    $updateData['password'] = Hash::make($data['password']);
+                }
+                $existingUser->update($updateData);
+
+                if (! empty($data['user_role'])) {
+                    $existingUser->syncRoles([$data['user_role']]);
+                }
+                $userId = $existingUser->id;
+            } else {
+                $user = User::create([
+                    'shop_id' => $shopId,
+                    'name' => $data['name'],
+                    'email' => $data['email'],
+                    'phone' => $data['phone'] ?? null,
+                    'password' => Hash::make($data['password'] ?? 'Password123!'),
+                    'email_verified_at' => now(),
+                ]);
+
+                if (! empty($data['user_role'])) {
+                    $user->assignRole($data['user_role']);
+                }
+                $userId = $user->id;
             }
-            $userId = $user->id;
         }
 
         Employee::create([
@@ -146,8 +176,13 @@ class StaffViewController extends Controller
             'is_active' => true,
         ]);
 
+        $successMsg = "Employee '{$data['name']}' registered successfully with code {$employeeCode}.";
+        if ($userId) {
+            $successMsg .= " Staff Portal login account created ({$data['email']}). Staff can log in at " . url('/login') . " to access their assigned workspace.";
+        }
+
         return redirect()->route('shop.staff', ['tab' => 'employees'])
-            ->with('success', "Employee '{$data['name']}' registered successfully with code {$employeeCode}.");
+            ->with('success', $successMsg);
     }
 
     public function updateEmployee(Request $request, Employee $employee): RedirectResponse
@@ -166,9 +201,12 @@ class StaffViewController extends Controller
             'position' => ['required', 'string', 'max:100'],
             'department' => ['nullable', 'string', 'max:100'],
             'basic_salary' => ['nullable', 'numeric', 'min:0'],
-            'outlet_id' => ['nullable', 'exists:outlets,id'],
+            'outlet_id' => ['nullable', Rule::exists('outlets', 'id')->where('shop_id', $shopId)],
             'joined_on' => ['required', 'date'],
-            'is_active' => ['nullable', 'boolean'],
+            'is_active' => ['nullable'],
+            'user_role' => ['nullable', 'string', 'in:Shop Manager,Cashier,Technician,Stock Manager'],
+            'password' => ['nullable', 'string', 'min:6'],
+            'create_user_account' => ['nullable', 'boolean'],
         ]);
 
         $employee->update([
@@ -180,8 +218,51 @@ class StaffViewController extends Controller
             'basic_salary' => $data['basic_salary'] ?? 0.00,
             'outlet_id' => $data['outlet_id'] ?? null,
             'joined_on' => $data['joined_on'],
-            'is_active' => $request->has('is_active'),
+            'is_active' => $request->has('is_active') ? (bool) $request->input('is_active') : $employee->is_active,
         ]);
+
+        if ($employee->user) {
+            $userUpdate = [
+                'name' => $data['name'],
+                'email' => $data['email'],
+                'phone' => $data['phone'] ?? null,
+            ];
+            if (! empty($data['password'])) {
+                $userUpdate['password'] = Hash::make($data['password']);
+            }
+            $employee->user->update($userUpdate);
+
+            if (! empty($data['user_role'])) {
+                $employee->user->syncRoles([$data['user_role']]);
+            }
+        } elseif (! empty($data['create_user_account'])) {
+            $existingUser = User::where('email', $data['email'])->first();
+            if ($existingUser) {
+                $existingUser->update([
+                    'shop_id' => $shopId,
+                    'name' => $data['name'],
+                    'phone' => $data['phone'] ?? $existingUser->phone,
+                    'password' => ! empty($data['password']) ? Hash::make($data['password']) : $existingUser->password,
+                ]);
+                if (! empty($data['user_role'])) {
+                    $existingUser->syncRoles([$data['user_role']]);
+                }
+                $employee->update(['user_id' => $existingUser->id]);
+            } else {
+                $newUser = User::create([
+                    'shop_id' => $shopId,
+                    'name' => $data['name'],
+                    'email' => $data['email'],
+                    'phone' => $data['phone'] ?? null,
+                    'password' => Hash::make($data['password'] ?? 'Password123!'),
+                    'email_verified_at' => now(),
+                ]);
+                if (! empty($data['user_role'])) {
+                    $newUser->assignRole($data['user_role']);
+                }
+                $employee->update(['user_id' => $newUser->id]);
+            }
+        }
 
         return redirect()->route('shop.staff', ['tab' => 'employees'])
             ->with('success', "Employee '{$employee->name}' updated successfully.");
@@ -190,6 +271,9 @@ class StaffViewController extends Controller
     public function destroyEmployee(Employee $employee): RedirectResponse
     {
         $name = $employee->name;
+        if ($employee->user) {
+            $employee->user->delete();
+        }
         $employee->delete();
 
         return redirect()->route('shop.staff', ['tab' => 'employees'])

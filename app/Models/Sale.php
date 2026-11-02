@@ -13,6 +13,7 @@ class Sale extends Model
     use BelongsToTenant, HasFactory;
 
     protected $fillable = [
+        'outlet_id',
         'customer_id',
         'user_id',
         'invoice_number',
@@ -39,6 +40,11 @@ class Sale extends Model
     public function shop(): BelongsTo
     {
         return $this->belongsTo(\App\Models\Platform\Shop::class, 'shop_id');
+    }
+
+    public function outlet(): BelongsTo
+    {
+        return $this->belongsTo(Outlet::class);
     }
 
     public function customer(): BelongsTo

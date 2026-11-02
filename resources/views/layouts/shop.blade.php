@@ -170,6 +170,31 @@
             padding: 0.85rem 0.65rem 0.35rem;
         }
 
+        /* Ultra-Clean Modern Sidebar Navigation */
+        .shop-nav {
+            padding: 1rem 0.85rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .shop-nav-header {
+            font-size: 0.6875rem;
+            font-weight: 750;
+            text-transform: uppercase;
+            letter-spacing: 0.09em;
+            color: #475569;
+            padding: 0.85rem 0.65rem 0.35rem;
+        }
+
+        .shop-nav-divider {
+            height: 1px;
+            background: rgba(255, 255, 255, 0.06);
+            margin: 0.5rem 0.35rem;
+        }
+
         .shop-nav-item {
             display: flex;
             align-items: center;
@@ -244,6 +269,32 @@
             gap: 0.7rem;
             overflow: hidden;
             min-width: 0;
+            text-decoration: none;
+            padding: 0.35rem 0.5rem;
+            margin: -0.35rem 0 -0.35rem -0.5rem;
+            border-radius: 8px;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            flex: 1;
+        }
+
+        .shop-user-meta:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateX(2px);
+        }
+
+        .shop-user-meta:hover .shop-user-name {
+            color: #38bdf8;
+        }
+
+        .shop-user-meta:hover .shop-user-avatar {
+            transform: scale(1.06);
+            box-shadow: 0 0 12px rgba(6, 182, 212, 0.5);
+        }
+
+        .shop-user-meta.active {
+            background: rgba(6, 182, 212, 0.15);
+            border: 1px solid rgba(6, 182, 212, 0.35);
         }
 
         .shop-user-avatar {
@@ -410,7 +461,7 @@
         }
 
         .shop-content {
-            padding: clamp(1rem, 2.5vw, 2rem);
+            padding: clamp(0.85rem, 1.6vw, 1.25rem);
             flex: 1;
         }
 
@@ -617,9 +668,9 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(15, 23, 42, 0.6);
-            backdrop-filter: blur(2px);
-            z-index: 100;
+            background: rgba(15, 23, 42, 0.65);
+            backdrop-filter: blur(3px);
+            z-index: 1200;
             align-items: center;
             justify-content: center;
             padding: 1rem;
@@ -637,6 +688,64 @@
             max-height: 90vh;
             overflow-y: auto;
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Quick Search Modal & Filter Pills */
+        .search-filter-pill {
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            color: #475569;
+            font-size: 0.72rem;
+            font-weight: 650;
+            padding: 0.22rem 0.65rem;
+            border-radius: 9999px;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.15s ease;
+        }
+        .search-filter-pill:hover {
+            background: #f1f5f9;
+            color: #0f172a;
+        }
+        .search-filter-pill.active {
+            background: #4f46e5;
+            border-color: #4f46e5;
+            color: #ffffff;
+        }
+        .quick-search-result-item {
+            padding: 0.6rem 0.85rem;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            background: #ffffff;
+            margin-bottom: 0.45rem;
+            transition: all 0.15s ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+            color: inherit;
+        }
+        .quick-search-result-item:hover {
+            border-color: #c7d2fe;
+            background: #f8fafc;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+        }
+        .search-category-header {
+            font-size: 0.7rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #64748b;
+            margin: 0.75rem 0 0.4rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        @keyframes modalSpin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
         }
 
         .modal-header {
@@ -940,6 +1049,32 @@
                 font-size: 0.8rem;
             }
         }
+
+        @media print {
+            @page {
+                margin: 0;
+            }
+            .shop-sidebar,
+            .shop-topbar,
+            .shop-sidebar-overlay,
+            .mobile-sidebar-toggle,
+            .alert,
+            .no-print {
+                display: none !important;
+            }
+            body {
+                background: #ffffff !important;
+                color: #0f172a !important;
+                min-height: auto !important;
+            }
+            .shop-workspace,
+            .shop-content {
+                width: 100% !important;
+                max-width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+        }
     </style>
 </head>
 <body>
@@ -957,142 +1092,65 @@
             </div>
             <div class="shop-brand-text">
                 <span class="shop-brand-title">{{ auth()->user()->shop->name ?? 'Phone Shop' }}</span>
-                <span class="shop-brand-subtitle">Branch: {{ session('active_outlet_name', auth()->user()->shop->mainOutlet->name ?? 'Main Branch') }}</span>
+                <a href="{{ route('shop.outlets.index') }}" class="shop-brand-subtitle" style="display: inline-flex; align-items: center; gap: 0.35rem; color: #38bdf8; text-decoration: none;" title="Manage & Switch Shop Branches">
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                    <span>Branch: {{ session('active_outlet_name', auth()->user()->shop->mainOutlet->name ?? 'Main Branch') }}</span>
+                    <span style="font-size: 0.65rem; opacity: 0.7;">&rarr;</span>
+                </a>
             </div>
             <button type="button" class="sidebar-close-btn" onclick="closeShopSidebar()" aria-label="Close navigation">&times;</button>
         </div>
 
         <nav class="shop-nav">
-            <span class="shop-nav-header">Counter & Sales</span>
-            <a href="{{ route('shop.dashboard') }}" class="shop-nav-item {{ request()->routeIs('shop.dashboard') ? 'active' : '' }}">
+            <!-- 1. Dashboard -->
+            <a href="{{ route('shop.dashboard') }}" class="shop-nav-item {{ request()->routeIs('shop.dashboard*') ? 'active' : '' }}" title="Dashboard & Shop Performance Overview">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
-                Dashboard
+                <span>Dashboard</span>
             </a>
-            <a href="{{ route('shop.pos') }}" class="shop-nav-item {{ request()->routeIs('shop.pos*') ? 'active' : '' }}">
+
+            <!-- 2. POS Counter & Sales -->
+            <a href="{{ route('shop.pos') }}" class="shop-nav-item {{ request()->routeIs('shop.pos*') || request()->routeIs('shop.sales*') || request()->routeIs('shop.quotations*') ? 'active' : '' }}" title="Point of Sale Counter & Sold Invoices">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 9h20"></path><rect x="2" y="4" width="20" height="16" rx="2"></rect><path d="M6 16h4"></path><path d="M14 16h4"></path></svg>
-                POS Counter
+                <span>POS &amp; Sales</span>
                 <span class="shop-nav-badge" style="background:#06b6d4; color:#fff;">Live</span>
             </a>
-            <a href="{{ route('shop.sales') }}" class="shop-nav-item {{ request()->routeIs('shop.sales') || request()->routeIs('shop.sales.show') ? 'active' : '' }}">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-                Sales &amp; Sold Invoices
-            </a>
-            <a href="{{ route('shop.sales.returns') }}" class="shop-nav-item {{ request()->routeIs('shop.sales.returns*') ? 'active' : '' }}">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg>
-                Sales Returns &amp; Refunds
-            </a>
-            <a href="{{ route('shop.quotations.index') }}" class="shop-nav-item {{ request()->routeIs('shop.quotations*') ? 'active' : '' }}">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
-                Quotations &amp; Estimates
-            </a>
 
-            <span class="shop-nav-header">Phone Inventory &amp; Stock</span>
-            <a href="{{ route('shop.phones') }}" class="shop-nav-item {{ request()->routeIs('shop.phones*') && request('status') !== 'sold' ? 'active' : '' }}">
+            <!-- 3. Inventory & Stock -->
+            <a href="{{ route('shop.phones') }}" class="shop-nav-item {{ request()->routeIs('shop.phones*') || request()->routeIs('shop.trade-ins*') || request()->routeIs('shop.labels*') || request()->routeIs('shop.products*') || request()->routeIs('shop.spare-parts*') || request()->routeIs('shop.inventory*') || request()->routeIs('shop.purchases*') || request()->routeIs('shop.suppliers*') ? 'active' : '' }}" title="Stock Management (Phones, Accessories & Spare Parts)">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
-                Dual IMEI Phones
-            </a>
-            <a href="{{ route('shop.trade-ins.index') }}" class="shop-nav-item {{ request()->routeIs('shop.trade-ins*') ? 'active' : '' }}">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 3h5v5"></path><path d="M4 20L21 3"></path><path d="M21 16v5h-5"></path><path d="M15 15l6 6"></path><path d="M4 4l5 5"></path></svg>
-                Used Phone Trade-Ins
-            </a>
-            <a href="{{ route('shop.labels.index') }}" class="shop-nav-item {{ request()->routeIs('shop.labels*') ? 'active' : '' }}">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="9" x2="20" y2="9"></line><line x1="4" y1="15" x2="20" y2="15"></line><line x1="10" y1="3" x2="8" y2="21"></line><line x1="16" y1="3" x2="14" y2="21"></line></svg>
-                Barcode &amp; IMEI Labels
-            </a>
-            <a href="{{ route('shop.phones', ['status' => 'sold']) }}" class="shop-nav-item {{ request()->routeIs('shop.phones*') && request('status') === 'sold' ? 'active' : '' }}">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"></path><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
-                Sold Phones (IMEI Archive)
-                <span class="shop-nav-badge" style="background:#10b981; color:#fff;">Sold</span>
-            </a>
-            <a href="{{ route('shop.products') }}" class="shop-nav-item {{ request()->routeIs('shop.products*') ? 'active' : '' }}">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>
-                Products &amp; Accessories
-            </a>
-            <a href="{{ route('shop.spare-parts') }}" class="shop-nav-item {{ request()->routeIs('shop.spare-parts*') ? 'active' : '' }}">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>
-                Spare Parts Stock
-            </a>
-            <a href="{{ route('shop.inventory') }}" class="shop-nav-item {{ request()->routeIs('shop.inventory*') ? 'active' : '' }}">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
-                Stock Movements &amp; Audit
-            </a>
-            <a href="{{ route('shop.purchases') }}" class="shop-nav-item {{ request()->routeIs('shop.purchases*') ? 'active' : '' }}">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
-                Inbound Purchases
-            </a>
-            <a href="{{ route('shop.inventory.grns') }}" class="shop-nav-item {{ request()->routeIs('shop.inventory.grns*') ? 'active' : '' }}">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-                Goods Receiving (GRN)
-            </a>
-            <a href="{{ route('shop.suppliers') }}" class="shop-nav-item {{ request()->routeIs('shop.suppliers*') ? 'active' : '' }}">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>
-                Suppliers &amp; Vendors
+                <span>Inventory &amp; Stock</span>
             </a>
 
-            <span class="shop-nav-header">Service & Warranties</span>
-            <a href="{{ route('shop.repairs') }}" class="shop-nav-item {{ request()->routeIs('shop.repairs*') ? 'active' : '' }}">
+            <!-- 4. Repairs & Service -->
+            <a href="{{ route('shop.repairs') }}" class="shop-nav-item {{ request()->routeIs('shop.repairs*') || request()->routeIs('shop.warranties*') || request()->routeIs('shop.notifications*') ? 'active' : '' }}" title="Repair Jobs, Tickets & Warranties">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>
-                Repair Jobs (8-Stages)
-            </a>
-            <a href="{{ route('shop.warranties') }}" class="shop-nav-item {{ request()->routeIs('shop.warranties*') ? 'active' : '' }}">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-                Warranty &amp; Claims
-            </a>
-            <a href="{{ route('shop.notifications.index') }}" class="shop-nav-item {{ request()->routeIs('shop.notifications*') ? 'active' : '' }}">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
-                SMS &amp; WhatsApp Alerts
+                <span>Repairs &amp; Service</span>
             </a>
 
-            <span class="shop-nav-header">Finance &amp; Cashbook</span>
-            <a href="{{ route('shop.expenses') }}" class="shop-nav-item {{ request()->routeIs('shop.expenses*') ? 'active' : '' }}">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line></svg>
-                Operating Expenses
-            </a>
-            <a href="{{ route('shop.cashbook') }}" class="shop-nav-item {{ request()->routeIs('shop.cashbook*') ? 'active' : '' }}">
+            <!-- 5. Cash & Reports (Option 2: Cashbook, Expenses, and Financial Reports) -->
+            <a href="{{ route('shop.cashbook') }}" class="shop-nav-item {{ request()->routeIs('shop.cashbook*') || request()->routeIs('shop.reports*') || request()->routeIs('shop.expenses*') ? 'active' : '' }}" title="Daily Cashbook Drawer & Financial Reports">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
-                Daily Cashbook &amp; Drawer
-            </a>
-            <a href="{{ route('shop.reports') }}" class="shop-nav-item {{ request()->routeIs('shop.reports*') ? 'active' : '' }}">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
-                Reports &amp; Analytics
+                <span>Cash &amp; Reports</span>
             </a>
 
-            <span class="shop-nav-header">Directory & Administration</span>
-            <a href="{{ route('shop.customers') }}" class="shop-nav-item {{ request()->routeIs('shop.customers*') ? 'active' : '' }}">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-                Customers &amp; Credit
-            </a>
-            <a href="{{ route('shop.outlets.index') }}" class="shop-nav-item {{ request()->routeIs('shop.outlets*') ? 'active' : '' }}">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
-                Outlets &amp; Branches
-            </a>
-            <a href="{{ route('shop.transfers.index') }}" class="shop-nav-item {{ request()->routeIs('shop.transfers*') ? 'active' : '' }}">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="17 1 21 5 17 9"></polyline><path d="M3 11V9a4 4 0 0 1 4-4h14"></path><polyline points="7 23 3 19 7 15"></polyline><path d="M21 13v2a4 4 0 0 1-4 4H3"></path></svg>
-                Branch Stock Transfers
-            </a>
-            <a href="{{ route('shop.settings') }}" class="shop-nav-item {{ request()->routeIs('shop.settings*') ? 'active' : '' }}">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-                Shop Settings
-            </a>
-            <a href="{{ route('shop.subscription.index') }}" class="shop-nav-item {{ request()->routeIs('shop.subscription*') ? 'active' : '' }}">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
-                Subscription &amp; Billing
-            </a>
-            <a href="{{ route('shop.staff') }}" class="shop-nav-item {{ request()->routeIs('shop.staff*') ? 'active' : '' }}">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
-                Staff HRM &amp; Payroll
+            <div class="shop-nav-divider"></div>
+
+            <!-- 6. Store Management (Admin: Outlets, Settings, Staff) -->
+            <a href="{{ route('shop.outlets.index') }}" class="shop-nav-item {{ request()->routeIs('shop.outlets*') || request()->routeIs('shop.settings*') || request()->routeIs('shop.transfers*') || request()->routeIs('shop.subscription*') || request()->routeIs('shop.staff*') ? 'active' : '' }}" title="Store Administration, Branches, Staff & Settings">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                <span>Store Management</span>
             </a>
 
             @if(auth()->user()->hasRole('Super Administrator') || auth()->user()->can('superadmin.view'))
-            <a href="{{ route('superadmin.dashboard') }}" class="shop-nav-item" style="color: #a5b4fc; margin-top: 1rem; border: 1px dashed rgba(165,180,252,0.3);">
+            <a href="{{ route('superadmin.dashboard') }}" class="shop-nav-item" style="color: #a5b4fc; margin-top: 0.75rem; border: 1px dashed rgba(165,180,252,0.3);">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon></svg>
-                Switch to SaaS Super Admin
+                <span>Switch to SaaS Super Admin</span>
             </a>
             @endif
         </nav>
 
         <div class="shop-user-footer">
-            <div class="shop-user-meta">
+            <a href="{{ route('shop.profile') }}" class="shop-user-meta {{ request()->routeIs('shop.profile*') ? 'active' : '' }}" title="View & Edit My Profile ({{ auth()->user()->name }})">
                 <div class="shop-user-avatar">
                     {{ strtoupper(substr(auth()->user()->name ?? 'U', 0, 1)) }}
                 </div>
@@ -1100,7 +1158,7 @@
                     <span class="shop-user-name" title="{{ auth()->user()->name }}">{{ auth()->user()->name }}</span>
                     <span class="shop-user-role">{{ auth()->user()->roles->first()->name ?? 'Staff' }}</span>
                 </div>
-            </div>
+            </a>
             <form action="{{ route('logout') }}" method="POST" style="margin: 0;">
                 @csrf
                 <button type="submit" class="shop-logout-btn" title="Sign out of Shop Panel">
@@ -1150,10 +1208,10 @@
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
                     <span class="topbar-action-text"><strong class="topbar-branch-name">{{ session('active_outlet_name', auth()->user()->shop->mainOutlet->name ?? 'Main') }}</strong></span>
                 </a>
-                <a href="{{ route('public.repair-track') }}" target="_blank" class="btn btn-sm btn-secondary" title="Open Customer Repair Tracking Portal" style="display: inline-flex; align-items: center; gap: 0.35rem; border-radius: 9999px; font-size: 0.78rem; padding: 0.35rem 0.75rem;">
+                <button type="button" onclick="openGlobalSearchModal()" class="btn btn-sm btn-secondary topbar-search-btn" title="Quick Search &amp; Repair Tracking Portal" style="display: inline-flex; align-items: center; gap: 0.35rem; border-radius: 9999px; font-size: 0.78rem; padding: 0.35rem 0.75rem; cursor: pointer;">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                    <span class="topbar-action-text">Track Portal</span>
-                </a>
+                    <span class="topbar-action-text">Track &amp; Search</span>
+                </button>
             </div>
         </header>
 
@@ -1174,6 +1232,241 @@
 
             @yield('content')
         </main>
+    </div>
+
+    <!-- Global Quick Search & Live Repair Tracker Modal -->
+    <div id="quickSearchModal" class="modal-backdrop" style="z-index: 1200;">
+        <div class="modal-box search-modal-box" style="max-width: 680px; width: 95%; max-height: 88vh; display: flex; flex-direction: column; border-radius: 14px; overflow: hidden; background: #ffffff; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);">
+            <!-- Header -->
+            <div class="modal-header" style="background: #ffffff; border-bottom: 1px solid #e2e8f0; padding: 0.75rem 1.15rem; display: flex; align-items: center; justify-content: space-between;">
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <div style="background: #eef2ff; color: #4f46e5; width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                    </div>
+                    <div>
+                        <h3 style="margin: 0; font-size: 0.95rem; font-weight: 800; color: #0f172a;">Quick Search &amp; Live Tracking</h3>
+                        <p style="margin: 0; font-size: 0.7rem; color: #64748b;">Instant lookup for repairs, phones (IMEI), sales invoices &amp; customers</p>
+                    </div>
+                </div>
+                <button type="button" class="modal-close" onclick="closeModal('quickSearchModal')" style="width: 28px; height: 28px; border-radius: 6px; display: flex; align-items: center; justify-content: center; background: #f1f5f9; border: none; font-size: 1.1rem; color: #475569; cursor: pointer;">&times;</button>
+            </div>
+
+            <!-- Search Input Bar -->
+            <div style="padding: 0.75rem 1.15rem 0.55rem; background: #f8fafc; border-bottom: 1px solid #e2e8f0;">
+                <div style="position: relative;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2.2" style="position: absolute; left: 0.85rem; top: 50%; transform: translateY(-50%); pointer-events: none;"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                    <input 
+                        type="text" 
+                        id="globalSearchInput" 
+                        class="form-control" 
+                        placeholder="Search Job #, IMEI, Phone, Customer name, Invoice #..." 
+                        autocomplete="off"
+                        style="padding-left: 2.35rem; padding-right: 2.25rem; height: 38px; font-size: 0.85rem; border-radius: 8px; border: 1.5px solid #cbd5e1; box-shadow: 0 1px 2px rgba(0,0,0,0.03);"
+                    >
+                    <button 
+                        type="button" 
+                        id="globalSearchClearBtn" 
+                        onclick="clearGlobalSearch()" 
+                        style="display: none; position: absolute; right: 0.65rem; top: 50%; transform: translateY(-50%); background: none; border: none; font-size: 1.1rem; color: #94a3b8; cursor: pointer; padding: 0.2rem;"
+                    >&times;</button>
+                </div>
+                
+                <!-- Filter Pills -->
+                <div id="searchFilterPillsRow" style="display: flex; gap: 0.35rem; margin-top: 0.5rem; overflow-x: auto; padding-bottom: 0.2rem;">
+                    <button type="button" class="search-filter-pill active" onclick="setSearchFilter('all', this)">All</button>
+                    <button type="button" class="search-filter-pill" onclick="setSearchFilter('repairs', this)">Repairs (<span id="countRepairs">0</span>)</button>
+                    <button type="button" class="search-filter-pill" onclick="setSearchFilter('phones', this)">Phones &amp; IMEI (<span id="countPhones">0</span>)</button>
+                    <button type="button" class="search-filter-pill" onclick="setSearchFilter('sales', this)">Invoices (<span id="countSales">0</span>)</button>
+                    <button type="button" class="search-filter-pill" onclick="setSearchFilter('customers', this)">Customers (<span id="countCustomers">0</span>)</button>
+                </div>
+            </div>
+
+            <!-- Body Area: Scrollable -->
+            <div style="flex: 1; overflow-y: auto; padding: 1rem 1.15rem; min-height: 240px; max-height: 55vh;">
+                <!-- Live Repair Tracking Card View (Shown when tracking is active) -->
+                <div id="quickTrackLiveCard" style="display: none; margin-bottom: 1rem;">
+                    <div style="background: #ffffff; border: 1.5px solid #818cf8; border-radius: 10px; padding: 1rem; box-shadow: 0 4px 12px -2px rgba(79, 70, 229, 0.12);">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 0.5rem; flex-wrap: wrap;">
+                            <div>
+                                <div style="display: flex; align-items: center; gap: 0.4rem;">
+                                    <span class="badge" id="trackCardJobNo" style="background: #4f46e5; color: #ffffff; font-weight: 700; font-size: 0.75rem; padding: 0.2rem 0.5rem;">REP-0000</span>
+                                    <h4 id="trackCardDevice" style="margin: 0; font-size: 0.95rem; font-weight: 800; color: #0f172a;">Apple iPhone</h4>
+                                </div>
+                                <div style="font-size: 0.72rem; color: #64748b; margin-top: 0.25rem;">
+                                    Customer: <strong id="trackCardCustomer" style="color: #334155;">-</strong> &bull; Phone: <span id="trackCardPhone">-</span> &bull; IMEI: <span id="trackCardImei" style="font-family: monospace;">-</span>
+                                </div>
+                            </div>
+                            <div style="text-align: right;">
+                                <span id="trackCardStatusBadge" class="badge" style="background: #e0e7ff; color: #4338ca; font-size: 0.75rem; font-weight: 700; padding: 0.25rem 0.6rem;">Status</span>
+                                <div style="font-size: 0.68rem; color: #94a3b8; margin-top: 0.2rem;" id="trackCardDate">Received Oct 28</div>
+                            </div>
+                        </div>
+
+                        <!-- Progress Bar -->
+                        <div style="margin: 0.85rem 0 0.5rem;">
+                            <div style="display: flex; justify-content: space-between; font-size: 0.72rem; font-weight: 700; color: #475569; margin-bottom: 0.3rem;">
+                                <span>Repair Progress</span>
+                                <span id="trackCardPercent">0%</span>
+                            </div>
+                            <div style="background: #e2e8f0; border-radius: 9999px; height: 7px; overflow: hidden;">
+                                <div id="trackCardProgressBar" style="background: linear-gradient(90deg, #4f46e5, #06b6d4); height: 100%; width: 0%; transition: width 0.4s ease;"></div>
+                            </div>
+                        </div>
+
+                        <!-- Info Grid -->
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.65rem; background: #f8fafc; border-radius: 8px; padding: 0.65rem 0.85rem; margin-top: 0.75rem; font-size: 0.78rem;">
+                            <div>
+                                <span style="color: #64748b; font-size: 0.7rem; display: block;">Reported Issue:</span>
+                                <strong id="trackCardFault" style="color: #1e293b;">-</strong>
+                            </div>
+                            <div>
+                                <span style="color: #64748b; font-size: 0.7rem; display: block;">Technician Notes:</span>
+                                <span id="trackCardNotes" style="color: #475569;">-</span>
+                            </div>
+                            <div>
+                                <span style="color: #64748b; font-size: 0.7rem; display: block;">Estimated Cost:</span>
+                                <strong id="trackCardCost" style="color: #0f172a; font-family: monospace;">LKR 0.00</strong>
+                            </div>
+                            <div>
+                                <span style="color: #64748b; font-size: 0.7rem; display: block;">Balance Due:</span>
+                                <strong id="trackCardBalance" style="color: #b91c1c; font-family: monospace;">LKR 0.00</strong>
+                            </div>
+                        </div>
+
+                        <!-- Actions -->
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.85rem; gap: 0.5rem; flex-wrap: wrap;">
+                            <button type="button" onclick="hideQuickTrackCard()" class="btn btn-sm btn-secondary" style="font-size: 0.72rem; padding: 0.25rem 0.6rem; height: 28px;">&larr; Back to Results</button>
+                            <div style="display: flex; gap: 0.4rem;">
+                                <a id="trackCardShopLink" href="#" class="btn btn-sm btn-secondary" style="font-size: 0.72rem; padding: 0.25rem 0.65rem; height: 28px;">View in Pipeline</a>
+                                <a id="trackCardPublicLink" href="#" target="_blank" class="btn btn-sm btn-primary" style="font-size: 0.72rem; padding: 0.25rem 0.65rem; height: 28px;">Customer Tracking Link &rarr;</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Loading Spinner -->
+                <div id="quickSearchLoading" style="display: none; text-align: center; padding: 2rem 0; color: #64748b; font-size: 0.8125rem;">
+                    <div style="display: inline-block; width: 22px; height: 22px; border: 2.5px solid #e2e8f0; border-top-color: #4f46e5; border-radius: 50%; animation: modalSpin 0.8s linear infinite;"></div>
+                    <div style="margin-top: 0.5rem;">Searching shop records...</div>
+                </div>
+
+                <!-- Empty / Initial Helper View -->
+                <div id="quickSearchEmptyState">
+                    <!-- Dedicated Quick Repair Tracking Box -->
+                    <div style="background: linear-gradient(135deg, #f8fafc 0%, #eef2ff 100%); border: 1px solid #c7d2fe; border-radius: 10px; padding: 0.85rem 1rem; margin-bottom: 0.85rem;">
+                        <div style="display: flex; align-items: center; gap: 0.4rem; margin-bottom: 0.4rem;">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#4f46e5" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                            <strong style="color: #312e81; font-size: 0.8125rem;">Instant Customer Repair Tracking</strong>
+                        </div>
+                        <p style="margin: 0 0 0.6rem 0; font-size: 0.72rem; color: #475569;">
+                            Enter a Job # (e.g. REP-...), customer phone, or device IMEI to track repair status live:
+                        </p>
+                        <div style="display: flex; gap: 0.4rem;">
+                            <input type="text" id="quickDirectTrackInp" class="form-control" placeholder="Job #, IMEI, Phone, or NIC..." style="height: 32px; font-size: 0.78rem; border-radius: 6px;" onkeydown="if(event.key==='Enter') executeDirectTrack();">
+                            <button type="button" onclick="executeDirectTrack()" class="btn btn-primary btn-sm" style="height: 32px; font-size: 0.75rem; font-weight: 650; padding: 0.25rem 0.85rem; border-radius: 6px; white-space: nowrap;">Track Status</button>
+                        </div>
+                        <div id="directTrackError" style="display: none; color: #dc2626; font-size: 0.72rem; margin-top: 0.35rem; font-weight: 600;"></div>
+                    </div>
+
+                    <!-- Fast Navigation Shortcuts -->
+                    <div style="font-size: 0.7rem; font-weight: 750; text-transform: uppercase; color: #64748b; letter-spacing: 0.04em; margin-bottom: 0.5rem;">
+                        Quick Navigation Shortcuts
+                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(135px, 1fr)); gap: 0.45rem;">
+                        <a href="{{ route('shop.pos') }}" class="btn btn-secondary btn-sm" style="justify-content: flex-start; font-size: 0.75rem; padding: 0.45rem 0.65rem; border-radius: 8px; display: inline-flex; align-items: center; gap: 0.4rem;">
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+                            <span>Launch POS Counter</span>
+                        </a>
+                        <a href="{{ route('shop.repairs') }}" class="btn btn-secondary btn-sm" style="justify-content: flex-start; font-size: 0.75rem; padding: 0.45rem 0.65rem; border-radius: 8px; display: inline-flex; align-items: center; gap: 0.4rem;">
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>
+                            <span>Repair Pipeline</span>
+                        </a>
+                        <a href="{{ route('shop.phones') }}" class="btn btn-secondary btn-sm" style="justify-content: flex-start; font-size: 0.75rem; padding: 0.45rem 0.65rem; border-radius: 8px; display: inline-flex; align-items: center; gap: 0.4rem;">
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="5" y="2" width="14" height="20" rx="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
+                            <span>Phones Stock (IMEI)</span>
+                        </a>
+                        <a href="{{ route('shop.sales') }}" class="btn btn-secondary btn-sm" style="justify-content: flex-start; font-size: 0.75rem; padding: 0.45rem 0.65rem; border-radius: 8px; display: inline-flex; align-items: center; gap: 0.4rem;">
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+                            <span>Sales Invoices</span>
+                        </a>
+                        <a href="{{ route('shop.cashbook') }}" class="btn btn-secondary btn-sm" style="justify-content: flex-start; font-size: 0.75rem; padding: 0.45rem 0.65rem; border-radius: 8px; display: inline-flex; align-items: center; gap: 0.4rem;">
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="2" y="6" width="20" height="12" rx="2"></rect><circle cx="12" cy="12" r="2"></circle><path d="M6 12h.01M18 12h.01"></path></svg>
+                            <span>Daily Cashbook</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Dynamic Search Results -->
+                <div id="quickSearchResultsList" style="display: none;">
+                    <!-- Category: Repairs -->
+                    <div id="secRepairs" style="display: none;">
+                        <div class="search-category-header">
+                            <span style="display: inline-flex; align-items: center; gap: 0.35rem;">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>
+                                <span>Repair Tickets</span>
+                            </span>
+                            <a href="{{ route('shop.repairs') }}" style="font-size: 0.68rem; color: #4f46e5; text-decoration: none;">View All &rarr;</a>
+                        </div>
+                        <div id="listRepairs"></div>
+                    </div>
+
+                    <!-- Category: Phones -->
+                    <div id="secPhones" style="display: none;">
+                        <div class="search-category-header">
+                            <span style="display: inline-flex; align-items: center; gap: 0.35rem;">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="5" y="2" width="14" height="20" rx="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
+                                <span>Phone Devices &amp; IMEI</span>
+                            </span>
+                            <a href="{{ route('shop.phones') }}" style="font-size: 0.68rem; color: #4f46e5; text-decoration: none;">View All &rarr;</a>
+                        </div>
+                        <div id="listPhones"></div>
+                    </div>
+
+                    <!-- Category: Sales Invoices -->
+                    <div id="secSales" style="display: none;">
+                        <div class="search-category-header">
+                            <span style="display: inline-flex; align-items: center; gap: 0.35rem;">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+                                <span>Sales Invoices</span>
+                            </span>
+                            <a href="{{ route('shop.sales') }}" style="font-size: 0.68rem; color: #4f46e5; text-decoration: none;">View All &rarr;</a>
+                        </div>
+                        <div id="listSales"></div>
+                    </div>
+
+                    <!-- Category: Customers -->
+                    <div id="secCustomers" style="display: none;">
+                        <div class="search-category-header">
+                            <span style="display: inline-flex; align-items: center; gap: 0.35rem;">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                                <span>Customers</span>
+                            </span>
+                            <a href="{{ route('shop.customers') }}" style="font-size: 0.68rem; color: #4f46e5; text-decoration: none;">View All &rarr;</a>
+                        </div>
+                        <div id="listCustomers"></div>
+                    </div>
+
+                    <!-- No Results State -->
+                    <div id="searchNoResults" style="display: none; text-align: center; padding: 2rem 1rem; color: #94a3b8; font-size: 0.8125rem;">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-bottom: 0.4rem; color: #cbd5e1;"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                        <div style="font-weight: 700; color: #64748b;">No matching results found</div>
+                        <div style="font-size: 0.72rem; margin-top: 0.2rem;">Try searching by a different IMEI, customer phone number, or job number.</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="modal-footer" style="padding: 0.6rem 1.15rem; background: #f8fafc; border-top: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; font-size: 0.72rem; color: #64748b;">
+                <div style="display: flex; align-items: center; gap: 0.35rem;">
+                    <span class="badge" style="background: #e2e8f0; color: #475569; font-size: 0.65rem; padding: 0.1rem 0.35rem; font-family: monospace;">ESC</span>
+                    <span>to close</span>
+                </div>
+                <a href="{{ route('public.repair-track') }}" target="_blank" style="color: #4f46e5; font-weight: 700; text-decoration: none; display: inline-flex; align-items: center; gap: 0.25rem;">
+                    <span>Public Tracking Portal</span>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                </a>
+            </div>
+        </div>
     </div>
 
     <!-- Modal helper & Mobile Navigation script -->
@@ -1215,6 +1508,330 @@
                 });
             });
         });
+
+        // Global Quick Search & Live Tracking Engine
+        let searchTimeout = null;
+        let activeSearchFilter = 'all';
+
+        function openGlobalSearchModal() {
+            openModal('quickSearchModal');
+            setTimeout(function() {
+                const inp = document.getElementById('globalSearchInput');
+                if (inp) {
+                    inp.focus();
+                    inp.select();
+                }
+            }, 120);
+        }
+
+        window.addEventListener('keydown', function(e) {
+            // ESC key to close modal
+            if (e.key === 'Escape') {
+                closeModal('quickSearchModal');
+            }
+            // Ctrl + K or Cmd + K shortcut to open search
+            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+                e.preventDefault();
+                openGlobalSearchModal();
+            }
+        });
+
+        const globalSearchInp = document.getElementById('globalSearchInput');
+        const clearBtn = document.getElementById('globalSearchClearBtn');
+
+        if (globalSearchInp) {
+            globalSearchInp.addEventListener('input', function() {
+                const query = this.value.trim();
+                
+                if (clearBtn) clearBtn.style.display = query.length > 0 ? 'block' : 'none';
+
+                if (query.length < 2) {
+                    document.getElementById('quickSearchEmptyState').style.display = 'block';
+                    document.getElementById('quickSearchResultsList').style.display = 'none';
+                    document.getElementById('quickSearchLoading').style.display = 'none';
+                    resetCounts();
+                    return;
+                }
+
+                clearTimeout(searchTimeout);
+                document.getElementById('quickSearchEmptyState').style.display = 'none';
+                document.getElementById('quickTrackLiveCard').style.display = 'none';
+                document.getElementById('quickSearchLoading').style.display = 'block';
+                document.getElementById('quickSearchResultsList').style.display = 'none';
+
+                searchTimeout = setTimeout(function() {
+                    performGlobalSearch(query);
+                }, 240);
+            });
+        }
+
+        function clearGlobalSearch() {
+            if (globalSearchInp) {
+                globalSearchInp.value = '';
+                globalSearchInp.focus();
+            }
+            if (clearBtn) clearBtn.style.display = 'none';
+            document.getElementById('quickSearchEmptyState').style.display = 'block';
+            document.getElementById('quickSearchResultsList').style.display = 'none';
+            document.getElementById('quickTrackLiveCard').style.display = 'none';
+            document.getElementById('quickSearchLoading').style.display = 'none';
+            resetCounts();
+        }
+
+        function resetCounts() {
+            document.getElementById('countRepairs').innerText = '0';
+            document.getElementById('countPhones').innerText = '0';
+            document.getElementById('countSales').innerText = '0';
+            document.getElementById('countCustomers').innerText = '0';
+        }
+
+        function performGlobalSearch(query) {
+            fetch("{{ route('shop.quick-search') }}?q=" + encodeURIComponent(query), {
+                headers: { 'Accept': 'application/json' }
+            })
+            .then(res => res.json())
+            .then(res => {
+                document.getElementById('quickSearchLoading').style.display = 'none';
+                document.getElementById('quickSearchResultsList').style.display = 'block';
+
+                if (!res.success || res.total_count === 0) {
+                    document.getElementById('searchNoResults').style.display = 'block';
+                    document.getElementById('secRepairs').style.display = 'none';
+                    document.getElementById('secPhones').style.display = 'none';
+                    document.getElementById('secSales').style.display = 'none';
+                    document.getElementById('secCustomers').style.display = 'none';
+                    resetCounts();
+                    return;
+                }
+
+                document.getElementById('searchNoResults').style.display = 'none';
+
+                // Update Badges
+                const repCount = res.data.repairs ? res.data.repairs.length : 0;
+                const phoCount = res.data.phones ? res.data.phones.length : 0;
+                const salCount = res.data.sales ? res.data.sales.length : 0;
+                const cusCount = res.data.customers ? res.data.customers.length : 0;
+
+                document.getElementById('countRepairs').innerText = repCount;
+                document.getElementById('countPhones').innerText = phoCount;
+                document.getElementById('countSales').innerText = salCount;
+                document.getElementById('countCustomers').innerText = cusCount;
+
+                // Render Repairs
+                const listRepairs = document.getElementById('listRepairs');
+                listRepairs.innerHTML = '';
+                if (repCount > 0) {
+                    res.data.repairs.forEach(job => {
+                        listRepairs.innerHTML += `
+                            <div class="quick-search-result-item">
+                                <div style="display: flex; align-items: center; gap: 0.65rem;">
+                                    <span class="badge" style="background: #4f46e5; color: #ffffff; font-weight: 700; font-size: 0.72rem; padding: 0.2rem 0.45rem;">${job.job_number}</span>
+                                    <div>
+                                        <div style="font-weight: 750; font-size: 0.825rem; color: #0f172a;">${job.device}</div>
+                                        <div style="font-size: 0.7rem; color: #64748b;">Customer: <strong>${job.customer_name}</strong> &bull; ${job.customer_phone}</div>
+                                    </div>
+                                </div>
+                                <div class="item-action" style="display: flex; align-items: center; gap: 0.35rem;">
+                                    <span class="badge" style="background: #eef2ff; color: #4338ca; font-size: 0.68rem; font-weight: 650;">${job.status_label}</span>
+                                    <button type="button" onclick="executeTrackJob('${job.job_number}')" class="btn btn-sm btn-primary" style="font-size: 0.68rem; padding: 0.2rem 0.5rem; height: 26px;">Track Status</button>
+                                    <a href="${job.url}" class="btn btn-sm btn-secondary" style="font-size: 0.68rem; padding: 0.2rem 0.5rem; height: 26px;">Open &rarr;</a>
+                                </div>
+                            </div>
+                        `;
+                    });
+                }
+
+                // Render Phones
+                const listPhones = document.getElementById('listPhones');
+                listPhones.innerHTML = '';
+                if (phoCount > 0) {
+                    res.data.phones.forEach(phone => {
+                        const statusBadge = phone.status === 'in_stock' 
+                            ? `<span class="badge badge-success" style="font-size: 0.68rem;">In Stock</span>`
+                            : `<span class="badge badge-secondary" style="font-size: 0.68rem;">${phone.status}</span>`;
+
+                        listPhones.innerHTML += `
+                            <a href="${phone.url}" class="quick-search-result-item">
+                                <div style="display: flex; align-items: center; gap: 0.65rem;">
+                                    <div style="background: #f1f5f9; color: #475569; width: 32px; height: 32px; border-radius: 6px; display: flex; align-items: center; justify-content: center;">
+                                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="5" y="2" width="14" height="20" rx="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
+                                    </div>
+                                    <div>
+                                        <div style="font-weight: 750; font-size: 0.825rem; color: #0f172a;">${phone.title} <span style="font-weight: 500; font-size: 0.72rem; color: #64748b;">${phone.specs}</span></div>
+                                        <div style="font-size: 0.7rem; color: #64748b; font-family: monospace;">IMEI 1: <strong>${phone.imei_1 || 'N/A'}</strong> ${phone.imei_2 ? ' &bull; IMEI 2: ' + phone.imei_2 : ''}</div>
+                                    </div>
+                                </div>
+                                <div class="item-action" style="display: flex; align-items: center; gap: 0.45rem;">
+                                    <strong style="font-size: 0.825rem; color: #166534; font-family: monospace;">LKR ${phone.selling_price}</strong>
+                                    ${statusBadge}
+                                    <span style="font-size: 0.75rem; color: #64748b;">&rarr;</span>
+                                </div>
+                            </a>
+                        `;
+                    });
+                }
+
+                // Render Sales
+                const listSales = document.getElementById('listSales');
+                listSales.innerHTML = '';
+                if (salCount > 0) {
+                    res.data.sales.forEach(sale => {
+                        listSales.innerHTML += `
+                            <a href="${sale.url}" class="quick-search-result-item">
+                                <div style="display: flex; align-items: center; gap: 0.65rem;">
+                                    <span class="badge" style="background: #f8fafc; border: 1px solid #cbd5e1; color: #334155; font-weight: 700; font-size: 0.72rem; padding: 0.2rem 0.45rem; font-family: monospace;">${sale.invoice_number}</span>
+                                    <div>
+                                        <div style="font-weight: 750; font-size: 0.825rem; color: #0f172a;">${sale.customer_name}</div>
+                                        <div style="font-size: 0.7rem; color: #64748b;">${sale.date} &bull; ${sale.payment_method}</div>
+                                    </div>
+                                </div>
+                                <div class="item-action" style="display: flex; align-items: center; gap: 0.45rem;">
+                                    <strong style="font-size: 0.825rem; color: #0f172a; font-family: monospace;">LKR ${sale.total_amount}</strong>
+                                    <span style="font-size: 0.75rem; color: #64748b;">&rarr;</span>
+                                </div>
+                            </a>
+                        `;
+                    });
+                }
+
+                // Render Customers
+                const listCustomers = document.getElementById('listCustomers');
+                listCustomers.innerHTML = '';
+                if (cusCount > 0) {
+                    res.data.customers.forEach(cust => {
+                        listCustomers.innerHTML += `
+                            <a href="${cust.url}" class="quick-search-result-item">
+                                <div style="display: flex; align-items: center; gap: 0.65rem;">
+                                    <div style="background: #eef2ff; color: #4f46e5; width: 32px; height: 32px; border-radius: 6px; display: flex; align-items: center; justify-content: center;">
+                                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                                    </div>
+                                    <div>
+                                        <div style="font-weight: 750; font-size: 0.825rem; color: #0f172a;">${cust.name}</div>
+                                        <div style="font-size: 0.7rem; color: #64748b;">Phone: <strong>${cust.phone || 'N/A'}</strong> ${cust.nic ? '&bull; NIC: ' + cust.nic : ''}</div>
+                                    </div>
+                                </div>
+                                <div class="item-action" style="display: flex; align-items: center; gap: 0.45rem;">
+                                    <span style="font-size: 0.72rem; color: #64748b;">Credit: <strong>LKR ${cust.balance}</strong></span>
+                                    <span style="font-size: 0.75rem; color: #64748b;">&rarr;</span>
+                                </div>
+                            </a>
+                        `;
+                    });
+                }
+
+                applyCurrentCategoryFilter();
+            })
+            .catch(err => {
+                console.error(err);
+                document.getElementById('quickSearchLoading').style.display = 'none';
+            });
+        }
+
+        function setSearchFilter(filter, el) {
+            activeSearchFilter = filter;
+            document.querySelectorAll('.search-filter-pill').forEach(btn => btn.classList.remove('active'));
+            if (el) el.classList.add('active');
+            applyCurrentCategoryFilter();
+        }
+
+        function applyCurrentCategoryFilter() {
+            const secRep = document.getElementById('secRepairs');
+            const secPho = document.getElementById('secPhones');
+            const secSal = document.getElementById('secSales');
+            const secCus = document.getElementById('secCustomers');
+
+            const hasRep = parseInt(document.getElementById('countRepairs').innerText || 0) > 0;
+            const hasPho = parseInt(document.getElementById('countPhones').innerText || 0) > 0;
+            const hasSal = parseInt(document.getElementById('countSales').innerText || 0) > 0;
+            const hasCus = parseInt(document.getElementById('countCustomers').innerText || 0) > 0;
+
+            secRep.style.display = (activeSearchFilter === 'all' || activeSearchFilter === 'repairs') && hasRep ? 'block' : 'none';
+            secPho.style.display = (activeSearchFilter === 'all' || activeSearchFilter === 'phones') && hasPho ? 'block' : 'none';
+            secSal.style.display = (activeSearchFilter === 'all' || activeSearchFilter === 'sales') && hasSal ? 'block' : 'none';
+            secCus.style.display = (activeSearchFilter === 'all' || activeSearchFilter === 'customers') && hasCus ? 'block' : 'none';
+        }
+
+        function executeDirectTrack() {
+            const inp = document.getElementById('quickDirectTrackInp');
+            const val = inp ? inp.value.trim() : '';
+            const errDiv = document.getElementById('directTrackError');
+            if (errDiv) errDiv.style.display = 'none';
+
+            if (!val) {
+                if (errDiv) {
+                    errDiv.innerText = 'Please enter a Job #, IMEI, phone or customer NIC.';
+                    errDiv.style.display = 'block';
+                }
+                return;
+            }
+            executeTrackJob(val);
+        }
+
+        function executeTrackJob(trackingId) {
+            const errDiv = document.getElementById('directTrackError');
+            if (errDiv) errDiv.style.display = 'none';
+
+            fetch("{{ route('shop.quick-search.track') }}?tracking_id=" + encodeURIComponent(trackingId), {
+                headers: { 'Accept': 'application/json' }
+            })
+            .then(res => res.json())
+            .then(res => {
+                if (!res.found) {
+                    if (errDiv) {
+                        errDiv.innerText = res.message || 'No repair ticket found.';
+                        errDiv.style.display = 'block';
+                    } else {
+                        alert(res.message);
+                    }
+                    return;
+                }
+
+                const job = res.job;
+                document.getElementById('trackCardJobNo').innerText = job.job_number;
+                document.getElementById('trackCardDevice').innerText = job.device;
+                document.getElementById('trackCardCustomer').innerText = job.customer_name;
+                document.getElementById('trackCardPhone').innerText = job.customer_phone;
+                document.getElementById('trackCardImei').innerText = job.imei;
+                
+                const badge = document.getElementById('trackCardStatusBadge');
+                badge.innerText = job.status_label;
+                badge.style.background = job.status_color + '22';
+                badge.style.color = job.status_color;
+
+                document.getElementById('trackCardDate').innerText = 'Received: ' + job.received_date;
+                document.getElementById('trackCardPercent').innerText = job.progress_percent + '% (' + job.status_label + ')';
+                document.getElementById('trackCardProgressBar').style.width = job.progress_percent + '%';
+                document.getElementById('trackCardProgressBar').style.background = job.status_color;
+
+                document.getElementById('trackCardFault').innerText = job.fault_description;
+                document.getElementById('trackCardNotes').innerText = job.technician_notes;
+                document.getElementById('trackCardCost').innerText = 'LKR ' + job.estimated_cost;
+                document.getElementById('trackCardBalance').innerText = 'LKR ' + job.balance_due;
+
+                document.getElementById('trackCardShopLink').href = job.shop_url;
+                document.getElementById('trackCardPublicLink').href = job.public_url;
+
+                document.getElementById('quickTrackLiveCard').style.display = 'block';
+                document.getElementById('quickSearchEmptyState').style.display = 'none';
+                document.getElementById('quickSearchResultsList').style.display = 'none';
+            })
+            .catch(err => {
+                console.error(err);
+                if (errDiv) {
+                    errDiv.innerText = 'Unable to track repair ticket. Please try again.';
+                    errDiv.style.display = 'block';
+                }
+            });
+        }
+
+        function hideQuickTrackCard() {
+            document.getElementById('quickTrackLiveCard').style.display = 'none';
+            if (globalSearchInp && globalSearchInp.value.trim().length >= 2) {
+                document.getElementById('quickSearchResultsList').style.display = 'block';
+            } else {
+                document.getElementById('quickSearchEmptyState').style.display = 'block';
+            }
+        }
     </script>
     @stack('scripts')
 </body>

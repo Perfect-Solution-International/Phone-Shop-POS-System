@@ -29,6 +29,7 @@ class AuthController extends Controller
             'loginPreviewUrl' => $this->loginPreviewEnabled() ? route('login.preview', [], false) : '',
             'currentUser' => $request->user(),
             'currentDestination' => $request->user() ? $this->destination($request->user()) : null,
+            'initialMode' => ($request->query('type') === 'staff' || $request->routeIs('staff.login')) ? 'staff' : 'owner',
         ]);
     }
 
@@ -52,6 +53,25 @@ class AuthController extends Controller
 
         $request->session()->regenerate();
         $user = $request->user('web');
+
+        // Automatically bind branch session if user is an assigned branch manager
+        if ($user && $user->shop_id !== null) {
+            $assignedOutlet = null;
+            if ($user->outlet_id) {
+                $assignedOutlet = \App\Models\Outlet::withoutGlobalScopes()->find($user->outlet_id);
+            }
+            if (! $assignedOutlet) {
+                $assignedOutlet = \App\Models\Outlet::withoutGlobalScopes()->where('manager_user_id', $user->id)->first();
+            }
+
+            if ($assignedOutlet && ($assignedOutlet->approval_status ?? 'approved') === 'approved') {
+                session([
+                    'active_outlet_id' => $assignedOutlet->id,
+                    'active_outlet_name' => $assignedOutlet->name,
+                    'active_outlet_code' => $assignedOutlet->code,
+                ]);
+            }
+        }
 
         if ($request->wantsJson()) {
             return response()->json(['user' => $this->profile($user), 'redirect' => $this->destination($user)]);
@@ -150,12 +170,24 @@ class AuthController extends Controller
             return route('customer.portal');
         }
 
-        if (! $user->hasVerifiedEmail()) {
+        if (config('auth.verification.enabled', false) && ! $user->hasVerifiedEmail()) {
             return route('verification.notice');
         }
 
         if ($user->shop_id !== null) {
-            if ($user->hasRole(['Shop Owner', 'Shop Manager', 'Cashier', 'Technician', 'Stock Manager'])) {
+            if ($user->hasRole('Cashier')) {
+                return route('shop.pos');
+            }
+
+            if ($user->hasRole('Technician')) {
+                return route('shop.repairs');
+            }
+
+            if ($user->hasRole(['Stock Manager', 'Stock Keeper'])) {
+                return route('shop.phones');
+            }
+
+            if ($user->hasRole(['Shop Owner', 'Shop Manager'])) {
                 return route('shop.dashboard');
             }
 

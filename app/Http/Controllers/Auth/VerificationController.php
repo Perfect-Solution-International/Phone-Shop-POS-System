@@ -18,7 +18,7 @@ class VerificationController extends Controller
             return redirect()->route('superadmin.dashboard');
         }
 
-        if ($request->user()?->hasVerifiedEmail()) {
+        if (! config('auth.verification.enabled', false) || $request->user()?->hasVerifiedEmail()) {
             return redirect()->route('app');
         }
 

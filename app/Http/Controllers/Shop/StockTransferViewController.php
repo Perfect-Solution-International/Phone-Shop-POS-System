@@ -12,6 +12,7 @@ use App\Models\StockTransferItem;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
 class StockTransferViewController extends Controller
@@ -34,7 +35,7 @@ class StockTransferViewController extends Controller
 
         // In-stock phones available for transfer
         $availablePhones = PhoneDevice::where('shop_id', $shopId)
-            ->where('status', 'In Stock')
+            ->whereIn('status', ['in_stock', 'In Stock'])
             ->orderBy('brand')
             ->orderBy('model')
             ->get();
@@ -63,11 +64,11 @@ class StockTransferViewController extends Controller
         $shopId = auth()->user()->shop_id ?? session('superadmin_active_shop_id');
 
         $data = $request->validate([
-            'from_outlet_id' => ['required', 'exists:outlets,id'],
-            'to_outlet_id' => ['required', 'exists:outlets,id', 'different:from_outlet_id'],
+            'from_outlet_id' => ['required', Rule::exists('outlets', 'id')->where('shop_id', $shopId)],
+            'to_outlet_id' => ['required', Rule::exists('outlets', 'id')->where('shop_id', $shopId), 'different:from_outlet_id'],
             'item_type' => ['required', 'in:phone,product'],
-            'phone_device_id' => ['nullable', 'required_if:item_type,phone', 'exists:phone_devices,id'],
-            'product_id' => ['nullable', 'required_if:item_type,product', 'exists:products,id'],
+            'phone_device_id' => ['nullable', 'required_if:item_type,phone', Rule::exists('phone_devices', 'id')->where('shop_id', $shopId)],
+            'product_id' => ['nullable', 'required_if:item_type,product', Rule::exists('products', 'id')->where('shop_id', $shopId)],
             'quantity' => ['nullable', 'integer', 'min:1'],
             'notes' => ['nullable', 'string', 'max:500'],
         ]);

@@ -6,15 +6,18 @@ use App\Http\Controllers\Controller;
 use App\Models\Brand;
 use App\Models\PhoneDevice;
 use App\Models\Supplier;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
 class PhoneViewController extends Controller
 {
     public function index(Request $request): View
     {
-        $query = PhoneDevice::with(['supplier', 'sale']);
+        $query = PhoneDevice::with(['supplier', 'sale.customer']);
 
         if ($search = $request->input('search')) {
             $query->where(function ($q) use ($search): void {
@@ -55,9 +58,14 @@ class PhoneViewController extends Controller
             'serial_number' => 'nullable|string|max:100',
             'purchase_cost' => 'required|numeric|min:0',
             'selling_price' => 'required|numeric|min:0',
-            'supplier_id' => 'nullable|exists:suppliers,id',
+            'supplier_id' => ['nullable', Rule::exists('suppliers', 'id')->where('shop_id', auth()->user()->shop_id)],
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,webp,gif|max:5120',
             'notes' => 'nullable|string|max:500',
         ]);
+
+        if ($request->hasFile('image')) {
+            $validated['image_path'] = $request->file('image')->store('phones', 'public');
+        }
 
         $validated['status'] = 'in_stock';
         PhoneDevice::create($validated);
@@ -82,9 +90,25 @@ class PhoneViewController extends Controller
             'serial_number' => 'nullable|string|max:100',
             'purchase_cost' => 'required|numeric|min:0',
             'selling_price' => 'required|numeric|min:0',
-            'supplier_id' => 'nullable|exists:suppliers,id',
+            'supplier_id' => ['nullable', Rule::exists('suppliers', 'id')->where('shop_id', auth()->user()->shop_id)],
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,webp,gif|max:5120',
+            'remove_image' => 'nullable|boolean',
             'notes' => 'nullable|string|max:500',
         ]);
+
+        if ($request->boolean('remove_image')) {
+            if ($phone->image_path && Storage::disk('public')->exists($phone->image_path)) {
+                Storage::disk('public')->delete($phone->image_path);
+            }
+            $validated['image_path'] = null;
+        }
+
+        if ($request->hasFile('image')) {
+            if ($phone->image_path && Storage::disk('public')->exists($phone->image_path)) {
+                Storage::disk('public')->delete($phone->image_path);
+            }
+            $validated['image_path'] = $request->file('image')->store('phones', 'public');
+        }
 
         if ($validated['status'] === 'sold' && ! $phone->sold_at) {
             $validated['sold_at'] = now();
@@ -108,10 +132,29 @@ class PhoneViewController extends Controller
             return back()->with('error', 'Cannot delete this device because it has warranty certificates issued.');
         }
 
+        if ($phone->image_path && Storage::disk('public')->exists($phone->image_path)) {
+            Storage::disk('public')->delete($phone->image_path);
+        }
+
         $deviceName = "{$phone->brand} {$phone->model} (IMEI: {$phone->imei_1})";
         $phone->delete();
 
         return redirect()->route('shop.phones')->with('success', "Device {$deviceName} removed from inventory successfully.");
+    }
+
+    public function deleteImage(PhoneDevice $phone): JsonResponse|RedirectResponse
+    {
+        if ($phone->image_path && Storage::disk('public')->exists($phone->image_path)) {
+            Storage::disk('public')->delete($phone->image_path);
+        }
+
+        $phone->update(['image_path' => null]);
+
+        if (request()->wantsJson() || request()->ajax()) {
+            return response()->json(['success' => true, 'message' => 'Phone image removed successfully.']);
+        }
+
+        return redirect()->back()->with('success', 'Phone image removed successfully.');
     }
 }
 

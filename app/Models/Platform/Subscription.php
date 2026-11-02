@@ -24,6 +24,11 @@ class Subscription extends Model
         'grace_period_ends_at',
         'cancelled_at',
         'last_paid_at',
+        'card_last4',
+        'card_brand',
+        'cardholder_name',
+        'card_expiry',
+        'payment_method',
     ];
 
     protected $casts = [

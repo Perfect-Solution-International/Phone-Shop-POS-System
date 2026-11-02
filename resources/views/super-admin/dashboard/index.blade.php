@@ -586,7 +586,7 @@
     <div class="data-card" style="border-left: 4px solid #f59e0b; margin-bottom: 2rem;">
         <div class="data-card-header" style="background: #fffbeb;">
             <div style="display: flex; align-items: center; gap: 0.5rem;">
-                <span style="font-size: 1.1rem;">⚠️</span>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#b45309" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
                 <h2 class="data-card-title" style="color: #92400e; font-size: 0.95rem;">
                     Subscriptions Expiring Within 7 Days ({{ $expiring_soon->count() }} Accounts)
                 </h2>
@@ -643,7 +643,7 @@
     <div class="data-card" style="margin-bottom: 2rem; border-left: 4px solid #10b981;">
         <div style="padding: 1.25rem 1.5rem; display: flex; align-items: center; justify-content: space-between;">
             <div style="display: flex; align-items: center; gap: 0.65rem;">
-                <span style="font-size: 1.25rem;">✅</span>
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
                 <div>
                     <strong style="color: #065f46; font-size: 0.9375rem;">No Subscriptions Expiring Within 7 Days</strong>
                     <p style="font-size: 0.775rem; color: #64748b; margin-top: 0.15rem;">All active paid shop workspaces are currently up to date.</p>
@@ -692,12 +692,14 @@
                                 <div style="font-size: 0.725rem; color: #64748b;">{{ $owner->email ?? 'No email' }}</div>
                                 <div style="margin-top: 0.25rem;">
                                     @if ($owner && $owner->email_verified_at)
-                                        <span class="status-pill status-active" style="font-size: 0.65rem; padding: 0.1rem 0.45rem;">
-                                            ✓ Verified
+                                        <span class="status-pill status-active" style="font-size: 0.65rem; padding: 0.1rem 0.45rem; display: inline-flex; align-items: center; gap: 0.2rem;">
+                                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                                            Verified
                                         </span>
                                     @else
-                                        <span class="status-pill status-pending" style="font-size: 0.65rem; padding: 0.1rem 0.45rem;">
-                                            ⏳ Unverified
+                                        <span class="status-pill status-pending" style="font-size: 0.65rem; padding: 0.1rem 0.45rem; display: inline-flex; align-items: center; gap: 0.2rem;">
+                                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                                            Unverified
                                         </span>
                                     @endif
                                 </div>

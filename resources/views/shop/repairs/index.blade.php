@@ -166,8 +166,9 @@
                             <button class="btn btn-sm btn-secondary" onclick="openPartsModal({{ $repair->id }}, '{{ $repair->job_number }}')">
                                 + Part
                             </button>
-                            <button class="btn btn-sm btn-secondary" onclick='openJobCardModal(@json($repair->load("customer", "technician")))' title="Print Repair Job Card Ticket">
-                                🖨️ Job Card
+                            <button class="btn btn-sm btn-secondary" onclick='openJobCardModal(@json($repair->load("customer", "technician")))' title="Print Repair Job Card Ticket" style="display: inline-flex; align-items: center; gap: 0.25rem;">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+                                Job Card
                             </button>
                         </div>
                     </td>
@@ -200,14 +201,20 @@
         <form method="POST" action="{{ route('shop.repairs.store') }}">
             @csrf
             <div class="modal-body">
-                <div class="form-group">
-                    <label>Customer *</label>
-                    <select name="customer_id" class="form-control" required>
-                        <option value="">Select Customer</option>
-                        @foreach($customers as $c)
-                            <option value="{{ $c->id }}">{{ $c->name }} ({{ $c->phone }})</option>
-                        @endforeach
-                    </select>
+                <div class="form-row">
+                    <div class="form-group" style="flex: 1.3;">
+                        <label>Customer *</label>
+                        <select name="customer_id" id="selRepairCustomer" class="form-control" required onchange="onRepairCustomerChange(this)">
+                            <option value="">Select Customer</option>
+                            @foreach($customers as $c)
+                                <option value="{{ $c->id }}" data-nic="{{ $c->nic }}">{{ $c->name }} ({{ $c->phone }})</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="form-group" style="flex: 1;">
+                        <label>Customer ID / NIC Number</label>
+                        <input type="text" name="customer_nic" id="inpRepairCustomerNic" class="form-control" placeholder="e.g. 199512345678 or 951234567V">
+                    </div>
                 </div>
 
                 <div class="form-row">
@@ -547,6 +554,15 @@
         document.getElementById('jcTrackUrl').innerText = trackUrl;
 
         openModal('jobCardModal');
+    }
+
+    function onRepairCustomerChange(sel) {
+        const opt = sel.options[sel.selectedIndex];
+        const nic = opt ? opt.getAttribute('data-nic') : '';
+        const nicInput = document.getElementById('inpRepairCustomerNic');
+        if (nicInput) {
+            nicInput.value = nic || '';
+        }
     }
 
     function printJobCard() {

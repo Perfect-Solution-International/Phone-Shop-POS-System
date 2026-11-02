@@ -4,6 +4,8 @@
 @section('page-title', 'Products, Accessories & Inventory Stock')
 
 @section('content')
+@include('shop.partials.inventory-subnav')
+
 <div class="card">
     <div class="card-header" style="flex-wrap: wrap; gap: 1rem;">
         <form method="GET" action="{{ route('shop.products') }}" style="display: flex; gap: 0.75rem; flex: 1; flex-wrap: wrap;">
@@ -173,9 +175,9 @@
 
                 <div class="form-row">
                     <div class="form-group">
-                        <label>Category *</label>
-                        <select name="category_id" id="product_category_id" class="form-control" required>
-                            <option value="">Select Category</option>
+                        <label>Category (Auto-defaults if unselected)</label>
+                        <select name="category_id" id="product_category_id" class="form-control">
+                            <option value="">General Accessories (Default)</option>
                             @foreach($categories as $cat)
                                 <option value="{{ $cat->id }}">{{ $cat->name }}</option>
                             @endforeach
@@ -183,24 +185,24 @@
                     </div>
 
                     <div class="form-group">
-                        <label>Brand (Optional)</label>
-                        <select name="brand_id" id="product_brand_id" class="form-control">
-                            <option value="">Select Brand</option>
-                            @foreach($brands as $b)
-                                <option value="{{ $b->id }}">{{ $b->name }}</option>
-                            @endforeach
-                        </select>
+                        <label>+ Or Create New Category</label>
+                        <input type="text" name="new_category" class="form-control" placeholder="e.g. Cables, Earphones, Cases">
                     </div>
                 </div>
 
                 <div class="form-row">
                     <div class="form-group">
-                        <label>Barcode / EAN (Auto-generated if empty)</label>
-                        <input type="text" name="barcode" class="form-control" placeholder="Scan barcode or leave blank" style="font-family: monospace;">
+                        <label>Brand (Optional)</label>
+                        <select name="brand_id" id="product_brand_id" class="form-control">
+                            <option value="">Generic / No Brand</option>
+                            @foreach($brands as $b)
+                                <option value="{{ $b->id }}">{{ $b->name }}</option>
+                            @endforeach
+                        </select>
                     </div>
                     <div class="form-group">
-                        <label>SKU Code</label>
-                        <input type="text" name="sku" class="form-control" placeholder="e.g. CHG-20W-WHT" style="font-family: monospace;">
+                        <label>Barcode / EAN (Auto-generated if blank)</label>
+                        <input type="text" name="barcode" class="form-control" placeholder="Scan barcode or leave blank" style="font-family: monospace;">
                     </div>
                 </div>
 
@@ -272,33 +274,33 @@
 
                 <div class="form-row">
                     <div class="form-group">
-                        <label>Category *</label>
-                        <select name="category_id" id="edit_product_category_id" class="form-control" required>
-                            <option value="">Select Category</option>
+                        <label>Category</label>
+                        <select name="category_id" id="edit_product_category_id" class="form-control">
+                            <option value="">General Accessories (Default)</option>
                             @foreach($categories as $cat)
                                 <option value="{{ $cat->id }}">{{ $cat->name }}</option>
                             @endforeach
                         </select>
                     </div>
                     <div class="form-group">
-                        <label>Brand (Optional)</label>
-                        <select name="brand_id" id="edit_product_brand_id" class="form-control">
-                            <option value="">Select Brand</option>
-                            @foreach($brands as $b)
-                                <option value="{{ $b->id }}">{{ $b->name }}</option>
-                            @endforeach
-                        </select>
+                        <label>+ Or Create New Category</label>
+                        <input type="text" name="new_category" class="form-control" placeholder="e.g. Cables, Earphones, Cases">
                     </div>
                 </div>
 
                 <div class="form-row">
                     <div class="form-group">
-                        <label>Barcode / EAN</label>
-                        <input type="text" name="barcode" id="edit_product_barcode" class="form-control" style="font-family: monospace;">
+                        <label>Brand (Optional)</label>
+                        <select name="brand_id" id="edit_product_brand_id" class="form-control">
+                            <option value="">Generic / No Brand</option>
+                            @foreach($brands as $b)
+                                <option value="{{ $b->id }}">{{ $b->name }}</option>
+                            @endforeach
+                        </select>
                     </div>
                     <div class="form-group">
-                        <label>SKU Code</label>
-                        <input type="text" name="sku" id="edit_product_sku" class="form-control" style="font-family: monospace;">
+                        <label>Barcode / EAN</label>
+                        <input type="text" name="barcode" id="edit_product_barcode" class="form-control" style="font-family: monospace;">
                     </div>
                 </div>
 
@@ -347,7 +349,10 @@
                     </div>
 
                     <div id="editProductImageRemovedNotice" style="display: none; background: #fee2e2; border: 1px solid #fca5a5; border-radius: 6px; padding: 0.45rem 0.75rem; margin-bottom: 0.75rem; font-size: 0.78rem; color: #991b1b; align-items: center; justify-content: space-between;">
-                        <span>⚠️ Image will be removed upon saving.</span>
+                        <span style="display: inline-flex; align-items: center; gap: 0.35rem;">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                            Image will be removed upon saving.
+                        </span>
                         <button type="button" onclick="undoDeleteProductImage()" style="background: none; border: none; color: #4338ca; text-decoration: underline; font-size: 0.75rem; font-weight: 700; cursor: pointer;">Undo</button>
                     </div>
 
@@ -537,8 +542,9 @@
                 </span>
                 <form method="POST" action="{{ route('shop.catalog.seed-defaults') }}">
                     @csrf
-                    <button type="submit" class="btn btn-secondary btn-sm" style="font-size: 0.75rem;">
-                        ✨ Load Standard Phone Catalog
+                    <button type="submit" class="btn btn-secondary btn-sm" style="font-size: 0.75rem; display: inline-flex; align-items: center; gap: 0.35rem;">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#4f46e5" stroke-width="2"><path d="M12 2l2.4 7.2L22 12l-7.6 2.8L12 22l-2.4-7.2L2 12l7.6-2.8z"></path></svg>
+                        Load Standard Phone Catalog
                     </button>
                 </form>
             </div>
@@ -730,7 +736,7 @@
         if (count > 0) {
             const itemType = type === 'category' ? 'category' : 'brand';
             const unassignDesc = type === 'category' ? 'marked as Uncategorized' : 'left without a brand';
-            confirmText = `⚠️ Warning: "${name}" currently has ${count} product(s) assigned.\n\nDeleting this ${itemType} will keep the products in your inventory, but they will be ${unassignDesc}.\n\nAre you sure you want to proceed with deletion?`;
+            confirmText = `Warning: "${name}" currently has ${count} product(s) assigned.\n\nDeleting this ${itemType} will keep the products in your inventory, but they will be ${unassignDesc}.\n\nAre you sure you want to proceed with deletion?`;
         }
 
         if (!confirm(confirmText)) {

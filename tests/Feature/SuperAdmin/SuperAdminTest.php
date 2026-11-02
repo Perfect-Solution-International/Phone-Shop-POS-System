@@ -118,6 +118,25 @@ test('superadmin can create and update subscription plans', function (): void {
         'monthly_price' => 19500.00,
         'max_branches' => 10,
     ]);
+
+    // Update existing subscription plan
+    $plan = SubscriptionPlan::where('name', 'Multi-Branch Ultimate')->first();
+    $updatePayload = array_merge($payload, [
+        'name' => 'Multi-Branch Enterprise Pro',
+        'monthly_price' => 24500.00,
+        'max_branches' => 15,
+    ]);
+
+    $this->actingAs($superAdmin, 'web')
+        ->put("/super-admin/plans/{$plan->id}", $updatePayload)
+        ->assertRedirect();
+
+    $this->assertDatabaseHas('subscription_plans', [
+        'id' => $plan->id,
+        'name' => 'Multi-Branch Enterprise Pro',
+        'monthly_price' => 24500.00,
+        'max_branches' => 15,
+    ]);
 });
 
 test('superadmin can approve bank transfer payments and activate subscription', function (): void {
@@ -177,6 +196,9 @@ test('superadmin can reject bank transfer payments with reason', function (): vo
 });
 
 test('new shop registration automatically initializes 7-day free trial on default plan', function (): void {
+    $plan = \App\Models\Platform\SubscriptionPlan::where('slug', 'starter')->first()
+        ?? \App\Models\Platform\SubscriptionPlan::first();
+
     $payload = [
         'shop_name' => 'Nexus Mobile Care',
         'name' => 'Sunil Shantha',
@@ -185,9 +207,18 @@ test('new shop registration automatically initializes 7-day free trial on defaul
         'password' => 'StrongPass1234!',
         'password_confirmation' => 'StrongPass1234!',
         'terms' => '1',
+        'plan_id' => $plan ? $plan->id : 1,
+        'cardholder_name' => 'Sunil Shantha',
+        'card_number' => '4242424242424242',
+        'card_expiry' => '12/28',
+        'card_cvv' => '123',
     ];
 
-    $this->post('/register', $payload)->assertRedirect(route('verification.notice'));
+    $expectedDestination = config('auth.verification.enabled', false)
+        ? route('verification.notice')
+        : route('shop.dashboard');
+
+    $this->post('/register', $payload)->assertRedirect($expectedDestination);
 
     $shop = Shop::where('name', 'Nexus Mobile Care')->first();
     expect($shop)->not->toBeNull();
@@ -198,4 +229,73 @@ test('new shop registration automatically initializes 7-day free trial on defaul
     expect($sub->plan->slug)->toBe('starter');
     expect($sub->trial_ends_at)->not->toBeNull();
 });
+
+test('superadmin can edit and update registered shop details', function (): void {
+    $superAdmin = User::factory()->create(['shop_id' => null]);
+    $superAdmin->assignRole('Super Administrator');
+
+    $shop = Shop::factory()->create(['name' => 'Original Shop Name']);
+    $owner = User::factory()->create([
+        'shop_id' => $shop->id,
+        'name' => 'Original Owner',
+        'email' => 'origowner@test.com',
+    ]);
+    $plan = SubscriptionPlan::first();
+    Subscription::create([
+        'shop_id' => $shop->id,
+        'plan_id' => $plan->id,
+        'status' => 'trial',
+        'current_period_starts_at' => now(),
+        'current_period_ends_at' => now()->addDays(7),
+    ]);
+
+    $updateData = [
+        'name' => 'Updated Prime Shop',
+        'email' => 'prime@test.com',
+        'phone' => '0771234567',
+        'address' => '123 Galle Road, Colombo',
+        'business_reg_number' => 'PV-998877',
+        'owner_name' => 'Updated Owner Name',
+        'owner_email' => 'updatedowner@test.com',
+        'subscription_status' => 'active',
+    ];
+
+    $this->actingAs($superAdmin, 'web')
+        ->put("/super-admin/shops/{$shop->id}", $updateData)
+        ->assertRedirect('/super-admin/shops');
+
+    expect($shop->fresh()->name)->toBe('Updated Prime Shop');
+    expect($shop->fresh()->phone)->toBe('0771234567');
+    expect($shop->fresh()->business_reg_number)->toBe('PV-998877');
+    expect($owner->fresh()->name)->toBe('Updated Owner Name');
+    expect($owner->fresh()->email)->toBe('updatedowner@test.com');
+    expect($shop->subscription->fresh()->status)->toBe('active');
+});
+
+test('superadmin can delete a registered shop workspace and its data', function (): void {
+    $superAdmin = User::factory()->create(['shop_id' => null]);
+    $superAdmin->assignRole('Super Administrator');
+
+    $shop = Shop::factory()->create(['name' => 'Shop To Be Deleted']);
+    $owner = User::factory()->create([
+        'shop_id' => $shop->id,
+        'name' => 'Owner To Delete',
+    ]);
+    $plan = SubscriptionPlan::first();
+    Subscription::create([
+        'shop_id' => $shop->id,
+        'plan_id' => $plan->id,
+        'status' => 'trial',
+        'current_period_starts_at' => now(),
+        'current_period_ends_at' => now()->addDays(7),
+    ]);
+
+    $this->actingAs($superAdmin, 'web')
+        ->delete("/super-admin/shops/{$shop->id}")
+        ->assertRedirect('/super-admin/shops');
+
+    expect(Shop::find($shop->id))->toBeNull();
+    expect(User::find($owner->id))->toBeNull();
+});
+
 

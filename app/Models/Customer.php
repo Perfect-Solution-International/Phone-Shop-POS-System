@@ -12,13 +12,20 @@ class Customer extends Model
     use BelongsToTenant, HasFactory;
 
     protected $fillable = [
+        'shop_id',
         'name',
         'phone',
         'email',
+        'password',
+        'nic',
         'address',
         'customer_type',
         'credit_limit',
         'balance',
+    ];
+
+    protected $hidden = [
+        'password',
     ];
 
     protected $casts = [
@@ -29,6 +36,11 @@ class Customer extends Model
     public function sales(): HasMany
     {
         return $this->hasMany(Sale::class);
+    }
+
+    public function debtPayments(): HasMany
+    {
+        return $this->hasMany(CustomerDebtPayment::class);
     }
 }
 

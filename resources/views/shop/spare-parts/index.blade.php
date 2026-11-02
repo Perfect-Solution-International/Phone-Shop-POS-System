@@ -8,6 +8,9 @@
     .stock-qty-low { color: #b91c1c; }
     .stock-qty-normal { color: #15803d; }
 </style>
+
+@include('shop.partials.inventory-subnav')
+
 <div class="card">
     <div class="card-header" style="flex-wrap: wrap; gap: 1rem;">
         <form method="GET" action="{{ route('shop.spare-parts') }}" style="display: flex; gap: 0.75rem; flex: 1; flex-wrap: wrap;">
@@ -314,7 +317,10 @@
                     </div>
 
                     <div id="editPartImageRemovedNotice" style="display: none; background: #fee2e2; border: 1px solid #fca5a5; border-radius: 6px; padding: 0.45rem 0.75rem; margin-bottom: 0.75rem; font-size: 0.78rem; color: #991b1b; align-items: center; justify-content: space-between;">
-                        <span>⚠️ Image will be removed upon saving.</span>
+                        <span style="display: inline-flex; align-items: center; gap: 0.35rem;">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                            Image will be removed upon saving.
+                        </span>
                         <button type="button" onclick="undoDeletePartImage()" style="background: none; border: none; color: #4338ca; text-decoration: underline; font-size: 0.75rem; font-weight: 700; cursor: pointer;">Undo</button>
                     </div>
 

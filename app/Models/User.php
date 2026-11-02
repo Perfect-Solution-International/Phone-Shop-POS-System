@@ -21,6 +21,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'phone',
         'password',
         'shop_id',
+        'outlet_id',
         'email_verified_at',
     ];
 
@@ -33,5 +34,35 @@ class User extends Authenticatable implements MustVerifyEmail
     public function shop(): BelongsTo
     {
         return $this->belongsTo(Shop::class);
+    }
+
+    public function outlet(): BelongsTo
+    {
+        return $this->belongsTo(\App\Models\Outlet::class);
+    }
+
+    /**
+     * Determine if the user has verified their email address.
+     * When email verification is paused, all authenticated accounts are considered verified.
+     */
+    public function hasVerifiedEmail(): bool
+    {
+        if (! config('auth.verification.enabled', false)) {
+            return true;
+        }
+
+        return ! is_null($this->email_verified_at);
+    }
+
+    /**
+     * Send the email verification notification.
+     */
+    public function sendEmailVerificationNotification(): void
+    {
+        if (! config('auth.verification.enabled', false)) {
+            return;
+        }
+
+        $this->notify(new \Illuminate\Auth\Notifications\VerifyEmail);
     }
 }

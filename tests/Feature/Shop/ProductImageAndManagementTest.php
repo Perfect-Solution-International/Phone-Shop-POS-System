@@ -181,3 +181,52 @@ test('shop cannot edit or delete products belonging to another tenant', function
     $response->assertNotFound();
     expect(Product::withoutGlobalScopes()->find($productB->id))->not->toBeNull();
 });
+
+test('shop owner can create product without category and it auto-defaults to General Accessories', function (): void {
+    $shop = Shop::factory()->create();
+    $owner = User::factory()->create(['shop_id' => $shop->id]);
+    $owner->assignRole('Shop Owner');
+
+    $response = $this->actingAs($owner, 'web')
+        ->post(route('shop.products.store'), [
+            'name' => 'Fast USB-C Cable 1M',
+            'category_id' => '', // blank category
+            'cost_price' => 350,
+            'selling_price' => 850,
+            'stock_quantity' => 25,
+        ]);
+
+    $response->assertRedirect(route('shop.products'));
+
+    $product = Product::withoutGlobalScopes()->where('name', 'Fast USB-C Cable 1M')->first();
+    expect($product)->not->toBeNull();
+    $category = Category::withoutGlobalScopes()->find($product->category_id);
+    expect($category)->not->toBeNull();
+    expect($category->name)->toBe('General Accessories');
+    expect($product->stock_quantity)->toBe(25);
+    expect((float) $product->cost_price)->toBe(350.0);
+    expect((float) $product->retail_price)->toBe(850.0);
+});
+
+test('shop owner can create product with on-the-fly new category name', function (): void {
+    $shop = Shop::factory()->create();
+    $owner = User::factory()->create(['shop_id' => $shop->id]);
+    $owner->assignRole('Shop Owner');
+
+    $response = $this->actingAs($owner, 'web')
+        ->post(route('shop.products.store'), [
+            'name' => 'Clear Case iPhone 15',
+            'new_category' => 'Protective Back Covers',
+            'cost_price' => 400,
+            'selling_price' => 1200,
+            'stock_quantity' => 12,
+        ]);
+
+    $response->assertRedirect(route('shop.products'));
+
+    $product = Product::withoutGlobalScopes()->where('name', 'Clear Case iPhone 15')->first();
+    expect($product)->not->toBeNull();
+    $category = Category::withoutGlobalScopes()->find($product->category_id);
+    expect($category)->not->toBeNull();
+    expect($category->name)->toBe('Protective Back Covers');
+});

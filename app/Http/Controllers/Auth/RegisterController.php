@@ -22,10 +22,15 @@ class RegisterController extends Controller
             $currentDestination = app(\App\Http\Controllers\Api\AuthController::class)->destination($currentUser);
         }
 
+        $plans = \App\Models\Platform\SubscriptionPlan::where('is_active', true)
+            ->orderBy('monthly_price')
+            ->get();
+
         return view('auth.register', [
             'applicationName' => config('app.name') === 'Laravel' ? 'SaaS Phone Shop POS System' : config('app.name'),
             'currentUser' => $currentUser,
             'currentDestination' => $currentDestination,
+            'plans' => $plans,
         ]);
     }
 
@@ -38,7 +43,7 @@ class RegisterController extends Controller
         Auth::guard('web')->login($user);
         $request->session()->regenerate();
 
-        $destination = $user->hasVerifiedEmail() ? route('app') : route('verification.notice');
+        $destination = app(\App\Http\Controllers\Api\AuthController::class)->destination($user);
 
         if ($request->wantsJson()) {
             return response()->json([

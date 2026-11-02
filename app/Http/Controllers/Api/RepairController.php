@@ -10,6 +10,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 
 class RepairController extends Controller
 {
@@ -47,9 +48,10 @@ class RepairController extends Controller
 
     public function store(Request $request): JsonResponse
     {
+        $shopId = (int) auth()->user()?->shop_id;
         $validated = $request->validate([
-            'customer_id' => 'required|exists:customers,id',
-            'technician_id' => 'nullable|exists:users,id',
+            'customer_id' => ['required', Rule::exists('customers', 'id')->where('shop_id', $shopId)],
+            'technician_id' => ['nullable', Rule::exists('users', 'id')->where('shop_id', $shopId)],
             'brand' => 'required|string|max:100',
             'model' => 'required|string|max:100',
             'imei' => 'nullable|string|max:50',

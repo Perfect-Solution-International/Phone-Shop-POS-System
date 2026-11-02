@@ -39,7 +39,7 @@ class Kernel extends HttpKernel
         'tenant' => \App\Http\Middleware\ResolveTenantContext::class,
         'superadmin' => \App\Http\Middleware\EnsureSuperAdmin::class,
         'signed' => \Illuminate\Routing\Middleware\ValidateSignature::class,
-        'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
+        'verified' => \App\Http\Middleware\EnsureEmailIsVerified::class,
     ];
 
     protected $middlewarePriority = [
