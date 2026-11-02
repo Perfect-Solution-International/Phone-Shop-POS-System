@@ -17,7 +17,7 @@ class PhoneViewController extends Controller
 {
     public function index(Request $request): View
     {
-        $query = PhoneDevice::with(['supplier', 'sale']);
+        $query = PhoneDevice::with(['supplier', 'sale.customer']);
 
         if ($search = $request->input('search')) {
             $query->where(function ($q) use ($search): void {

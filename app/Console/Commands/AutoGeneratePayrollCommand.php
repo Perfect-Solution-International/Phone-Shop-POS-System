@@ -35,7 +35,7 @@ class AutoGeneratePayrollCommand extends Command
         $periodInput = $this->option('month') ?: now()->format('Y-m');
 
         try {
-            $periodCarbon = Carbon::createFromFormat('Y-m', $periodInput);
+            $periodCarbon = Carbon::createFromFormat('!Y-m', $periodInput);
         } catch (\Exception $e) {
             $this->error("Invalid month format '{$periodInput}'. Please use YYYY-MM format (e.g. 2026-10).");
             return self::FAILURE;
@@ -63,6 +63,7 @@ class AutoGeneratePayrollCommand extends Command
         $totalSkipped = 0;
 
         foreach ($shops as $shop) {
+            app()->instance('shop.id', $shop->id);
             $employees = Employee::withoutGlobalScopes()
                 ->where('shop_id', $shop->id)
                 ->where('is_active', true)
@@ -113,6 +114,8 @@ class AutoGeneratePayrollCommand extends Command
 
             $this->line("Shop [{$shop->id}] {$shop->name}: Generated {$shopGenerated}, Skipped {$shopSkipped}.");
         }
+
+        app()->forgetInstance('shop.id');
 
         $this->info("✓ Completed: {$totalGenerated} payslips generated/updated, {$totalSkipped} existing records skipped.");
 

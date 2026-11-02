@@ -73,6 +73,12 @@ class OutletController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
+        abort_unless(
+            $request->user()->can('branches.manage') || $request->user()->hasRole(['Shop Owner', 'Administrator', 'Super Administrator']),
+            403,
+            'Only store owners and administrators can create new branches.'
+        );
+
         $shop = $request->user()->shop;
         $subscription = $shop?->activeSubscription ?? $shop?->subscription;
         $plan = $subscription?->plan;
@@ -157,16 +163,24 @@ class OutletController extends Controller
 
         // Provision Branch Manager Login Account if manager email provided
         if ($managerEmail) {
+            $existingUser = User::where('email', $managerEmail)->first();
+            $managerData = [
+                'shop_id' => $shop->id,
+                'outlet_id' => $outlet->id,
+                'name' => $validated['manager_name'] ?: ($outlet->name . ' Manager'),
+                'phone' => $validated['phone'] ?? null,
+                'email_verified_at' => now(),
+            ];
+
+            if (! empty($managerPassword)) {
+                $managerData['password'] = Hash::make($managerPassword);
+            } elseif (! $existingUser) {
+                $managerData['password'] = Hash::make('Manager123!');
+            }
+
             $managerUser = User::updateOrCreate(
                 ['email' => $managerEmail],
-                [
-                    'shop_id' => $shop->id,
-                    'outlet_id' => $outlet->id,
-                    'name' => $validated['manager_name'] ?: ($outlet->name . ' Manager'),
-                    'phone' => $validated['phone'] ?? null,
-                    'password' => Hash::make($managerPassword ?: 'Manager123!'),
-                    'email_verified_at' => now(),
-                ]
+                $managerData
             );
 
             if (! $managerUser->hasRole('Shop Manager')) {
@@ -195,6 +209,12 @@ class OutletController extends Controller
      */
     public function update(Request $request, Outlet $outlet): RedirectResponse
     {
+        abort_unless(
+            $request->user()->can('branches.manage') || $request->user()->hasRole(['Shop Owner', 'Administrator', 'Super Administrator']),
+            403,
+            'Only store owners and administrators can update branches.'
+        );
+
         $validated = $request->validate([
             'name' => 'required|string|max:150',
             'code' => 'required|string|max:50',
@@ -288,8 +308,14 @@ class OutletController extends Controller
     /**
      * Delete an outlet.
      */
-    public function destroy(Outlet $outlet): RedirectResponse
+    public function destroy(Request $request, Outlet $outlet): RedirectResponse
     {
+        abort_unless(
+            $request->user()->can('branches.manage') || $request->user()->hasRole(['Shop Owner', 'Administrator', 'Super Administrator']),
+            403,
+            'Only store owners and administrators can delete branches.'
+        );
+
         if ($outlet->is_main) {
             return redirect()->back()->with('error', 'Cannot delete the primary Main Branch of your shop.');
         }
@@ -337,8 +363,14 @@ class OutletController extends Controller
     /**
      * Set this outlet as the primary/main branch.
      */
-    public function toggleMain(Outlet $outlet): RedirectResponse
+    public function toggleMain(Request $request, Outlet $outlet): RedirectResponse
     {
+        abort_unless(
+            $request->user()->can('branches.manage') || $request->user()->hasRole(['Shop Owner', 'Administrator', 'Super Administrator']),
+            403,
+            'Only store owners and administrators can designate the primary main branch.'
+        );
+
         if ($outlet->approval_status !== 'approved') {
             return redirect()->back()->with('error', "Cannot set '{$outlet->name}' as Main Branch because it is pending Super Admin approval.");
         }

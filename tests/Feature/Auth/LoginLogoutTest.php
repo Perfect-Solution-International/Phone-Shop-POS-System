@@ -132,6 +132,40 @@ test('customer logging in redirects directly to customer care portal', function 
     $response->assertRedirect(route('customer.portal'));
 });
 
+test('cashier logging in redirects directly to pos counter', function (): void {
+    $shop = Shop::factory()->create();
+    $cashier = User::factory()->create(['shop_id' => $shop->id, 'password' => bcrypt('password')]);
+    $cashier->assignRole('Cashier');
+
+    $response = $this->post('/login', [
+        'email' => $cashier->email,
+        'password' => 'password',
+    ]);
+
+    $response->assertRedirect(route('shop.pos'));
+});
+
+test('technician logging in redirects directly to repairs workbench', function (): void {
+    $shop = Shop::factory()->create();
+    $tech = User::factory()->create(['shop_id' => $shop->id, 'password' => bcrypt('password')]);
+    $tech->assignRole('Technician');
+
+    $response = $this->post('/login', [
+        'email' => $tech->email,
+        'password' => 'password',
+    ]);
+
+    $response->assertRedirect(route('shop.repairs'));
+});
+
+test('staff login convenience route loads login view with staff initial mode', function (): void {
+    $response = $this->get('/staff/login');
+
+    $response->assertOk();
+    $response->assertViewHas('initialMode', 'staff');
+    $response->assertSee('Staff &amp; Cashier Portal', false);
+});
+
 test('get request to logout terminates session and redirects to login with success flash', function (): void {
     $user = User::factory()->create();
     $this->actingAs($user, 'web');

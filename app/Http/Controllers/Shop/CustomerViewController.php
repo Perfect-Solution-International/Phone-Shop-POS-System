@@ -166,7 +166,7 @@ class CustomerViewController extends Controller
         });
 
         $remainingDebt = max(0, $currentBalance - $amount);
-        return redirect()->route('shop.customers')
+        return redirect()->back()
             ->with('success', "Debt payment of LKR " . number_format($amount, 2) . " received successfully from '{$customer->name}'! Remaining Debt: LKR " . number_format($remainingDebt, 2));
     }
 }

@@ -159,6 +159,16 @@
                                     WA
                                 </a>
                             @endif
+                            @if(in_array($sale->status, ['credit', 'partial']) && $sale->customer && (float) $sale->customer->balance > 0)
+                                <button type="button" 
+                                        class="btn btn-sm" 
+                                        onclick="openSettleDebtModal({{ $sale->customer->id }}, '{{ addslashes($sale->customer->name) }}', {{ (float) $sale->customer->balance }}, '{{ $sale->invoice_number }}')" 
+                                        title="Settle Customer Debt" 
+                                        style="background: #10b981; color: #ffffff; padding: 0.35rem 0.55rem; font-size: 0.75rem; display: inline-flex; align-items: center; gap: 0.35rem; font-weight: 700; border-radius: 4px;">
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
+                                    <span>Settle</span>
+                                </button>
+                            @endif
                             <button type="button" 
                                     class="btn btn-secondary btn-sm" 
                                     onclick='viewInvoiceModal({{ $sale->id }})' 
@@ -253,6 +263,15 @@
                             WA
                         </a>
                     @endif
+                    @if(in_array($sale->status, ['credit', 'partial']) && $sale->customer && (float) $sale->customer->balance > 0)
+                        <button type="button" 
+                                class="btn btn-sm" 
+                                onclick="openSettleDebtModal({{ $sale->customer->id }}, '{{ addslashes($sale->customer->name) }}', {{ (float) $sale->customer->balance }}, '{{ $sale->invoice_number }}')" 
+                                style="background: #10b981; color: #ffffff; padding: 0.4rem 0.6rem; font-size: 0.75rem; border-radius: 6px; font-weight: 700; display: inline-flex; align-items: center; gap: 0.35rem;">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
+                            <span>Settle</span>
+                        </button>
+                    @endif
                     <button type="button" class="btn btn-secondary btn-sm" onclick='viewInvoiceModal({{ $sale->id }})' style="font-size: 0.75rem; padding: 0.4rem 0.65rem; border-radius: 6px;">
                         Details
                     </button>
@@ -296,6 +315,60 @@
                 <button type="button" class="btn btn-secondary btn-sm" onclick="closeModal('invoiceDetailsModal')">Close</button>
             </div>
         </div>
+    </div>
+</div>
+
+<!-- Modal: Settle Customer Debt -->
+<div class="modal-backdrop" id="settleDebtModal">
+    <div class="modal-box" style="max-width: 480px;">
+        <div class="modal-header">
+            <h3 style="display: flex; align-items: center; gap: 0.5rem;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" style="color: #059669;"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
+                <span>Settle Customer Outstanding Debt</span>
+            </h3>
+            <button type="button" class="modal-close" onclick="closeModal('settleDebtModal')">&times;</button>
+        </div>
+        <form method="POST" id="settleDebtForm" action="">
+            @csrf
+            <div class="modal-body" style="display: flex; flex-direction: column; gap: 1rem;">
+                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.85rem;">
+                    <div style="font-size: 0.75rem; color: #64748b; font-weight: 650; text-transform: uppercase;">Customer Name</div>
+                    <div id="debtCustomerName" style="font-size: 1rem; font-weight: 750; color: #0f172a;">-</div>
+                    <div style="margin-top: 0.4rem; display: flex; justify-content: space-between; align-items: center;">
+                        <span style="font-size: 0.75rem; color: #64748b;">Current Outstanding Debt:</span>
+                        <strong id="debtCurrentBalance" style="color: #b91c1c; font-size: 1.05rem;">LKR 0.00</strong>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Payment Amount (LKR) *</label>
+                    <input type="number" step="0.01" name="amount" id="debtAmountInput" class="form-control" required min="0.01" placeholder="Enter amount to settle">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Payment Method *</label>
+                    <select name="payment_method" class="form-control" required>
+                        <option value="cash">Cash (Updates Daily Cashbook)</option>
+                        <option value="card">Card Payment</option>
+                        <option value="bank_transfer">Bank Transfer</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Reference / Slip Number (Optional)</label>
+                    <input type="text" name="reference" id="debtReferenceInput" class="form-control" placeholder="e.g. Counter Payment, Receipt #">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Notes (Optional)</label>
+                    <input type="text" name="notes" class="form-control" placeholder="Settlement notes">
+                </div>
+            </div>
+            <div class="modal-footer" style="padding: 1rem 1.5rem; display: flex; justify-content: flex-end; gap: 0.5rem; border-top: 1px solid #e2e8f0;">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('settleDebtModal')">Cancel</button>
+                <button type="submit" class="btn btn-primary" style="background: #10b981; border-color: #10b981;">Confirm Settlement</button>
+            </div>
+        </form>
     </div>
 </div>
 
@@ -435,6 +508,16 @@
             printWindow.print();
             printWindow.close();
         }, 300);
+    }
+
+    function openSettleDebtModal(customerId, customerName, currentBalance, invoiceNumber) {
+        document.getElementById('settleDebtForm').action = `/shop/customers/${customerId}/settle-debt`;
+        document.getElementById('debtCustomerName').innerText = customerName;
+        document.getElementById('debtCurrentBalance').innerText = 'LKR ' + parseFloat(currentBalance).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        document.getElementById('debtAmountInput').value = parseFloat(currentBalance).toFixed(2);
+        document.getElementById('debtAmountInput').max = parseFloat(currentBalance).toFixed(2);
+        document.getElementById('debtReferenceInput').value = `Settlement for ${invoiceNumber}`;
+        openModal('settleDebtModal');
     }
 </script>
 @endpush

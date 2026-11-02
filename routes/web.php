@@ -14,6 +14,8 @@ Route::post('/track-repair/approve', [\App\Http\Controllers\PublicRepairTracking
 
 // Authentication (Login / Logout)
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
+Route::get('/staff/login', [AuthController::class, 'showLogin'])->name('staff.login');
+Route::get('/staff', fn () => redirect()->route('login', ['type' => 'staff']));
 Route::post('/login', [AuthController::class, 'browserLogin'])->middleware('throttle:login')->name('login.store');
 Route::match(['get', 'post'], '/logout', [AuthController::class, 'logout'])->name('logout');
 
@@ -39,6 +41,7 @@ Route::view('/app/{path?}', 'layouts.master')->middleware(['auth', 'verified'])-
 // Customer Care Portal (Repairs, Warranties, Invoices)
 Route::prefix('portal')->name('customer.')->middleware(['auth', 'verified', 'shop'])->group(function (): void {
     Route::get('/', [\App\Http\Controllers\CustomerPortal\PortalController::class, 'index'])->name('portal');
+    Route::post('/buy', [\App\Http\Controllers\CustomerPortal\PortalController::class, 'buy'])->name('buy');
     Route::get('/repairs/{repair}', [\App\Http\Controllers\CustomerPortal\PortalController::class, 'repair'])->name('repairs.show');
     Route::post('/repairs/{repair}/estimate/approve', [\App\Http\Controllers\CustomerPortal\PortalController::class, 'approveEstimate'])->name('repairs.estimate.approve');
     Route::post('/repairs/{repair}/estimate/decline', [\App\Http\Controllers\CustomerPortal\PortalController::class, 'declineEstimate'])->name('repairs.estimate.decline');

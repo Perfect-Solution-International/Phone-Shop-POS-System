@@ -30,7 +30,28 @@ class CashbookViewController extends Controller
             ->get();
         $totalRepairCashIn = (float) $repairAdvances->sum('advance_amount');
 
-        $totalCashIn = $totalSalesCashIn + $totalRepairCashIn;
+        // Repair delivery final balance cash collected
+        $repairDeliveries = RepairJob::with('customer')
+            ->whereNotNull('delivered_at')
+            ->whereDate('delivered_at', $selectedDate)
+            ->where('final_cost', '>', 0)
+            ->get()
+            ->filter(function ($job) {
+                return (float) $job->final_cost > (float) $job->advance_amount;
+            });
+        $totalRepairDeliveriesCashIn = (float) $repairDeliveries->sum(function ($job) {
+            return max(0, (float) $job->final_cost - (float) $job->advance_amount);
+        });
+
+        // Customer Debt settlement cash collected
+        $debtPayments = \App\Models\CustomerDebtPayment::with('customer')
+            ->where('payment_method', 'cash')
+            ->whereDate('payment_date', $selectedDate)
+            ->latest()
+            ->get();
+        $totalDebtPaymentsCashIn = (float) $debtPayments->sum('amount');
+
+        $totalCashIn = $totalSalesCashIn + $totalRepairCashIn + $totalRepairDeliveriesCashIn + $totalDebtPaymentsCashIn;
 
         // Cash Outflow for the date
         $cashExpenses = Expense::where('payment_method', 'cash')
@@ -56,6 +77,10 @@ class CashbookViewController extends Controller
             'totalSalesCashIn',
             'repairAdvances',
             'totalRepairCashIn',
+            'repairDeliveries',
+            'totalRepairDeliveriesCashIn',
+            'debtPayments',
+            'totalDebtPaymentsCashIn',
             'totalCashIn',
             'cashExpenses',
             'totalCashExpenses',

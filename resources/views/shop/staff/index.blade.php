@@ -6,20 +6,25 @@
 @section('content')
 <!-- Store Management Unified Sub-Navigation Tabs -->
 <div class="shop-subnav-tabs no-print" style="display: flex; gap: 0.45rem; margin-bottom: 1.1rem; border-bottom: 2px solid #e2e8f0; padding-bottom: 0.75rem; overflow-x: auto; align-items: center;">
-    <a href="{{ route('shop.outlets.index') }}" class="btn btn-sm {{ request()->routeIs('shop.outlets*') ? 'btn-primary' : 'btn-secondary' }}" style="border-radius: 8px; font-weight: 700; display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.45rem 0.85rem; text-decoration: none; white-space: nowrap;">
-        🏢 Outlets &amp; Branches
+    <a href="{{ route('shop.outlets.index') }}" class="btn btn-sm {{ request()->routeIs('shop.outlets*') ? 'btn-primary' : 'btn-secondary' }}" style="border-radius: 8px; font-weight: 700; display: inline-flex; align-items: center; gap: 0.45rem; padding: 0.45rem 0.85rem; text-decoration: none; white-space: nowrap;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 21h18"></path><path d="M5 21V7l8-4v18"></path><path d="M19 21V11l-6-3"></path><line x1="9" y1="9" x2="9" y2="9.01"></line><line x1="9" y1="13" x2="9" y2="13.01"></line><line x1="9" y1="17" x2="9" y2="17.01"></line></svg>
+        <span>Outlets &amp; Branches</span>
     </a>
-    <a href="{{ route('shop.transfers.index') }}" class="btn btn-sm {{ request()->routeIs('shop.transfers*') ? 'btn-primary' : 'btn-secondary' }}" style="border-radius: 8px; font-weight: 700; display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.45rem 0.85rem; text-decoration: none; white-space: nowrap;">
-        🔄 Branch Transfers
+    <a href="{{ route('shop.transfers.index') }}" class="btn btn-sm {{ request()->routeIs('shop.transfers*') ? 'btn-primary' : 'btn-secondary' }}" style="border-radius: 8px; font-weight: 700; display: inline-flex; align-items: center; gap: 0.45rem; padding: 0.45rem 0.85rem; text-decoration: none; white-space: nowrap;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M16 3h5v5"></path><path d="M4 20L21 3"></path><path d="M21 16v5h-5"></path><path d="M15 15l6 6"></path><path d="M4 4l5 5"></path></svg>
+        <span>Branch Transfers</span>
     </a>
-    <a href="{{ route('shop.staff') }}" class="btn btn-sm {{ request()->routeIs('shop.staff*') ? 'btn-primary' : 'btn-secondary' }}" style="border-radius: 8px; font-weight: 700; display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.45rem 0.85rem; text-decoration: none; white-space: nowrap;">
-        👔 Staff &amp; Payroll
+    <a href="{{ route('shop.staff') }}" class="btn btn-sm {{ request()->routeIs('shop.staff*') ? 'btn-primary' : 'btn-secondary' }}" style="border-radius: 8px; font-weight: 700; display: inline-flex; align-items: center; gap: 0.45rem; padding: 0.45rem 0.85rem; text-decoration: none; white-space: nowrap;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+        <span>Staff &amp; Payroll</span>
     </a>
-    <a href="{{ route('shop.subscription.index') }}" class="btn btn-sm {{ request()->routeIs('shop.subscription*') ? 'btn-primary' : 'btn-secondary' }}" style="border-radius: 8px; font-weight: 700; display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.45rem 0.85rem; text-decoration: none; white-space: nowrap;">
-        💳 Subscription &amp; Billing
+    <a href="{{ route('shop.subscription.index') }}" class="btn btn-sm {{ request()->routeIs('shop.subscription*') ? 'btn-primary' : 'btn-secondary' }}" style="border-radius: 8px; font-weight: 700; display: inline-flex; align-items: center; gap: 0.45rem; padding: 0.45rem 0.85rem; text-decoration: none; white-space: nowrap;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
+        <span>Subscription &amp; Billing</span>
     </a>
-    <a href="{{ route('shop.settings') }}" class="btn btn-sm {{ request()->routeIs('shop.settings*') ? 'btn-primary' : 'btn-secondary' }}" style="border-radius: 8px; font-weight: 700; display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.45rem 0.85rem; text-decoration: none; white-space: nowrap;">
-        ⚙️ Store Settings
+    <a href="{{ route('shop.settings') }}" class="btn btn-sm {{ request()->routeIs('shop.settings*') ? 'btn-primary' : 'btn-secondary' }}" style="border-radius: 8px; font-weight: 700; display: inline-flex; align-items: center; gap: 0.45rem; padding: 0.45rem 0.85rem; text-decoration: none; white-space: nowrap;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+        <span>Store Settings</span>
     </a>
 </div>
 
@@ -143,12 +148,33 @@
                         @endif
                     </td>
                     <td style="text-align: right; white-space: nowrap;">
-                        <button type="button" class="btn btn-secondary btn-sm" onclick='openEditEmployeeModal(@json($emp))' style="padding: 0.3rem 0.6rem;">Edit</button>
-                        <form action="{{ route('shop.staff.employees.destroy', $emp) }}" method="POST" style="display: inline-block;" onsubmit="return confirm('Archive staff member {{ $emp->name }}?');">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn btn-sm" style="background: #fee2e2; color: #b91c1c; border: 1px solid #fecaca; padding: 0.3rem 0.6rem;">Archive</button>
-                        </form>
+                        <div style="display: inline-flex; align-items: center; gap: 0.45rem;">
+                            <button type="button" 
+                                    class="btn btn-sm" 
+                                    onclick='openEditEmployeeModal(@json($emp))' 
+                                    title="Edit employee details and login credentials" 
+                                    style="padding: 0.35rem 0.75rem; font-size: 0.8125rem; font-weight: 600; background: #ffffff; border: 1.5px solid #cbd5e1; color: #334155; border-radius: 8px; display: inline-flex; align-items: center; gap: 0.35rem; cursor: pointer; transition: all 0.15s ease;">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                                </svg>
+                                <span>Edit</span>
+                            </button>
+
+                            <button type="button" 
+                                    class="btn btn-sm" 
+                                    onclick='confirmDeleteEmployee(@json($emp))' 
+                                    title="Delete staff member" 
+                                    style="padding: 0.35rem 0.75rem; font-size: 0.8125rem; font-weight: 600; background: #fef2f2; border: 1.5px solid #fecaca; color: #dc2626; border-radius: 8px; display: inline-flex; align-items: center; gap: 0.35rem; cursor: pointer; transition: all 0.15s ease;">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                                    <polyline points="3 6 5 6 21 6"></polyline>
+                                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                    <line x1="10" y1="11" x2="10" y2="17"></line>
+                                    <line x1="14" y1="11" x2="14" y2="17"></line>
+                                </svg>
+                                <span>Delete</span>
+                            </button>
+                        </div>
                     </td>
                 </tr>
                 @empty
@@ -588,6 +614,24 @@
 <!-- TAB 5: USERS & ROLES                       -->
 <!-- ========================================== -->
 @if($tab === 'roles')
+<!-- Staff Login Portal Banner -->
+<div style="background: linear-gradient(135deg, #eef2ff 0%, #f0fdf4 100%); border: 1.5px solid #c7d2fe; border-radius: 12px; padding: 1.15rem 1.35rem; margin-bottom: 1.35rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
+    <div>
+        <div style="font-weight: 700; color: #1e1b4b; font-size: 0.95rem; display: flex; align-items: center; gap: 0.45rem;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" style="color: #4f46e5;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+            Staff Login Portal Access &amp; Workspace Routing
+        </div>
+        <p style="font-size: 0.8125rem; color: #475569; margin: 0.35rem 0 0;">
+            Staff members (Cashiers, Technicians, Managers) log in using their credentials at <strong><code style="color: #4338ca; background: #fff; padding: 2px 6px; border-radius: 4px; border: 1px solid #cbd5e1;">{{ url('/login') }}</code></strong> or <strong><code style="color: #4338ca; background: #fff; padding: 2px 6px; border-radius: 4px; border: 1px solid #cbd5e1;">{{ url('/staff/login') }}</code></strong>.
+            Their workspace automatically opens according to their assigned role.
+        </p>
+    </div>
+    <button type="button" class="btn btn-secondary btn-sm" onclick="copyStaffPortalUrl()" style="display: inline-flex; align-items: center; gap: 0.4rem; font-weight: 700; background: #ffffff; border: 1px solid #cbd5e1;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+        <span id="copyPortalBtnText">Copy Staff Portal URL</span>
+    </button>
+</div>
+
 <div class="card">
     <div class="card-header">
         <div>
@@ -603,6 +647,7 @@
                     <th>Login Email</th>
                     <th>Phone</th>
                     <th>Assigned Role</th>
+                    <th>Assigned Portal Workspace</th>
                     <th>Account Status</th>
                 </tr>
             </thead>
@@ -622,6 +667,34 @@
                         @foreach($u->roles as $r)
                             <span class="badge badge-purple">{{ $r->name }}</span>
                         @endforeach
+                    </td>
+                    <td>
+                        @php
+                            $roleName = $u->roles->first()->name ?? 'User';
+                        @endphp
+                        @if($roleName === 'Cashier')
+                            <span class="badge" style="background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; font-weight: 600; display: inline-flex; align-items: center; gap: 0.35rem;">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+                                <span>POS Counter (<code>/shop/pos</code>)</span>
+                            </span>
+                        @elseif($roleName === 'Technician')
+                            <span class="badge" style="background: #fef3c7; color: #92400e; border: 1px solid #fde68a; font-weight: 600; display: inline-flex; align-items: center; gap: 0.35rem;">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>
+                                <span>Repairs Desk (<code>/shop/repairs</code>)</span>
+                            </span>
+                        @elseif($roleName === 'Stock Manager' || $roleName === 'Stock Keeper')
+                            <span class="badge" style="background: #f3e8ff; color: #6b21a8; border: 1px solid #e9d5ff; font-weight: 600; display: inline-flex; align-items: center; gap: 0.35rem;">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>
+                                <span>Stock Inventory (<code>/shop/phones</code>)</span>
+                            </span>
+                        @elseif($roleName === 'Shop Owner' || $roleName === 'Shop Manager' || $roleName === 'Administrator')
+                            <span class="badge" style="background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; font-weight: 600; display: inline-flex; align-items: center; gap: 0.35rem;">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="7" height="9"></rect><rect x="14" y="3" width="7" height="5"></rect><rect x="14" y="12" width="7" height="9"></rect><rect x="3" y="16" width="7" height="6"></rect></svg>
+                                <span>Dashboard (<code>/shop/dashboard</code>)</span>
+                            </span>
+                        @else
+                            <span class="badge badge-secondary">{{ $roleName }}</span>
+                        @endif
                     </td>
                     <td>
                         <span class="badge badge-success">Active Login</span>
@@ -691,11 +764,19 @@
                     <input type="date" name="joined_on" id="inpEmpJoined" class="form-control" required value="{{ date('Y-m-d') }}">
                 </div>
 
-                <!-- Create Login User checkbox (for new employees) -->
-                <div id="createUserSection" style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem; margin-top: 1rem;">
+                <div class="form-group" id="grpEmpStatus" style="display: none;">
+                    <label>Employment Status</label>
+                    <select name="is_active" id="inpEmpIsActive" class="form-control">
+                        <option value="1">Active</option>
+                        <option value="0">Inactive / On Leave</option>
+                    </select>
+                </div>
+
+                <!-- Create Login User checkbox (for new employees or update login) -->
+                <div id="createUserSection" style="background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 10px; padding: 1.15rem; margin-top: 1rem;">
                     <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem;">
                         <input type="checkbox" name="create_user_account" value="1" id="chkCreateUser" onchange="toggleUserAccountFields(this.checked)">
-                        <label for="chkCreateUser" style="font-weight: 700; margin: 0; cursor: pointer; color: #0f172a;">
+                        <label for="chkCreateUser" id="lblCreateUser" style="font-weight: 700; margin: 0; cursor: pointer; color: #0f172a; font-size: 0.9375rem;">
                             Create POS / Panel Login Account for this Staff Member
                         </label>
                     </div>
@@ -703,15 +784,25 @@
                         <div class="form-row">
                             <div class="form-group">
                                 <label>System Permission Role *</label>
-                                <select name="user_role" class="form-control">
-                                    <option value="Cashier">Cashier (POS &amp; Invoices only)</option>
-                                    <option value="Technician">Technician (Repairs only)</option>
+                                <select name="user_role" id="selUserRole" class="form-control">
+                                    <option value="Cashier">Cashier (POS &amp; Sold Invoices)</option>
+                                    <option value="Technician">Technician (Repairs &amp; Service Workbench)</option>
+                                    <option value="Stock Manager">Stock Manager (Inventory &amp; Phones)</option>
                                     <option value="Shop Manager">Shop Manager (Operations &amp; Reports)</option>
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label>Initial Password *</label>
-                                <input type="password" name="password" class="form-control" placeholder="Password123!">
+                                <label id="lblStaffPassword">Initial Password *</label>
+                                <div style="position: relative;">
+                                    <input type="password" name="password" id="inpStaffPassword" class="form-control" placeholder="Password123!" style="padding-right: 2.5rem;">
+                                    <button type="button" onclick="toggleStaffPasswordVisibility()" style="position: absolute; right: 0.5rem; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: #64748b; padding: 0.25rem;" aria-label="Toggle password">
+                                        <svg id="eyeStaffShow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                                        <svg id="eyeStaffHide" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: none;"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+                                    </button>
+                                </div>
+                                <div id="hintPasswordEdit" style="display: none; font-size: 0.72rem; color: #64748b; margin-top: 0.25rem;">
+                                    Leave blank to keep current password.
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -719,8 +810,53 @@
             </div>
             <div style="padding: 1rem 1.5rem; border-top: 1px solid var(--surface-border); display: flex; justify-content: flex-end; gap: 0.5rem;">
                 <button type="button" class="btn btn-secondary" onclick="closeModal('employeeModal')">Cancel</button>
-                <button type="submit" class="btn btn-primary">Save Staff Member</button>
+                <button type="submit" id="btnSubmitEmpForm" class="btn btn-primary">Save Staff Member</button>
             </div>
+        </form>
+    </div>
+</div>
+
+<!-- User-Friendly Delete Confirmation Modal -->
+<div class="modal-backdrop" id="deleteEmployeeModal">
+    <div class="modal-box" style="max-width: 440px; border-radius: 14px; overflow: hidden; padding: 0;">
+        <div style="padding: 1.5rem; text-align: center;">
+            <div style="width: 54px; height: 54px; border-radius: 50%; background: #fee2e2; color: #dc2626; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 1rem;">
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                    <line x1="10" y1="11" x2="10" y2="17"></line>
+                    <line x1="14" y1="11" x2="14" y2="17"></line>
+                </svg>
+            </div>
+            <h3 style="font-size: 1.2rem; font-weight: 800; color: #0f172a; margin-bottom: 0.5rem;">Delete Staff Member?</h3>
+            <p style="font-size: 0.875rem; color: #64748b; margin-bottom: 1rem; line-height: 1.5;">
+                Are you sure you want to delete <strong id="delEmpNameText" style="color: #0f172a;"></strong> (<span id="delEmpCodeText" style="font-family: monospace; color: #4f46e5;"></span>)?
+            </p>
+            <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.75rem 1rem; font-size: 0.8rem; color: #475569; margin-bottom: 1.25rem; text-align: left;">
+                <div style="font-weight: 700; color: #dc2626; margin-bottom: 0.35rem; display: inline-flex; align-items: center; gap: 0.35rem;">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                    <span>Important Notice:</span>
+                </div>
+                <div>&bull; Staff member directory profile will be removed.</div>
+                <div>&bull; Any associated POS &amp; system login access will be revoked.</div>
+            </div>
+
+            <form id="deleteEmployeeForm" method="POST" action="">
+                @csrf
+                @method('DELETE')
+                <div style="display: flex; gap: 0.75rem; justify-content: center;">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('deleteEmployeeModal')" style="flex: 1; padding: 0.65rem 1rem; font-weight: 600;">
+                        Cancel
+                    </button>
+                    <button type="submit" class="btn btn-danger" style="flex: 1; padding: 0.65rem 1rem; font-weight: 700; background: #dc2626; border-color: #dc2626; display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem;">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                        Yes, Delete
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
         </form>
     </div>
 </div>
@@ -1044,6 +1180,15 @@
         document.getElementById('empMethodPut').innerHTML = '';
         form.reset();
         document.getElementById('createUserSection').style.display = 'block';
+        document.getElementById('chkCreateUser').checked = false;
+        document.getElementById('lblCreateUser').innerText = 'Create POS / Panel Login Account for this Staff Member';
+        document.getElementById('userAccountFields').style.display = 'none';
+        document.getElementById('lblStaffPassword').innerText = 'Initial Password *';
+        document.getElementById('inpStaffPassword').value = '';
+        document.getElementById('inpStaffPassword').placeholder = 'Password123!';
+        document.getElementById('hintPasswordEdit').style.display = 'none';
+        document.getElementById('grpEmpStatus').style.display = 'none';
+        document.getElementById('btnSubmitEmpForm').innerText = 'Save Staff Member';
         openModal('employeeModal');
     }
 
@@ -1059,13 +1204,98 @@
         document.getElementById('inpEmpOutlet').value = emp.outlet_id || '';
         document.getElementById('inpEmpSalary').value = emp.basic_salary || '0.00';
         document.getElementById('inpEmpJoined').value = emp.joined_on || '';
-        document.getElementById('createUserSection').style.display = 'none';
+        
+        // Employment Status
+        document.getElementById('grpEmpStatus').style.display = 'block';
+        document.getElementById('inpEmpIsActive').value = emp.is_active ? '1' : '0';
+
+        // User Account Login Settings
+        document.getElementById('createUserSection').style.display = 'block';
+        if (emp.user_id) {
+            document.getElementById('chkCreateUser').checked = true;
+            document.getElementById('lblCreateUser').innerText = '🔑 System Login Account Active (Update Role / Reset Password)';
+            document.getElementById('userAccountFields').style.display = 'block';
+            document.getElementById('lblStaffPassword').innerText = 'New Password (Optional)';
+            document.getElementById('inpStaffPassword').value = '';
+            document.getElementById('inpStaffPassword').placeholder = 'Leave blank to keep current password';
+            document.getElementById('hintPasswordEdit').style.display = 'block';
+            if (emp.user && emp.user.roles && emp.user.roles.length > 0) {
+                document.getElementById('selUserRole').value = emp.user.roles[0].name;
+            }
+        } else {
+            document.getElementById('chkCreateUser').checked = false;
+            document.getElementById('lblCreateUser').innerText = 'Create POS / Panel Login Account for this Staff Member';
+            document.getElementById('userAccountFields').style.display = 'none';
+            document.getElementById('lblStaffPassword').innerText = 'Initial Password *';
+            document.getElementById('inpStaffPassword').value = '';
+            document.getElementById('inpStaffPassword').placeholder = 'Password123!';
+            document.getElementById('hintPasswordEdit').style.display = 'none';
+        }
+
+        document.getElementById('btnSubmitEmpForm').innerText = 'Update Staff Member';
         openModal('employeeModal');
+    }
+
+    function confirmDeleteEmployee(emp) {
+        document.getElementById('delEmpNameText').innerText = emp.name;
+        document.getElementById('delEmpCodeText').innerText = emp.employee_code || '';
+        const form = document.getElementById('deleteEmployeeForm');
+        form.action = `/shop/staff/employees/${emp.id}`;
+        openModal('deleteEmployeeModal');
     }
 
     function toggleUserAccountFields(checked) {
         document.getElementById('userAccountFields').style.display = checked ? 'block' : 'none';
     }
+
+    function toggleStaffPasswordVisibility() {
+        const inp = document.getElementById('inpStaffPassword');
+        const show = document.getElementById('eyeStaffShow');
+        const hide = document.getElementById('eyeStaffHide');
+        if (!inp) return;
+        if (inp.type === 'password') {
+            inp.type = 'text';
+            if (show) show.style.display = 'none';
+            if (hide) hide.style.display = 'inline-block';
+        } else {
+            inp.type = 'password';
+            if (show) show.style.display = 'inline-block';
+            if (hide) hide.style.display = 'none';
+        }
+    }
+
+    function copyStaffPortalUrl() {
+        const url = "{{ url('/login') }}";
+        if (navigator.clipboard) {
+            navigator.clipboard.writeText(url).then(() => {
+                const btnText = document.getElementById('copyPortalBtnText');
+                if (btnText) {
+                    btnText.innerText = '✓ Copied URL!';
+                    setTimeout(() => { btnText.innerText = 'Copy Staff Portal URL'; }, 2500);
+                }
+            });
+        }
+    }
+
+    // Auto-sync position designation with permission role
+    document.addEventListener('DOMContentLoaded', function() {
+        const posSelect = document.getElementById('inpEmpPosition');
+        const roleSelect = document.getElementById('selUserRole');
+        if (posSelect && roleSelect) {
+            posSelect.addEventListener('change', function() {
+                const pos = posSelect.value;
+                if (pos === 'Cashier' || pos === 'Sales Assistant') {
+                    roleSelect.value = 'Cashier';
+                } else if (pos.includes('Technician')) {
+                    roleSelect.value = 'Technician';
+                } else if (pos.includes('Stock') || pos.includes('Inventory')) {
+                    roleSelect.value = 'Stock Manager';
+                } else if (pos.includes('Manager')) {
+                    roleSelect.value = 'Shop Manager';
+                }
+            });
+        }
+    });
 
     function openAutoPayrollModal() {
         openModal('autoPayrollModal');

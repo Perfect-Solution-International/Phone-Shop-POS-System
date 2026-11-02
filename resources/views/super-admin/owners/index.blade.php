@@ -421,7 +421,10 @@
                                 <label id="optMethodCard" style="border: 2px solid #4f46e5; background: #eef2ff; border-radius: 8px; padding: 0.75rem; cursor: pointer; display: flex; align-items: flex-start; gap: 0.5rem; transition: all 0.15s ease;">
                                     <input type="radio" name="payment_method" value="card" checked onchange="switchOwnerPaymentMethod('card')" style="margin-top: 0.2rem; cursor: pointer;">
                                     <div>
-                                        <div style="font-weight: 750; font-size: 0.85rem; color: #3730a3;">💳 Credit / Debit Card</div>
+                                        <div style="font-weight: 750; font-size: 0.85rem; color: #3730a3; display: inline-flex; align-items: center; gap: 0.35rem;">
+                                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
+                                            <span>Credit / Debit Card</span>
+                                        </div>
                                         <div style="font-size: 0.73rem; color: #6366f1;">Instant verification &amp; active store</div>
                                     </div>
                                 </label>
@@ -430,7 +433,10 @@
                                 <label id="optMethodBank" style="border: 1.5px solid #cbd5e1; background: #ffffff; border-radius: 8px; padding: 0.75rem; cursor: pointer; display: flex; align-items: flex-start; gap: 0.5rem; transition: all 0.15s ease;">
                                     <input type="radio" name="payment_method" value="bank_transfer" onchange="switchOwnerPaymentMethod('bank_transfer')" style="margin-top: 0.2rem; cursor: pointer;">
                                     <div>
-                                        <div style="font-weight: 750; font-size: 0.85rem; color: #1e293b;">🏦 Bank Transfer Slip</div>
+                                        <div style="font-weight: 750; font-size: 0.85rem; color: #1e293b; display: inline-flex; align-items: center; gap: 0.35rem;">
+                                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 21h18"></path><path d="M5 21V10l7-5 7 5v11"></path><line x1="9" y1="14" x2="9" y2="17"></line><line x1="15" y1="14" x2="15" y2="17"></line></svg>
+                                            <span>Bank Transfer Slip</span>
+                                        </div>
                                         <div style="font-size: 0.73rem; color: #64748b;">Upload deposit slip for Bank Approvals</div>
                                     </div>
                                 </label>

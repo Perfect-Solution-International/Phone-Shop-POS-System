@@ -29,6 +29,7 @@ class AuthController extends Controller
             'loginPreviewUrl' => $this->loginPreviewEnabled() ? route('login.preview', [], false) : '',
             'currentUser' => $request->user(),
             'currentDestination' => $request->user() ? $this->destination($request->user()) : null,
+            'initialMode' => ($request->query('type') === 'staff' || $request->routeIs('staff.login')) ? 'staff' : 'owner',
         ]);
     }
 
@@ -174,7 +175,19 @@ class AuthController extends Controller
         }
 
         if ($user->shop_id !== null) {
-            if ($user->hasRole(['Shop Owner', 'Shop Manager', 'Cashier', 'Technician', 'Stock Manager'])) {
+            if ($user->hasRole('Cashier')) {
+                return route('shop.pos');
+            }
+
+            if ($user->hasRole('Technician')) {
+                return route('shop.repairs');
+            }
+
+            if ($user->hasRole(['Stock Manager', 'Stock Keeper'])) {
+                return route('shop.phones');
+            }
+
+            if ($user->hasRole(['Shop Owner', 'Shop Manager'])) {
                 return route('shop.dashboard');
             }
 

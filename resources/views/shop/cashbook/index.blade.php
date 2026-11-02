@@ -246,7 +246,45 @@
                     @empty
                     @endforelse
 
-                    @if($cashSales->isEmpty() && $repairAdvances->isEmpty())
+                    @forelse($repairDeliveries as $repDel)
+                    <tr>
+                        <td>
+                            <div style="display: flex; align-items: center; gap: 0.4rem;">
+                                <span class="badge" style="background: #0284c7; color: #ffffff; font-size: 0.65rem; padding: 0.15rem 0.4rem;">Repair Delivery</span>
+                                <span style="font-size: 0.78rem; font-weight: 600; color: #1e293b;">{{ $repDel->customer->name ?? 'Customer' }}</span>
+                            </div>
+                            <div style="font-size: 0.7rem; color: #64748b; margin-top: 2px;">{{ $repDel->brand }} {{ $repDel->model }} (Final Settlement)</div>
+                        </td>
+                        <td style="font-family: monospace; font-size: 0.78rem; color: #4f46e5;">
+                            {{ $repDel->job_number }}
+                        </td>
+                        <td style="text-align: right; font-weight: 700; color: #166534; font-family: monospace; font-size: 0.8125rem;">
+                            LKR {{ number_format(max(0, (float) $repDel->final_cost - (float) $repDel->advance_amount), 2) }}
+                        </td>
+                    </tr>
+                    @empty
+                    @endforelse
+
+                    @forelse($debtPayments as $dp)
+                    <tr>
+                        <td>
+                            <div style="display: flex; align-items: center; gap: 0.4rem;">
+                                <span class="badge badge-warning" style="font-size: 0.65rem; padding: 0.15rem 0.4rem;">Debt Settlement</span>
+                                <span style="font-size: 0.78rem; font-weight: 600; color: #1e293b;">{{ $dp->customer->name ?? 'Customer' }}</span>
+                            </div>
+                            <div style="font-size: 0.7rem; color: #64748b; margin-top: 2px;">{{ $dp->notes ?? 'Customer outstanding debt payment' }}</div>
+                        </td>
+                        <td style="font-family: monospace; font-size: 0.78rem; color: #4f46e5;">
+                            {{ $dp->reference ?? 'Counter Receipt' }}
+                        </td>
+                        <td style="text-align: right; font-weight: 700; color: #166534; font-family: monospace; font-size: 0.8125rem;">
+                            LKR {{ number_format($dp->amount, 2) }}
+                        </td>
+                    </tr>
+                    @empty
+                    @endforelse
+
+                    @if($cashSales->isEmpty() && $repairAdvances->isEmpty() && $repairDeliveries->isEmpty() && $debtPayments->isEmpty())
                     <tr>
                         <td colspan="3" style="text-align: center; padding: 1.25rem; color: #94a3b8; font-size: 0.8125rem;">
                             No cash received on this date.
