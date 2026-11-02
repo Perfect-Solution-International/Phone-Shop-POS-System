@@ -6,6 +6,37 @@
 @section('content')
 @include('shop.partials.inventory-subnav')
 
+<!-- Summary Stat Cards -->
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.25rem;">
+    <div style="background: #ffffff; border: 1.5px solid #bbf7d0; padding: 0.9rem 1.15rem; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.03); display: flex; align-items: center; justify-content: space-between;">
+        <div>
+            <div style="font-size: 0.72rem; font-weight: 750; color: #166534; text-transform: uppercase; letter-spacing: 0.04em;">Available In Stock</div>
+            <div style="font-size: 1.45rem; font-weight: 900; color: #15803d; margin-top: 2px;">{{ number_format($inStockCount ?? 0) }} <span style="font-size: 0.8rem; font-weight: 600; color: #16a34a;">units</span></div>
+        </div>
+        <div style="width: 40px; height: 40px; border-radius: 10px; background: #dcfce7; color: #16a34a; display: flex; align-items: center; justify-content: center;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+        </div>
+    </div>
+    <div style="background: #ffffff; border: 1.5px solid #fecaca; padding: 0.9rem 1.15rem; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.03); display: flex; align-items: center; justify-content: space-between;">
+        <div>
+            <div style="font-size: 0.72rem; font-weight: 750; color: #991b1b; text-transform: uppercase; letter-spacing: 0.04em;">Sold Out Devices</div>
+            <div style="font-size: 1.45rem; font-weight: 900; color: #b91c1c; margin-top: 2px;">{{ number_format($soldCount ?? 0) }} <span style="font-size: 0.8rem; font-weight: 600; color: #dc2626;">units</span></div>
+        </div>
+        <div style="width: 40px; height: 40px; border-radius: 10px; background: #fee2e2; color: #dc2626; display: flex; align-items: center; justify-content: center;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </div>
+    </div>
+    <div style="background: #ffffff; border: 1.5px solid #e2e8f0; padding: 0.9rem 1.15rem; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.03); display: flex; align-items: center; justify-content: space-between;">
+        <div>
+            <div style="font-size: 0.72rem; font-weight: 750; color: #475569; text-transform: uppercase; letter-spacing: 0.04em;">Total Registered Phones</div>
+            <div style="font-size: 1.45rem; font-weight: 900; color: #0f172a; margin-top: 2px;">{{ number_format($totalCount ?? 0) }} <span style="font-size: 0.8rem; font-weight: 600; color: #64748b;">units</span></div>
+        </div>
+        <div style="width: 40px; height: 40px; border-radius: 10px; background: #f1f5f9; color: #475569; display: flex; align-items: center; justify-content: center;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="5" y="2" width="14" height="20" rx="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
+        </div>
+    </div>
+</div>
+
 <div class="card">
     <div class="card-header" style="flex-wrap: wrap; gap: 1rem;">
         <form method="GET" action="{{ route('shop.phones') }}" style="display: flex; gap: 0.75rem; flex: 1; flex-wrap: wrap;">
@@ -39,9 +70,10 @@
         <table class="data-table">
             <thead>
                 <tr>
-                    <th>Device & Model</th>
-                    <th>IMEI 1 & IMEI 2</th>
+                    <th>Device &amp; Model</th>
+                    <th>IMEI 1 &amp; IMEI 2</th>
                     <th>Specification</th>
+                    <th>In Stock</th>
                     <th>Condition</th>
                     <th>Purchase Cost</th>
                     <th>Selling Price</th>
@@ -106,6 +138,18 @@
                         </span>
                     </td>
                     <td>
+                        @if($phone->status === 'in_stock')
+                            <strong style="font-size: 1rem; color: #15803d;">1</strong>
+                            <span style="font-size: 0.75rem; color: var(--text-muted);">unit</span>
+                        @elseif($phone->status === 'sold')
+                            <strong style="font-size: 1rem; color: #b91c1c;">0</strong>
+                            <span style="font-size: 0.75rem; color: var(--text-muted);">units</span>
+                        @else
+                            <strong style="font-size: 1rem; color: #d97706;">0</strong>
+                            <span style="font-size: 0.75rem; color: var(--text-muted);">units</span>
+                        @endif
+                    </td>
+                    <td>
                         @if($phone->condition === 'new')
                             <span class="badge badge-success">New</span>
                         @elseif($phone->condition === 'used')
@@ -138,14 +182,14 @@
                                         </div>
                                     @endif
                                     <div style="font-size: 0.68rem; color: #4338ca; font-family: monospace; margin-top: 2px;">
-                                        <a href="{{ route('shop.sales.show', $phone->sale) }}" target="_blank" style="text-decoration: underline; color: inherit;">
+                                        <a href="{{ route('shop.sales.show', $phone->sale) }}" style="text-decoration: underline; color: inherit;">
                                             #{{ $phone->sale->invoice_number }}
                                         </a>
                                     </div>
                                 </div>
                             @elseif($phone->sale)
                                 <div style="font-size: 0.7rem; color: #4338ca; margin-top: 2px;">
-                                    <a href="{{ route('shop.sales.show', $phone->sale) }}" target="_blank" style="text-decoration: underline; color: inherit; font-family: monospace;">
+                                    <a href="{{ route('shop.sales.show', $phone->sale) }}" style="text-decoration: underline; color: inherit; font-family: monospace;">
                                         #{{ $phone->sale->invoice_number }}
                                     </a>
                                 </div>
@@ -196,7 +240,7 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="8" style="text-align: center; color: var(--text-muted); padding: 3.5rem 1rem;">
+                    <td colspan="9" style="text-align: center; color: var(--text-muted); padding: 3.5rem 1rem;">
                         <div style="width: 48px; height: 48px; border-radius: 50%; background: #f1f5f9; color: #94a3b8; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 0.75rem;">
                             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
                         </div>
@@ -296,18 +340,24 @@
 
                 <div class="form-row">
                     <div class="form-group">
+                        <label>Stock Quantity *</label>
+                        <input type="number" name="quantity" class="form-control" value="1" min="1" max="500" required>
+                        <small style="font-size: 0.72rem; color: #64748b; margin-top: 3px; display: block;">Default is 1 unit. Enter more to register multiple units in stock.</small>
+                    </div>
+                    <div class="form-group">
                         <label>Serial Number (Optional)</label>
                         <input type="text" name="serial_number" class="form-control" placeholder="Device Serial Number">
                     </div>
-                    <div class="form-group">
-                        <label>Supplier (Optional)</label>
-                        <select name="supplier_id" class="form-control">
-                            <option value="">No Supplier / Store Direct</option>
-                            @foreach($suppliers as $sup)
-                                <option value="{{ $sup->id }}">{{ $sup->name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Supplier (Optional)</label>
+                    <select name="supplier_id" class="form-control">
+                        <option value="">No Supplier / Store Direct</option>
+                        @foreach($suppliers as $sup)
+                            <option value="{{ $sup->id }}">{{ $sup->name }}</option>
+                        @endforeach
+                    </select>
                 </div>
 
                 <!-- Device Image Upload -->
@@ -379,7 +429,7 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label>Status *</label>
-                        <select name="status" id="edit_phone_status" class="form-control" required>
+                        <select name="status" id="edit_phone_status" class="form-control" required onchange="updateEditPhoneStockQty(this.value)">
                             <option value="in_stock">In Stock</option>
                             <option value="reserved">Reserved</option>
                             <option value="sold">Sold</option>
@@ -389,6 +439,13 @@
                         </select>
                     </div>
                     <div class="form-group">
+                        <label>Current Stock Quantity</label>
+                        <input type="text" id="edit_phone_stock_display" class="form-control" readonly style="background: #f8fafc; font-weight: 750;" value="1 unit (In Stock)">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
                         <label>Condition *</label>
                         <select name="condition" id="edit_phone_condition" class="form-control" required>
                             <option value="new">Brand New (Sealed/Official)</option>
@@ -396,13 +453,11 @@
                             <option value="refurbished">Factory Refurbished</option>
                         </select>
                     </div>
-                </div>
-
-                <div class="form-row">
                     <div class="form-group">
                         <label>Color</label>
                         <input type="text" name="color" id="edit_phone_color" class="form-control" placeholder="e.g. Space Black, Titanium">
                     </div>
+                </div>
                     <div class="form-group">
                         <label>Internal Storage</label>
                         <input type="text" name="storage" id="edit_phone_storage" class="form-control" placeholder="e.g. 128GB, 256GB">
@@ -540,6 +595,7 @@
         document.getElementById('edit_phone_selling_price').value = phone.selling_price || '0.00';
         document.getElementById('edit_phone_supplier_id').value = phone.supplier_id || '';
         document.getElementById('edit_phone_notes').value = phone.notes || '';
+        updateEditPhoneStockQty(phone.status || 'in_stock');
 
         // Reset and populate image handling
         document.getElementById('editPhoneRemoveImage').value = '0';
@@ -558,6 +614,21 @@
         }
 
         openModal('editPhoneModal');
+    }
+
+    function updateEditPhoneStockQty(status) {
+        const stockDisplay = document.getElementById('edit_phone_stock_display');
+        if (!stockDisplay) return;
+        if (status === 'in_stock') {
+            stockDisplay.value = '1 unit (In Stock)';
+            stockDisplay.style.color = '#15803d';
+        } else if (status === 'sold') {
+            stockDisplay.value = '0 units (Sold)';
+            stockDisplay.style.color = '#b91c1c';
+        } else {
+            stockDisplay.value = '0 units (' + (status || '') + ')';
+            stockDisplay.style.color = '#d97706';
+        }
     }
 
     // Preview new image in Create Modal

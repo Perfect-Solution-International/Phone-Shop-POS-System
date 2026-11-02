@@ -322,3 +322,34 @@ test('POS direct counter sale captures customer details and immediately deducts 
     expect((float) $sale->total_amount)->toBe(80000.00);
 });
 
+test('shop staff can register multiple phone devices in stock using quantity batching', function (): void {
+    $shop = Shop::factory()->create();
+    $staff = User::factory()->create(['shop_id' => $shop->id]);
+    $staff->assignRole('Stock Manager');
+
+    $response = $this->actingAs($staff, 'web')
+        ->post(route('shop.phones.store'), [
+            'brand' => 'Samsung',
+            'model' => 'Galaxy A15',
+            'imei_1' => '860123456789001',
+            'imei_2' => '860123456789002',
+            'condition' => 'new',
+            'purchase_cost' => 45000.00,
+            'selling_price' => 55000.00,
+            'quantity' => 3,
+        ]);
+
+    $response->assertRedirect(route('shop.phones'));
+    $response->assertSessionHas('success');
+
+    // Verify 3 distinct devices created with unique IMEIs
+    $devices = PhoneDevice::withoutGlobalScopes()
+        ->where('shop_id', $shop->id)
+        ->where('model', 'Galaxy A15')
+        ->get();
+
+    expect($devices)->toHaveCount(3);
+    expect($devices->pluck('status')->unique()->toArray())->toBe(['in_stock']);
+    expect($devices->pluck('imei_1')->unique())->toHaveCount(3);
+});
+

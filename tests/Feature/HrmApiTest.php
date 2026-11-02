@@ -8,6 +8,7 @@ use App\Models\Payroll;
 use App\Models\Platform\Shop;
 use App\Models\User;
 use Database\Seeders\DatabaseSeeder;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Laravel\Sanctum\Sanctum;
 
@@ -283,5 +284,5 @@ test('administrator provisioning creates a shop role and hashed credentials', fu
     $user = User::where('email', 'admin@example.test')->firstOrFail();
     expect($user->hasRole('Administrator'))->toBeTrue();
     expect($user->shop->name)->toBe('My shop');
-    expect(Illuminate\Support\Facades\Hash::check('StrongPassword123!', $user->password))->toBeTrue();
+    expect(Hash::check('StrongPassword123!', $user->password))->toBeTrue();
 });

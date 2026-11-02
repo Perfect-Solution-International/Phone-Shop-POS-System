@@ -473,13 +473,25 @@
     .modal-box-modern {
         max-width: 530px;
         width: 100%;
+        max-height: calc(100vh - 2rem);
         border-radius: 20px;
         background: #ffffff;
         box-shadow: 0 25px 60px -15px rgba(15, 23, 42, 0.25), 0 0 0 1px rgba(15, 23, 42, 0.05);
         border: 1px solid #e2e8f0;
-        padding: 1.5rem 1.65rem;
+        padding: 1.25rem 1.45rem;
         position: relative;
-        overflow: hidden;
+        overflow-y: auto;
+        overflow-x: hidden;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .modal-box-modern::-webkit-scrollbar {
+        width: 6px;
+    }
+    .modal-box-modern::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 9999px;
     }
 
     .modal-box-modern::before {
@@ -609,8 +621,8 @@
         background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
         border: 1.5px solid #e2e8f0;
         border-radius: 14px;
-        padding: 1.05rem 1.25rem;
-        margin-bottom: 1.15rem;
+        padding: 0.85rem 1.05rem;
+        margin-bottom: 0.85rem;
         position: relative;
     }
 
@@ -633,8 +645,8 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-top: 0.75rem;
-        padding-top: 0.75rem;
+        margin-top: 0.65rem;
+        padding-top: 0.65rem;
         border-top: 1px dashed #cbd5e1;
     }
 
@@ -643,8 +655,8 @@
         background: #ffffff;
         border: 1.5px solid #e2e8f0;
         border-radius: 14px;
-        padding: 1.1rem;
-        margin-bottom: 1.15rem;
+        padding: 0.85rem 1.05rem;
+        margin-bottom: 0.85rem;
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
     }
 
@@ -917,8 +929,13 @@
         align-items: center;
         gap: 0.75rem;
         border-top: 1px solid #f1f5f9;
-        padding-top: 1rem;
-        margin-top: 1rem;
+        padding-top: 0.85rem;
+        margin-top: 0.85rem;
+        position: sticky;
+        bottom: -1.25rem;
+        background: #ffffff;
+        padding-bottom: 0.4rem;
+        z-index: 10;
     }
 
     .qs-btn-cancel {
@@ -1426,14 +1443,15 @@
 
         <!-- 2-Step Wizard Progress Indicator -->
         <div class="qs-wizard-steps" id="qsWizardSteps">
-            <div class="qs-step-indicator active" id="qsStepIndicator1" onclick="setQsStep(1)">
+            <div class="qs-step-indicator active" id="qsStepIndicator1" onclick="setQsStep(1)" style="cursor: pointer;" title="Step 1: Customer Details">
                 <span class="qs-step-num" id="qsStepNum1">1</span>
                 <span class="qs-step-label">Customer Details</span>
             </div>
             <div class="qs-step-divider" id="qsStepDivider"></div>
-            <div class="qs-step-indicator" id="qsStepIndicator2" onclick="goToQsStep2()">
+            <div class="qs-step-indicator" id="qsStepIndicator2" onclick="goToQsStep2()" style="cursor: pointer;" title="Step 2: Proceed to Payment">
                 <span class="qs-step-num" id="qsStepNum2">2</span>
                 <span class="qs-step-label">Payment &amp; Finalize</span>
+                <span style="font-size: 0.7rem; background: #ecfdf5; color: #047857; border: 1px solid #86efac; padding: 2px 7px; border-radius: 6px; font-weight: 800;">Pay &rarr;</span>
             </div>
         </div>
 
@@ -1473,9 +1491,9 @@
                 </div>
 
                 <!-- Quantity (for accessories) -->
-                <div id="qsQtyRow" style="display: none; margin-bottom: 1.15rem; background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 12px; padding: 0.85rem 1rem;">
+                <div id="qsQtyRow" style="display: none; margin-bottom: 0.85rem; background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 12px; padding: 0.75rem 0.95rem;">
                     <label style="font-size: 0.75rem; font-weight: 800; color: #334155; margin-bottom: 0.35rem; display: block; text-transform: uppercase; letter-spacing: 0.03em;">Quantity Sold</label>
-                    <input type="number" id="qsQuantity" class="form-control" value="1" min="1" style="height: 40px; border-radius: 10px; font-weight: 750; font-size: 0.95rem;" oninput="updateQsTotal()">
+                    <input type="number" id="qsQuantity" class="form-control" value="1" min="1" style="height: 38px; border-radius: 10px; font-weight: 750; font-size: 0.95rem;" oninput="updateQsTotal()">
                     <div id="qsStockHint" style="font-size: 0.72rem; color: #64748b; margin-top: 4px;"></div>
                 </div>
 
@@ -1484,35 +1502,41 @@
                     <div class="qs-customer-header">
                         <span style="font-size: 0.78rem; font-weight: 850; text-transform: uppercase; color: #1e293b; letter-spacing: 0.04em; display: inline-flex; align-items: center; gap: 0.35rem;">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#4f46e5" stroke-width="2.2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-                            <span>Customer Details (Required)</span>
+                            <span>Customer Details</span>
                         </span>
-                        <button type="button" onclick="toggleQsExistingCustomer()" id="btnToggleQsCust" class="qs-btn-pick-cust">
-                            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
-                            <span>Pick Saved Customer ▾</span>
-                        </button>
+                        <div style="display: flex; gap: 0.4rem; align-items: center;">
+                            <button type="button" onclick="fillWalkInCustomer()" class="qs-btn-pick-cust" style="background: #f0fdf4; border-color: #86efac; color: #047857;" title="Click for Instant Walk-in Sale">
+                                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                                <span>⚡ Walk-in</span>
+                            </button>
+                            <button type="button" onclick="toggleQsExistingCustomer()" id="btnToggleQsCust" class="qs-btn-pick-cust">
+                                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
+                                <span>Saved ▾</span>
+                            </button>
+                        </div>
                     </div>
 
-                    <div id="qsDirectFields" style="display: flex; flex-direction: column; gap: 0.75rem;">
+                    <div id="qsDirectFields" style="display: flex; flex-direction: column; gap: 0.65rem;">
                         <!-- Row 1: Name and Phone -->
                         <div style="display: grid; grid-template-columns: 1.15fr 1fr; gap: 0.65rem;">
                             <div class="qs-input-field">
                                 <label class="qs-input-label" for="qsCustName">
                                     <span>Customer Name</span>
-                                    <span style="color: #dc2626;">*</span>
+                                    <span style="color: #64748b; font-weight: normal; font-size: 0.68rem;">(Optional)</span>
                                 </label>
                                 <div class="qs-input-wrapper">
                                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-                                    <input type="text" id="qsCustName" placeholder="Full Name *" required oninput="this.classList.remove('input-error')">
+                                    <input type="text" id="qsCustName" placeholder="Full Name or Walk-in" oninput="this.classList.remove('input-error')">
                                 </div>
                             </div>
                             <div class="qs-input-field">
                                 <label class="qs-input-label" for="qsCustPhone">
                                     <span>Contact Phone</span>
-                                    <span style="color: #dc2626;">*</span>
+                                    <span style="color: #64748b; font-weight: normal; font-size: 0.68rem;">(Optional)</span>
                                 </label>
                                 <div class="qs-input-wrapper">
                                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
-                                    <input type="text" id="qsCustPhone" placeholder="07XXXXXXXX *" required oninput="this.classList.remove('input-error')">
+                                    <input type="text" id="qsCustPhone" placeholder="07XXXXXXXX or Counter" oninput="this.classList.remove('input-error')">
                                 </div>
                             </div>
                         </div>
@@ -1559,8 +1583,8 @@
                 <!-- Step 1 Footer -->
                 <div class="qs-modal-footer">
                     <button type="button" class="qs-btn-cancel" onclick="closeQuickSellModal()">Cancel</button>
-                    <button type="button" class="qs-btn-confirm" onclick="goToQsStep2()" id="btnGoToStep2">
-                        <span>Proceed to Payment</span>
+                    <button type="button" class="qs-btn-confirm" onclick="goToQsStep2()" id="btnGoToStep2" style="min-width: 100px;">
+                        <span>Next</span>
                         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
                     </button>
                 </div>
@@ -1664,7 +1688,7 @@
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
                         <span>Back</span>
                     </button>
-                    <button type="submit" id="btnConfirmQuickSell" class="qs-btn-confirm">
+                    <button type="submit" id="btnConfirmQuickSell" class="qs-btn-confirm" style="flex: 1; height: 44px; font-size: 0.95rem;">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
                         <span>Complete Sale &amp; Deduct Stock</span>
                     </button>
@@ -1949,8 +1973,8 @@
             }
 
             // Sync Summary
-            const custName = (document.getElementById('qsCustName')?.value || '').trim();
-            const custPhone = (document.getElementById('qsCustPhone')?.value || '').trim();
+            const custName = (document.getElementById('qsCustName')?.value || '').trim() || 'Walk-in Customer';
+            const custPhone = (document.getElementById('qsCustPhone')?.value || '').trim() || 'Counter';
             const title = document.getElementById('qsItemTitle')?.innerText || '';
             const price = document.getElementById('qsItemPrice')?.innerText || '';
 
@@ -1959,7 +1983,7 @@
             const sumTitle = document.getElementById('qsSummaryItemTitle');
             const sumPrice = document.getElementById('qsSummaryItemPrice');
 
-            if (sumBuyer) sumBuyer.innerText = custName || 'Walk-in Customer';
+            if (sumBuyer) sumBuyer.innerText = custName;
             if (sumPhone) sumPhone.innerText = custPhone;
             if (sumTitle) sumTitle.innerText = title;
             if (sumPrice) sumPrice.innerText = price;
@@ -1992,30 +2016,37 @@
         }
     }
 
+    function fillWalkInCustomer() {
+        const nameInp = document.getElementById('qsCustName');
+        const phoneInp = document.getElementById('qsCustPhone');
+        const nicInp = document.getElementById('qsCustNic');
+        const addrInp = document.getElementById('qsCustAddress');
+        if (nameInp) {
+            nameInp.value = 'Walk-in Customer';
+            nameInp.classList.remove('input-error');
+        }
+        if (phoneInp) {
+            phoneInp.value = 'Counter';
+            phoneInp.classList.remove('input-error');
+        }
+        if (nicInp) nicInp.value = '';
+        if (addrInp) addrInp.value = '';
+    }
+
     function goToQsStep2() {
         const nameInp = document.getElementById('qsCustName');
         const phoneInp = document.getElementById('qsCustPhone');
-        let hasError = false;
 
-        if (!nameInp || !nameInp.value.trim()) {
-            if (nameInp) nameInp.classList.add('input-error');
-            hasError = true;
-        } else {
-            nameInp.classList.remove('input-error');
+        // Automatically default to Walk-in Customer if left blank so payment is never blocked
+        if (nameInp && !nameInp.value.trim()) {
+            nameInp.value = 'Walk-in Customer';
+        }
+        if (phoneInp && !phoneInp.value.trim()) {
+            phoneInp.value = 'Counter';
         }
 
-        if (!phoneInp || !phoneInp.value.trim()) {
-            if (phoneInp) phoneInp.classList.add('input-error');
-            hasError = true;
-        } else {
-            phoneInp.classList.remove('input-error');
-        }
-
-        if (hasError) {
-            if (nameInp && !nameInp.value.trim()) nameInp.focus();
-            else if (phoneInp) phoneInp.focus();
-            return;
-        }
+        if (nameInp) nameInp.classList.remove('input-error');
+        if (phoneInp) phoneInp.classList.remove('input-error');
 
         setQsStep(2);
     }
@@ -2184,18 +2215,15 @@
         const type = document.getElementById('qsItemType').value;
         const id = parseInt(document.getElementById('qsItemId').value);
         const qty = parseInt(document.getElementById('qsQuantity').value) || 1;
-        const custName = document.getElementById('qsCustName').value.trim();
-        const custPhone = document.getElementById('qsCustPhone').value.trim();
-        const custNic = document.getElementById('qsCustNic').value.trim();
-        const custAddress = document.getElementById('qsCustAddress').value.trim();
+        let custName = (document.getElementById('qsCustName')?.value || '').trim();
+        let custPhone = (document.getElementById('qsCustPhone')?.value || '').trim();
+        const custNic = (document.getElementById('qsCustNic')?.value || '').trim();
+        const custAddress = (document.getElementById('qsCustAddress')?.value || '').trim();
         const customerId = document.getElementById('qsExistingSelect') ? document.getElementById('qsExistingSelect').value : null;
         const paymentMethod = document.querySelector('input[name="qs_payment_method"]:checked')?.value || 'cash';
 
-        if (!custName || !custPhone) {
-            setQsStep(1);
-            goToQsStep2();
-            return;
-        }
+        if (!custName) custName = 'Walk-in Customer';
+        if (!custPhone) custPhone = 'Counter';
 
         const totalAmount = currentQsUnitPrice * qty;
         const tenderInp = document.getElementById('qsCashTendered');
