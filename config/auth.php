@@ -103,6 +103,21 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Email Verification Expiry
+    |--------------------------------------------------------------------------
+    |
+    | The number of minutes that a signed email verification link will be
+    | considered valid before expiring.
+    |
+    */
+
+    'verification' => [
+        'enabled' => (bool) env('AUTH_VERIFICATION_ENABLED', false), // Email verification is paused by default
+        'expire' => (int) env('AUTH_VERIFICATION_EXPIRE', 60),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Password Confirmation Timeout
     |--------------------------------------------------------------------------
     |

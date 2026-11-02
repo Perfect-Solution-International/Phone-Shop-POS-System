@@ -56,14 +56,14 @@ test('remember me issues an encrypted HTTP only recaller cookie', function (): v
     expect($cookie->isHttpOnly())->toBeTrue();
 });
 
-test('signed in users visiting home or login go to an authorized existing page', function (string $permission, string $path): void {
+test('signed in users visiting home go to an authorized existing page and login route remains accessible to switch accounts', function (string $permission, string $path): void {
     $this->seed(DatabaseSeeder::class);
     $user = User::factory()->create();
     $user->givePermissionTo($permission);
     $this->actingAs($user, 'web');
 
     $this->get('/')->assertRedirect(route('app', ['path' => $path]));
-    $this->get('/login')->assertRedirect(route('app', ['path' => $path]));
+    $this->get('/login')->assertOk();
 })->with([
     ['hrm.view', ''],
     ['payroll.view', 'hrm/payroll'],

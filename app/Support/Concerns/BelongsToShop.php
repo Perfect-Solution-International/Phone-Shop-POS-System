@@ -2,29 +2,18 @@
 
 namespace App\Support\Concerns;
 
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
-use LogicException;
+use App\Models\Scopes\BelongsToTenantScope;
 
 trait BelongsToShop
 {
+    use BelongsToTenant;
+
+    /**
+     * Boot the BelongsToShop trait alias for backwards-compatibility.
+     */
     public static function bootBelongsToShop(): void
     {
-        static::addGlobalScope('shop', function (Builder $query): void {
-            if (app()->bound('shop.id')) {
-                $query->where($query->getModel()->qualifyColumn('shop_id'), app('shop.id'));
-            } else {
-                $query->whereRaw('1 = 0');
-            }
-        });
-
-        static::creating(function (Model $model): void {
-            if (app()->bound('shop.id')) {
-                $model->shop_id = app('shop.id');
-            }
-            if (! $model->shop_id) {
-                throw new LogicException('Shop-owned records require an explicit shop context.');
-            }
-        });
+        // Register 'shop' named scope alias so withoutGlobalScope('shop') works identically
+        static::addGlobalScope('shop', new BelongsToTenantScope());
     }
 }

@@ -22,11 +22,14 @@ class AuthController extends Controller
         return redirect($request->user() ? $this->destination($request->user()) : route('login'));
     }
 
-    public function showLogin(Request $request): View|RedirectResponse
+    public function showLogin(Request $request): View
     {
-        return $request->user() ? redirect($this->destination($request->user())) : view('auth.login', [
-            'applicationName' => config('app.name') === 'Laravel' ? 'Phone Shop POS SaaS' : config('app.name'),
+        return view('auth.login', [
+            'applicationName' => config('app.name') === 'Laravel' ? 'SaaS Phone Shop POS System' : config('app.name'),
             'loginPreviewUrl' => $this->loginPreviewEnabled() ? route('login.preview', [], false) : '',
+            'currentUser' => $request->user(),
+            'currentDestination' => $request->user() ? $this->destination($request->user()) : null,
+            'initialMode' => ($request->query('type') === 'staff' || $request->routeIs('staff.login')) ? 'staff' : 'owner',
         ]);
     }
 
@@ -42,7 +45,7 @@ class AuthController extends Controller
         return app()->environment('local') && config('app.login_preview');
     }
 
-    public function browserLogin(LoginRequest $request): JsonResponse
+    public function browserLogin(LoginRequest $request): JsonResponse|RedirectResponse
     {
         if (! Auth::guard('web')->attempt($request->safe()->only(['email', 'password']), $request->boolean('remember'))) {
             throw ValidationException::withMessages(['email' => ['The provided credentials are incorrect.']]);
@@ -51,7 +54,67 @@ class AuthController extends Controller
         $request->session()->regenerate();
         $user = $request->user('web');
 
-        return response()->json(['user' => $this->profile($user), 'redirect' => $this->destination($user)]);
+        // Automatically bind branch session if user is an assigned branch manager
+        if ($user && $user->shop_id !== null) {
+            $assignedOutlet = null;
+            if ($user->outlet_id) {
+                $assignedOutlet = \App\Models\Outlet::withoutGlobalScopes()->find($user->outlet_id);
+            }
+            if (! $assignedOutlet) {
+                $assignedOutlet = \App\Models\Outlet::withoutGlobalScopes()->where('manager_user_id', $user->id)->first();
+            }
+
+            if ($assignedOutlet && ($assignedOutlet->approval_status ?? 'approved') === 'approved') {
+                session([
+                    'active_outlet_id' => $assignedOutlet->id,
+                    'active_outlet_name' => $assignedOutlet->name,
+                    'active_outlet_code' => $assignedOutlet->code,
+                ]);
+            }
+        }
+
+        if ($request->wantsJson()) {
+            return response()->json(['user' => $this->profile($user), 'redirect' => $this->destination($user)]);
+        }
+
+        $destination = $this->safeDestination($request, $user);
+
+        return redirect()->to($destination);
+    }
+
+    private function safeDestination(Request $request, User $user): string
+    {
+        $default = $this->destination($user);
+        $intended = $request->session()->pull('url.intended');
+
+        if (! $intended || ! is_string($intended) || str_contains($intended, '/email/verify') || str_contains($intended, '/login') || rtrim($intended, '/') === rtrim(url('/'), '/')) {
+            return $default;
+        }
+
+        $appHost = parse_url(config('app.url'), PHP_URL_HOST);
+        $intendedHost = parse_url($intended, PHP_URL_HOST);
+
+        // Discard external domains to prevent open redirects
+        if ($intendedHost !== null && strtolower($intendedHost) !== strtolower((string) $appHost)) {
+            return $default;
+        }
+
+        // Enforce strict workspace boundaries based on user role
+        if ($user->hasRole('Super Administrator') || $user->can('superadmin.view')) {
+            if (! str_contains($intended, '/super-admin')) {
+                return $default;
+            }
+        } elseif ($user->hasRole('Customer') || $user->can('customer.portal')) {
+            if (! str_contains($intended, '/portal')) {
+                return $default;
+            }
+        } elseif ($user->shop_id !== null) {
+            if (! str_contains($intended, '/shop') && ! str_contains($intended, '/app')) {
+                return $default;
+            }
+        }
+
+        return $intended;
     }
 
     public function login(LoginRequest $request): JsonResponse
@@ -77,23 +140,57 @@ class AuthController extends Controller
         return response()->json(['user' => $this->profile($request->user())]);
     }
 
-    public function logout(Request $request): Response
+    public function logout(Request $request): Response|RedirectResponse
     {
-        $token = $request->user()->currentAccessToken();
+        $token = $request->user()?->currentAccessToken();
         if ($token instanceof PersonalAccessToken) {
             $token->delete();
-        } else {
-            Auth::guard('web')->logout();
-            $request->session()->invalidate();
-            $request->session()->regenerateToken();
+
+            return response()->noContent();
         }
 
-        return response()->noContent();
+        Auth::guard('web')->logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        if ($request->wantsJson()) {
+            return response()->noContent();
+        }
+
+        return redirect()->route('login')->with('status', 'You have been successfully signed out.');
     }
 
-    private function destination(User $user): string
+    public function destination(User $user): string
     {
+        if ($user->hasRole('Super Administrator') || $user->can('superadmin.view')) {
+            return route('superadmin.dashboard');
+        }
+
+        if ($user->hasRole('Customer') || $user->can('customer.portal')) {
+            return route('customer.portal');
+        }
+
+        if (config('auth.verification.enabled', false) && ! $user->hasVerifiedEmail()) {
+            return route('verification.notice');
+        }
+
         if ($user->shop_id !== null) {
+            if ($user->hasRole('Cashier')) {
+                return route('shop.pos');
+            }
+
+            if ($user->hasRole('Technician')) {
+                return route('shop.repairs');
+            }
+
+            if ($user->hasRole(['Stock Manager', 'Stock Keeper'])) {
+                return route('shop.phones');
+            }
+
+            if ($user->hasRole(['Shop Owner', 'Shop Manager'])) {
+                return route('shop.dashboard');
+            }
+
             foreach (['hrm.view' => '', 'payroll.view' => 'hrm/payroll', 'settings.manage' => 'settings'] as $permission => $path) {
                 if ($user->can($permission)) {
                     return route('app', ['path' => $path]);
