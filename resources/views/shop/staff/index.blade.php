@@ -1213,7 +1213,7 @@
         document.getElementById('createUserSection').style.display = 'block';
         if (emp.user_id) {
             document.getElementById('chkCreateUser').checked = true;
-            document.getElementById('lblCreateUser').innerText = '🔑 System Login Account Active (Update Role / Reset Password)';
+            document.getElementById('lblCreateUser').innerText = 'System Login Account Active (Update Role / Reset Password)';
             document.getElementById('userAccountFields').style.display = 'block';
             document.getElementById('lblStaffPassword').innerText = 'New Password (Optional)';
             document.getElementById('inpStaffPassword').value = '';

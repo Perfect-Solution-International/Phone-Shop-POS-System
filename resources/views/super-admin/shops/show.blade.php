@@ -35,7 +35,7 @@
             <button type="button" class="btn-action btn-outline" onclick='openEditShopModal(@json($shopData))' style="color: #4338ca; border-color: #c7d2fe;">
                 Edit Shop Details
             </button>
-            <form method="POST" action="{{ route('superadmin.shops.destroy', $shop->id) }}" style="display: inline; margin: 0;" onsubmit="return confirm('⚠️ WARNING: Are you sure you want to PERMANENTLY DELETE shop \'{{ addslashes($shop->name) }}\'? All related data, inventory, sales, and accounts will be completely erased. This action CANNOT be undone!');">
+            <form method="POST" action="{{ route('superadmin.shops.destroy', $shop->id) }}" style="display: inline; margin: 0;" onsubmit="return confirm('WARNING: Are you sure you want to PERMANENTLY DELETE shop \'{{ addslashes($shop->name) }}\'? All related data, inventory, sales, and accounts will be completely erased. This action CANNOT be undone!');">
                 @csrf
                 @method('DELETE')
                 <button type="submit" class="btn-action btn-danger" style="background: #991b1b; border-color: #991b1b;">Delete Shop</button>
@@ -173,10 +173,16 @@
                         <td>
                             <strong>{{ $outlet->name }}</strong>
                             @if($outlet->is_main)
-                                <span style="display: block; font-size: 0.7rem; font-weight: 700; color: #4f46e5;">★ Main Branch</span>
+                                <span style="display: inline-flex; align-items: center; gap: 0.25rem; font-size: 0.7rem; font-weight: 700; color: #4f46e5;">
+                                    <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                                    <span>Main Branch</span>
+                                </span>
                             @endif
                             @if($outlet->manager_email)
-                                <div style="font-size: 0.72rem; color: #64748b;">🔑 {{ $outlet->manager_email }}</div>
+                                <div style="font-size: 0.72rem; color: #64748b; display: inline-flex; align-items: center; gap: 0.25rem;">
+                                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="7.5" cy="15.5" r="5.5"></circle><path d="m21 2-9.6 9.6"></path><path d="m15.5 7.5 3 3"></path><path d="M18.5 4.5 20 6"></path></svg>
+                                    <span>{{ $outlet->manager_email }}</span>
+                                </div>
                             @endif
                         </td>
                         <td><span style="font-family: monospace; font-size: 0.8125rem; background: #e0e7ff; color: #4338ca; padding: 0.15rem 0.45rem; border-radius: 4px;">{{ $outlet->code }}</span></td>
@@ -186,12 +192,18 @@
                             @elseif($outlet->payment_status === 'paid')
                                 <span class="status-pill status-active" style="background: #eff6ff; color: #1d4ed8; font-size: 0.7rem;">✓ Paid (LKR {{ number_format($outlet->additional_fee ?: 2500, 0) }})</span>
                             @elseif($outlet->payment_status === 'pending_verification')
-                                <span class="status-pill status-trial" style="background: #fffbeb; color: #b45309; font-size: 0.7rem;">⏳ Slip Uploaded</span>
+                                <span class="status-pill status-trial" style="background: #fffbeb; color: #b45309; font-size: 0.7rem; display: inline-flex; align-items: center; gap: 0.25rem;">
+                                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                                    <span>Slip Uploaded</span>
+                                </span>
                                 @if($outlet->payment_receipt_url)
                                     <a href="{{ $outlet->payment_receipt_url }}" target="_blank" style="font-size: 0.7rem; color: #2563eb; display: block;">View Slip ↗</a>
                                 @endif
                             @else
-                                <span class="status-pill status-suspended" style="background: #fef2f2; color: #b91c1c; font-size: 0.7rem;">⚠️ LKR {{ number_format($outlet->additional_fee ?: 2500, 0) }} Unpaid</span>
+                                <span class="status-pill status-suspended" style="background: #fef2f2; color: #b91c1c; font-size: 0.7rem; display: inline-flex; align-items: center; gap: 0.25rem;">
+                                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                                    <span>LKR {{ number_format($outlet->additional_fee ?: 2500, 0) }} Unpaid</span>
+                                </span>
                             @endif
                         </td>
                         <td>{{ $outlet->address }}{{ $outlet->city ? ' (' . $outlet->city . ')' : '' }}</td>

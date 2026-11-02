@@ -34,7 +34,9 @@ class CustomerViewController extends Controller
             $query->where('balance', '>', 0);
         }
 
-        $customers = $query->latest()->paginate(20)->withQueryString();
+        /** @var \Illuminate\Pagination\LengthAwarePaginator $customers */
+        $customers = $query->latest()->paginate(20);
+        $customers->withQueryString();
 
         return view('shop.customers.index', compact('customers'));
     }

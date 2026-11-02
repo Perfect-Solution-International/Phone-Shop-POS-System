@@ -4,6 +4,8 @@
 @section('page-title', 'Goods Received Note: ' . $grn->grn_number)
 
 @section('content')
+@include('shop.partials.inventory-subnav')
+
 <style>
     .grn-voucher-card {
         background: #ffffff;

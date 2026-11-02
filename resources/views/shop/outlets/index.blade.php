@@ -155,8 +155,9 @@
                                     ⏳ Slip Uploaded
                                 </span>
                             @else
-                                <span class="badge" style="background: #fff1f2; color: #be123c; border: 1px solid #fecdd3; font-size: 0.68rem; font-weight: 700; padding: 0.15rem 0.45rem; border-radius: 5px;" title="Payment required for Super Admin approval">
-                                    ⚠️ Fee Unpaid
+                                <span class="badge" style="background: #fff1f2; color: #be123c; border: 1px solid #fecdd3; font-size: 0.68rem; font-weight: 700; padding: 0.15rem 0.45rem; border-radius: 5px; display: inline-flex; align-items: center; gap: 0.25rem;" title="Payment required for Super Admin approval">
+                                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                                    <span>Fee Unpaid</span>
                                 </span>
                             @endif
                         </div>

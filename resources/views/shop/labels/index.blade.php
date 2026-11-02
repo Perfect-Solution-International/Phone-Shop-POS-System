@@ -4,6 +4,8 @@
 @section('page-title', 'Thermal Barcode & IMEI Label Generator')
 
 @section('content')
+@include('shop.partials.inventory-subnav')
+
 <style>
     .labels-layout-grid {
         display: grid;

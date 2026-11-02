@@ -215,7 +215,10 @@
     <div class="print-toolbar">
         <div style="display: flex; align-items: center; gap: 0.75rem;">
             <span>Ready to print <strong>{{ $quantity }}</strong> labels ({{ $template }})</span>
-            <span style="background: rgba(255,255,255,0.2); padding: 0.2rem 0.6rem; border-radius: 4px; font-size: 0.75rem; border: 1px solid rgba(255,255,255,0.3);">💡 Tip: Set Margins to "None" in Print Dialog</span>
+            <span style="background: rgba(255,255,255,0.2); padding: 0.2rem 0.6rem; border-radius: 4px; font-size: 0.75rem; border: 1px solid rgba(255,255,255,0.3); display: inline-flex; align-items: center; gap: 0.35rem;">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                <span>Tip: Set Margins to "None" in Print Dialog</span>
+            </span>
         </div>
         <button class="print-btn" onclick="window.print()">Print Now (Ctrl + P)</button>
     </div>

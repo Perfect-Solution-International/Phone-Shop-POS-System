@@ -9,6 +9,7 @@ use App\Models\Setting;
 use App\Models\User;
 use Database\Seeders\DatabaseSeeder;
 use Illuminate\Auth\Events\Registered;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Event;
 use Laravel\Sanctum\Sanctum;
 
@@ -78,8 +79,7 @@ test('new shop owner can register and creates exactly one independent shop works
 
     $response = $this->post('/register', $payload);
 
-    $expectedDestination = config('auth.verification.enabled', false) ? route('verification.notice') : route('shop.dashboard');
-    $response->assertRedirect($expectedDestination);
+    $response->assertRedirect(route('verification.notice'));
     $this->assertAuthenticated('web');
 
     // Exactly 1 shop created with business details
@@ -146,14 +146,12 @@ test('JSON registration returns 201 with structured payload and destination', fu
 
     $response = $this->postJson('/register', $payload);
 
-    $expectedDestination = config('auth.verification.enabled', false) ? route('verification.notice') : route('shop.dashboard');
-
     $response->assertCreated()
         ->assertJsonPath('message', 'Workspace and owner account created successfully.')
         ->assertJsonPath('user.email', 'nimal@example.test')
         ->assertJsonPath('user.phone', '0771234567')
         ->assertJsonPath('user.shop_name', 'Tech World')
-        ->assertJsonPath('redirect', $expectedDestination);
+        ->assertJsonPath('redirect', route('verification.notice'));
 });
 
 test('registration requires valid mobile number', function (?string $invalidPhone): void {
@@ -339,9 +337,8 @@ test('repeated registration requests with the same email cannot create duplicate
     ];
 
     // First registration succeeds
-    $expectedDestination = config('auth.verification.enabled', false) ? route('verification.notice') : route('shop.dashboard');
     $response1 = $this->post('/register', $payload);
-    $response1->assertRedirect($expectedDestination);
+    $response1->assertRedirect(route('verification.notice'));
     $shopCount = Shop::count();
     $userCount = User::count();
 
@@ -364,7 +361,7 @@ test('newly registered shop and owner immediately appear in super admin dashboar
     $plan = SubscriptionPlan::where('slug', 'starter')->first();
 
     // Register a new shop
-    $regResp = $this->post('/register', [
+    $this->post('/register', [
         'shop_name' => 'Colombo Apex Mobile',
         'name' => 'Dinesh Fonseka',
         'phone' => '+94 77 999 8888',
@@ -382,9 +379,7 @@ test('newly registered shop and owner immediately appear in super admin dashboar
         'password' => 'SecurePass123!@#',
         'password_confirmation' => 'SecurePass123!@#',
         'terms' => '1',
-    ]);
-    $expectedDestination = config('auth.verification.enabled', false) ? route('verification.notice') : route('shop.dashboard');
-    $regResp->assertRedirect($expectedDestination);
+    ])->assertRedirect(route('verification.notice'));
 
     // Check Super Admin Dashboard
     $dashResponse = $this->actingAs($superAdmin, 'web')->get(route('superadmin.dashboard'));
@@ -414,8 +409,7 @@ test('shop owner can register with an 8-character valid password', function (): 
         'terms' => '1',
     ]);
 
-    $expectedDestination = config('auth.verification.enabled', false) ? route('verification.notice') : route('shop.dashboard');
-    $response->assertRedirect($expectedDestination);
+    $response->assertRedirect(route('verification.notice'));
     $this->assertAuthenticated('web');
     $this->assertDatabaseHas('users', ['email' => 'eightchar@example.test']);
 });
@@ -478,8 +472,7 @@ test('shop owner can select Growth plan and subscription initializes with 3 bran
         'terms' => '1',
     ]);
 
-    $expectedDestination = config('auth.verification.enabled', false) ? route('verification.notice') : route('shop.dashboard');
-    $response->assertRedirect($expectedDestination);
+    $response->assertRedirect(route('verification.notice'));
 
     $shop = Shop::where('name', 'Growth Store Kandy')->firstOrFail();
     $sub = Subscription::where('shop_id', $shop->id)->firstOrFail();

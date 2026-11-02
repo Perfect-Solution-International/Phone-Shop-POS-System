@@ -4,6 +4,8 @@
 @section('page-title', 'Purchasing & Supplier Invoices')
 
 @section('content')
+@include('shop.partials.inventory-subnav')
+
 <div class="card">
     <div class="card-header" style="flex-wrap: wrap; gap: 1rem;">
         <form method="GET" action="{{ route('shop.purchases') }}" style="display: flex; gap: 0.75rem; flex: 1; flex-wrap: wrap;">

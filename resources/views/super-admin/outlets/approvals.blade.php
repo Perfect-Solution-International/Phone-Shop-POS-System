@@ -79,15 +79,18 @@
                                 </span>
                             </div>
                             @if($outlet->is_main)
-                                <span style="display: inline-block; font-size: 0.68rem; font-weight: 700; color: #4f46e5; margin-top: 0.2rem;">
-                                    ★ Primary Main Branch
+                                <span style="display: inline-flex; align-items: center; gap: 0.25rem; font-size: 0.68rem; font-weight: 700; color: #4f46e5; margin-top: 0.2rem;">
+                                    <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                                    <span>Primary Main Branch</span>
                                 </span>
                             @endif
                             @if($outlet->manager_name || $outlet->manager_email)
-                                <div style="font-size: 0.75rem; color: #64748b; margin-top: 0.15rem;">
-                                    Manager: <strong>{{ $outlet->manager_name ?: 'Branch Manager' }}</strong>
+                                <div style="font-size: 0.75rem; color: #64748b; margin-top: 0.15rem; display: inline-flex; align-items: center; gap: 0.25rem;">
+                                    <span>Manager: <strong>{{ $outlet->manager_name ?: 'Branch Manager' }}</strong></span>
                                     @if($outlet->manager_email)
-                                        <span style="color: #4338ca;">(🔑 {{ $outlet->manager_email }})</span>
+                                        <span style="color: #4338ca; display: inline-flex; align-items: center; gap: 0.2rem;">
+                                            (<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="7.5" cy="15.5" r="5.5"></circle><path d="m21 2-9.6 9.6"></path><path d="m15.5 7.5 3 3"></path><path d="M18.5 4.5 20 6"></path></svg> {{ $outlet->manager_email }})
+                                        </span>
                                     @endif
                                 </div>
                             @endif
@@ -129,8 +132,9 @@
                                         </a>
                                     @endif
                                 @else
-                                    <span class="status-pill status-suspended" style="background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; font-size: 0.72rem;">
-                                        ⚠️ Quota Exceeded (LKR {{ number_format($outlet->additional_fee ?: 2500, 2) }} Unpaid)
+                                    <span class="status-pill status-suspended" style="background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; font-size: 0.72rem; display: inline-flex; align-items: center; gap: 0.25rem;">
+                                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                                        <span>Quota Exceeded (LKR {{ number_format($outlet->additional_fee ?: 2500, 2) }} Unpaid)</span>
                                     </span>
                                 @endif
                             @endif
@@ -179,7 +183,7 @@
                                         </form>
                                     @else
                                         <!-- Unpaid Additional Branch: Requires confirmation or payment receipt -->
-                                        <form method="POST" action="{{ route('superadmin.outlets.approve', $outlet->id) }}" onsubmit="return confirm('⚠️ Notice: This shop has exhausted their plan quota ({{ $approvedInShop }}/{{ $planMax }} branches used). Payment of LKR {{ number_format($outlet->additional_fee ?: 2500, 2) }} is currently unpaid. Confirm payment received and approve branch?');" style="margin: 0;">
+                                        <form method="POST" action="{{ route('superadmin.outlets.approve', $outlet->id) }}" onsubmit="return confirm('Notice: This shop has exhausted their plan quota ({{ $approvedInShop }}/{{ $planMax }} branches used). Payment of LKR {{ number_format($outlet->additional_fee ?: 2500, 2) }} is currently unpaid. Confirm payment received and approve branch?');" style="margin: 0;">
                                             @csrf
                                             <input type="hidden" name="confirm_unpaid" value="1">
                                             <button type="submit" class="btn-action btn-primary" style="font-size: 0.72rem; padding: 0.35rem 0.6rem; background: #d97706; border-color: #d97706;" title="Mark fee as received and approve branch">
