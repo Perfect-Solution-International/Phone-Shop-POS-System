@@ -12,15 +12,26 @@ class SalePayment extends Model
     use BelongsToTenant, HasFactory;
 
     protected $fillable = [
+        'shop_id',
         'sale_id',
         'payment_method',
         'amount',
         'reference',
+        'slip_path',
     ];
 
     protected $casts = [
         'amount' => 'decimal:2',
     ];
+
+    protected $appends = [
+        'slip_url',
+    ];
+
+    public function getSlipUrlAttribute(): ?string
+    {
+        return $this->slip_path ? asset('storage/' . $this->slip_path) : null;
+    }
 
     public function sale(): BelongsTo
     {

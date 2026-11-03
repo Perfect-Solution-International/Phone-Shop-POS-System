@@ -71,6 +71,17 @@ class PhoneDevice extends Model
         return $this->belongsTo(Sale::class);
     }
 
+    public function setStatusAttribute($value): void
+    {
+        $val = strtolower(trim(str_replace(' ', '_', (string) $value)));
+        $this->attributes['status'] = $val;
+    }
+
+    public function getStatusAttribute($value): string
+    {
+        return strtolower(trim(str_replace(' ', '_', (string) $value)));
+    }
+
     public function isAvailable(): bool
     {
         return $this->status === 'in_stock';

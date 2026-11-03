@@ -81,6 +81,14 @@
                                         <span style="color: #64748b; font-weight: normal;">• {{ $product->brand->name }}</span>
                                     @endif
                                 </div>
+                                @if($product->supplier)
+                                    <div style="margin-top: 0.25rem;">
+                                        <span style="display: inline-flex; align-items: center; gap: 0.25rem; font-size: 0.7rem; background: #eef2ff; color: #4f46e5; padding: 0.12rem 0.45rem; border-radius: 4px; border: 1px solid #c7d2fe; font-weight: 600;" title="Supplier">
+                                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                                            {{ $product->supplier->name }}
+                                        </span>
+                                    </div>
+                                @endif
                             </div>
                         </div>
                     </td>
@@ -121,7 +129,8 @@
                             </a>
                             <button type="button" 
                                     class="btn btn-secondary btn-sm" 
-                                    onclick='openEditProductModal(@json($product))' 
+                                    data-product="{{ json_encode($product) }}" 
+                                    onclick='handleEditProductClick(this)' 
                                     title="Edit product details and photo" 
                                     style="padding: 0.3rem 0.6rem; font-size: 0.75rem; display: inline-flex; align-items: center; gap: 0.25rem;">
                                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
@@ -203,6 +212,22 @@
                     <div class="form-group">
                         <label>Barcode / EAN (Auto-generated if blank)</label>
                         <input type="text" name="barcode" class="form-control" placeholder="Scan barcode or leave blank" style="font-family: monospace;">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Supplier (Optional)</label>
+                        <select name="supplier_id" id="product_supplier_id" class="form-control">
+                            <option value="">No Supplier / Store Direct</option>
+                            @foreach($suppliers as $sup)
+                                <option value="{{ $sup->id }}">{{ $sup->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>SKU Code (Auto-generated if blank)</label>
+                        <input type="text" name="sku" class="form-control" placeholder="e.g. SKU-CHARGER" style="font-family: monospace;">
                     </div>
                 </div>
 
@@ -301,6 +326,22 @@
                     <div class="form-group">
                         <label>Barcode / EAN</label>
                         <input type="text" name="barcode" id="edit_product_barcode" class="form-control" style="font-family: monospace;">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>SKU Code</label>
+                        <input type="text" name="sku" id="edit_product_sku" class="form-control" style="font-family: monospace;" placeholder="SKU-XXXXXX">
+                    </div>
+                    <div class="form-group">
+                        <label>Supplier (Optional)</label>
+                        <select name="supplier_id" id="edit_product_supplier_id" class="form-control">
+                            <option value="">No Supplier / Store Direct</option>
+                            @foreach($suppliers as $sup)
+                                <option value="{{ $sup->id }}">{{ $sup->name }}</option>
+                            @endforeach
+                        </select>
                     </div>
                 </div>
 
@@ -817,37 +858,66 @@
         clearBtn.style.display = 'none';
     }
 
+    function handleEditProductClick(btn) {
+        try {
+            const raw = btn.dataset.product || btn.getAttribute('data-product');
+            const product = typeof raw === 'string' ? JSON.parse(raw) : raw;
+            openEditProductModal(product);
+        } catch (e) {
+            console.error('Failed to parse product data', e);
+        }
+    }
+
     // Open Edit Product Modal
     function openEditProductModal(product) {
-        const form = document.getElementById('editProductForm');
-        form.action = `/shop/products/${product.id}`;
+        if (typeof product === 'string') {
+            try { product = JSON.parse(product); } catch(e) {}
+        }
+        if (!product) return;
 
-        document.getElementById('edit_product_name').value = product.name || '';
-        document.getElementById('edit_product_category_id').value = product.category_id || '';
-        document.getElementById('edit_product_brand_id').value = product.brand_id || '';
-        document.getElementById('edit_product_barcode').value = product.barcode || product.code || '';
-        document.getElementById('edit_product_sku').value = product.sku || product.code || '';
-        document.getElementById('edit_product_cost_price').value = product.cost_price || '0.00';
-        document.getElementById('edit_product_selling_price').value = product.selling_price || product.retail_price || '0.00';
-        document.getElementById('edit_product_stock_quantity').value = product.stock_quantity ?? '0';
-        document.getElementById('edit_product_alert_quantity').value = product.alert_quantity ?? '3';
+        const form = document.getElementById('editProductForm');
+        if (form) {
+            form.action = `/shop/products/${product.id}`;
+        }
+
+        const setVal = (id, val) => {
+            const el = document.getElementById(id);
+            if (el) el.value = (val !== null && val !== undefined) ? val : '';
+        };
+
+        setVal('edit_product_name', product.name || '');
+        setVal('edit_product_category_id', product.category_id || '');
+        setVal('edit_product_brand_id', product.brand_id || '');
+        setVal('edit_product_supplier_id', product.supplier_id || '');
+        setVal('edit_product_barcode', product.barcode || product.code || '');
+        setVal('edit_product_sku', product.sku || product.code || '');
+        setVal('edit_product_cost_price', product.cost_price || '0.00');
+        setVal('edit_product_selling_price', product.selling_price || product.retail_price || '0.00');
+        setVal('edit_product_stock_quantity', product.stock_quantity ?? '0');
+        setVal('edit_product_alert_quantity', product.alert_quantity ?? '3');
 
         // Reset image states
-        document.getElementById('editProductRemoveImage').value = '0';
-        document.getElementById('edit_product_image_input').value = '';
-        document.getElementById('editProductNewImagePreviewWrap').style.display = 'none';
-        document.getElementById('editProductNewImagePreview').src = '';
-        document.getElementById('editProductImageRemovedNotice').style.display = 'none';
+        setVal('editProductRemoveImage', '0');
+        setVal('edit_product_image_input', '');
+
+        const previewWrap = document.getElementById('editProductNewImagePreviewWrap');
+        if (previewWrap) previewWrap.style.display = 'none';
+        const preview = document.getElementById('editProductNewImagePreview');
+        if (preview) preview.src = '';
+        const notice = document.getElementById('editProductImageRemovedNotice');
+        if (notice) notice.style.display = 'none';
 
         const existingWrap = document.getElementById('editProductExistingImageWrap');
         const existingImg = document.getElementById('editProductExistingImg');
 
-        if (product.image_url) {
-            existingImg.src = product.image_url;
-            existingWrap.style.display = 'flex';
-        } else {
-            existingImg.src = '';
-            existingWrap.style.display = 'none';
+        if (existingImg && existingWrap) {
+            if (product.image_url) {
+                existingImg.src = product.image_url;
+                existingWrap.style.display = 'flex';
+            } else {
+                existingImg.src = '';
+                existingWrap.style.display = 'none';
+            }
         }
 
         openModal('editProductModal');

@@ -16,6 +16,7 @@ class Product extends Model
         'shop_id',
         'category_id',
         'brand_id',
+        'supplier_id',
         'name',
         'code',
         'type',
@@ -72,6 +73,11 @@ class Product extends Model
     public function brand(): BelongsTo
     {
         return $this->belongsTo(Brand::class);
+    }
+
+    public function supplier(): BelongsTo
+    {
+        return $this->belongsTo(Supplier::class);
     }
 
     public function phoneDevices(): HasMany

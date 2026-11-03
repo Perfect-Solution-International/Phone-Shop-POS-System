@@ -77,9 +77,10 @@ test('new shop owner can register and creates exactly one independent shop works
         'terms' => '1',
     ];
 
+    $expectedDestination = config('auth.verification.enabled', false) ? route('verification.notice') : route('shop.dashboard');
     $response = $this->post('/register', $payload);
 
-    $response->assertRedirect(route('verification.notice'));
+    $response->assertRedirect($expectedDestination);
     $this->assertAuthenticated('web');
 
     // Exactly 1 shop created with business details
@@ -146,12 +147,14 @@ test('JSON registration returns 201 with structured payload and destination', fu
 
     $response = $this->postJson('/register', $payload);
 
+    $expectedDestination = config('auth.verification.enabled', false) ? route('verification.notice') : route('shop.dashboard');
+
     $response->assertCreated()
         ->assertJsonPath('message', 'Workspace and owner account created successfully.')
         ->assertJsonPath('user.email', 'nimal@example.test')
         ->assertJsonPath('user.phone', '0771234567')
         ->assertJsonPath('user.shop_name', 'Tech World')
-        ->assertJsonPath('redirect', route('verification.notice'));
+        ->assertJsonPath('redirect', $expectedDestination);
 });
 
 test('registration requires valid mobile number', function (?string $invalidPhone): void {
@@ -337,8 +340,9 @@ test('repeated registration requests with the same email cannot create duplicate
     ];
 
     // First registration succeeds
+    $expectedDestination = config('auth.verification.enabled', false) ? route('verification.notice') : route('shop.dashboard');
     $response1 = $this->post('/register', $payload);
-    $response1->assertRedirect(route('verification.notice'));
+    $response1->assertRedirect($expectedDestination);
     $shopCount = Shop::count();
     $userCount = User::count();
 
@@ -361,6 +365,7 @@ test('newly registered shop and owner immediately appear in super admin dashboar
     $plan = SubscriptionPlan::where('slug', 'starter')->first();
 
     // Register a new shop
+    $expectedDestination = config('auth.verification.enabled', false) ? route('verification.notice') : route('shop.dashboard');
     $this->post('/register', [
         'shop_name' => 'Colombo Apex Mobile',
         'name' => 'Dinesh Fonseka',
@@ -379,7 +384,7 @@ test('newly registered shop and owner immediately appear in super admin dashboar
         'password' => 'SecurePass123!@#',
         'password_confirmation' => 'SecurePass123!@#',
         'terms' => '1',
-    ])->assertRedirect(route('verification.notice'));
+    ])->assertRedirect($expectedDestination);
 
     // Check Super Admin Dashboard
     $dashResponse = $this->actingAs($superAdmin, 'web')->get(route('superadmin.dashboard'));
@@ -393,6 +398,7 @@ test('shop owner can register with an 8-character valid password', function (): 
     Event::fake([Registered::class]);
     $plan = SubscriptionPlan::where('slug', 'starter')->first();
 
+    $expectedDestination = config('auth.verification.enabled', false) ? route('verification.notice') : route('shop.dashboard');
     $response = $this->post('/register', [
         'shop_name' => 'Eight Char Shop',
         'name' => 'Owner Eight',
@@ -409,7 +415,7 @@ test('shop owner can register with an 8-character valid password', function (): 
         'terms' => '1',
     ]);
 
-    $response->assertRedirect(route('verification.notice'));
+    $response->assertRedirect($expectedDestination);
     $this->assertAuthenticated('web');
     $this->assertDatabaseHas('users', ['email' => 'eightchar@example.test']);
 });
@@ -456,6 +462,7 @@ test('shop owner can select Growth plan and subscription initializes with 3 bran
 
     $growthPlan = SubscriptionPlan::where('slug', 'growth')->first();
 
+    $expectedDestination = config('auth.verification.enabled', false) ? route('verification.notice') : route('shop.dashboard');
     $response = $this->post('/register', [
         'shop_name' => 'Growth Store Kandy',
         'name' => 'Saman Jayasinghe',
@@ -472,7 +479,7 @@ test('shop owner can select Growth plan and subscription initializes with 3 bran
         'terms' => '1',
     ]);
 
-    $response->assertRedirect(route('verification.notice'));
+    $response->assertRedirect($expectedDestination);
 
     $shop = Shop::where('name', 'Growth Store Kandy')->firstOrFail();
     $sub = Subscription::where('shop_id', $shop->id)->firstOrFail();

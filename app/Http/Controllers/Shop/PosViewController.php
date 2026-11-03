@@ -68,7 +68,16 @@ class PosViewController extends Controller
             'payments.*.payment_method' => 'required|string|in:cash,card,bank_transfer',
             'payments.*.amount' => 'required|numeric|min:0.01',
             'payments.*.reference' => 'nullable|string|max:100',
+            'bank_slip' => 'nullable|file|mimes:jpeg,png,jpg,webp,pdf|max:5120',
+            'card_slip' => 'nullable|file|mimes:jpeg,png,jpg,webp,pdf|max:5120',
         ]);
+
+        if ($request->hasFile('bank_slip')) {
+            $validated['bank_slip_path'] = $request->file('bank_slip')->store('bank_slips', 'public');
+        }
+        if ($request->hasFile('card_slip')) {
+            $validated['card_slip_path'] = $request->file('card_slip')->store('card_slips', 'public');
+        }
 
         $validated['outlet_id'] = $request->input('outlet_id') ?: (session('active_outlet_id') ?: auth()->user()?->outlet_id);
 

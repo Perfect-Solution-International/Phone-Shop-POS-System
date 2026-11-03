@@ -7,6 +7,8 @@ use App\Models\Product;
 use App\Models\Sale;
 use App\Models\User;
 use Database\Seeders\DatabaseSeeder;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Laravel\Sanctum\Sanctum;
 
 beforeEach(function (): void {
@@ -320,5 +322,172 @@ test('POS direct counter sale captures customer details and immediately deducts 
     $sale = Sale::withoutGlobalScopes()->where('shop_id', $shop->id)->latest('id')->first();
     expect($sale->customer_id)->toBe($customer->id);
     expect((float) $sale->total_amount)->toBe(80000.00);
+});
+
+test('device registered with In Stock title-case or trade-in can be sold via POS without error', function (): void {
+    $shop = Shop::factory()->create();
+    $cashier = User::factory()->create(['shop_id' => $shop->id]);
+    $cashier->assignRole('Cashier');
+
+    app()->instance('shop.id', $shop->id);
+    $device = PhoneDevice::create([
+        'shop_id' => $shop->id,
+        'brand' => 'Apple',
+        'model' => '12 pro',
+        'condition' => 'used',
+        'imei_1' => '111222333444555',
+        'purchase_cost' => 50000.00,
+        'selling_price' => 60000.00,
+        'status' => 'In Stock',
+    ]);
+    app()->forgetInstance('shop.id');
+
+    expect($device->status)->toBe('in_stock');
+    expect($device->isAvailable())->toBeTrue();
+
+    $response = $this->actingAs($cashier, 'web')
+        ->postJson(route('shop.pos.checkout'), [
+            'customer_name' => 'Shelini Senevirathna',
+            'customer_phone' => '0768794565',
+            'items' => [
+                [
+                    'phone_device_id' => $device->id,
+                    'item_name' => 'Apple 12 pro',
+                    'quantity' => 1,
+                    'unit_price' => 60000.00,
+                ],
+            ],
+            'payments' => [
+                ['payment_method' => 'cash', 'amount' => 60000.00],
+            ],
+        ]);
+
+    $response->assertCreated();
+    $response->assertJsonPath('success', true);
+    expect($device->fresh()->status)->toBe('sold');
+    expect($device->fresh()->sale_id)->not->toBeNull();
+});
+
+test('POS checkout with bank transfer uploads slip and attaches to sale and payment', function (): void {
+    Storage::fake('public');
+
+    $shop = Shop::factory()->create();
+    $cashier = User::factory()->create(['shop_id' => $shop->id]);
+    $cashier->assignRole('Cashier');
+
+    app()->instance('shop.id', $shop->id);
+    $device = PhoneDevice::create([
+        'shop_id' => $shop->id,
+        'brand' => 'Apple',
+        'model' => 'iPhone 15 Pro',
+        'condition' => 'brand_new',
+        'imei_1' => '999888777666555',
+        'purchase_cost' => 200000.00,
+        'selling_price' => 250000.00,
+        'status' => 'in_stock',
+    ]);
+    app()->forgetInstance('shop.id');
+
+    $fakeSlip = UploadedFile::fake()->create('bank_deposit_slip.jpg', 500, 'image/jpeg');
+
+    $response = $this->actingAs($cashier, 'web')
+        ->post(route('shop.pos.checkout'), [
+            'customer_name' => 'Kasun Perera',
+            'customer_phone' => '0771234567',
+            'items' => [
+                [
+                    'phone_device_id' => $device->id,
+                    'item_name' => 'Apple iPhone 15 Pro',
+                    'quantity' => 1,
+                    'unit_price' => 250000.00,
+                ],
+            ],
+            'payments' => [
+                [
+                    'payment_method' => 'bank_transfer',
+                    'amount' => 250000.00,
+                    'reference' => 'TXN-BANK-123456',
+                ],
+            ],
+            'bank_slip' => $fakeSlip,
+        ], ['Accept' => 'application/json']);
+
+    $response->assertCreated();
+    $response->assertJsonPath('success', true);
+
+    $sale = Sale::withoutGlobalScopes()->where('shop_id', $shop->id)->latest('id')->first();
+    expect($sale->bank_slip_path)->not->toBeNull();
+    expect($sale->bank_slip_url)->not->toBeNull();
+    Storage::disk('public')->assertExists($sale->bank_slip_path);
+
+    $payment = $sale->payments()->withoutGlobalScopes()->first();
+    expect($payment)->not->toBeNull();
+    expect($payment->payment_method)->toBe('bank_transfer');
+    expect($payment->reference)->toBe('TXN-BANK-123456');
+    expect($payment->slip_path)->toBe($sale->bank_slip_path);
+    expect($payment->slip_url)->not->toBeNull();
+});
+
+test('POS checkout with card payment processes sale and records terminal reference and slip', function (): void {
+    Storage::fake('public');
+
+    $shop = Shop::factory()->create();
+    $cashier = User::factory()->create(['shop_id' => $shop->id]);
+    $cashier->assignRole('Cashier');
+
+    app()->instance('shop.id', $shop->id);
+    $device = PhoneDevice::create([
+        'shop_id' => $shop->id,
+        'brand' => 'Apple',
+        'model' => 'iPhone 13 Pro',
+        'condition' => 'brand_new',
+        'imei_1' => '999999999999999',
+        'purchase_cost' => 60000.00,
+        'selling_price' => 70000.00,
+        'status' => 'in_stock',
+    ]);
+    app()->forgetInstance('shop.id');
+
+    $fakeCardSlip = UploadedFile::fake()->create('pos_card_terminal_slip.png', 300, 'image/png');
+
+    $response = $this->actingAs($cashier, 'web')
+        ->post(route('shop.pos.checkout'), [
+            'customer_name' => 'Walk-in Customer',
+            'customer_phone' => '0778899112',
+            'items' => [
+                [
+                    'phone_device_id' => $device->id,
+                    'item_name' => 'Apple iPhone 13 Pro',
+                    'quantity' => 1,
+                    'unit_price' => 70000.00,
+                ],
+            ],
+            'payments' => [
+                [
+                    'payment_method' => 'card',
+                    'amount' => 70000.00,
+                    'reference' => 'Visa • Auth: 648291 • Card: •••• 4321',
+                ],
+            ],
+            'card_slip' => $fakeCardSlip,
+        ], ['Accept' => 'application/json']);
+
+    $response->assertCreated();
+    $response->assertJsonPath('success', true);
+
+    $sale = Sale::withoutGlobalScopes()->where('shop_id', $shop->id)->latest('id')->first();
+    expect($sale->payment_method)->toBe('card');
+    expect($sale->bank_slip_path)->not->toBeNull();
+    Storage::disk('public')->assertExists($sale->bank_slip_path);
+
+    $payment = $sale->payments()->withoutGlobalScopes()->first();
+    expect($payment)->not->toBeNull();
+    expect($payment->payment_method)->toBe('card');
+    expect($payment->reference)->toBe('Visa • Auth: 648291 • Card: •••• 4321');
+    expect($payment->slip_path)->toBe($sale->bank_slip_path);
+    expect($payment->slip_url)->not->toBeNull();
+
+    // Verify device status is marked as sold
+    expect($device->fresh()->status)->toBe('sold');
 });
 

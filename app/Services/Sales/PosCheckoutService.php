@@ -68,7 +68,8 @@ class PosCheckoutService
                         throw new InvalidArgumentException("Device ID #{$item['phone_device_id']} does not exist in inventory.");
                     }
 
-                    if ($device->status !== 'in_stock') {
+                    $deviceStatus = strtolower(trim(str_replace(' ', '_', (string) $device->status)));
+                    if ($deviceStatus !== 'in_stock') {
                         throw new InvalidArgumentException("Device with IMEI {$device->imei_1} ({$device->model}) is already marked as '{$device->status}' and cannot be sold.");
                     }
 
@@ -177,6 +178,7 @@ class PosCheckoutService
                 'total_amount' => $totalAmount,
                 'paid_amount' => $effectivePaid,
                 'payment_method' => $primaryMethod,
+                'bank_slip_path' => $payload['bank_slip_path'] ?? $payload['card_slip_path'] ?? null,
                 'status' => $status,
                 'notes' => $payload['notes'] ?? null,
             ]);
@@ -199,11 +201,22 @@ class PosCheckoutService
 
             // 6. Record Split Payments
             foreach ($paymentsData as $pay) {
+                $slipPath = $pay['slip_path'] ?? null;
+                if (! $slipPath) {
+                    if ($pay['payment_method'] === 'bank_transfer') {
+                        $slipPath = $payload['bank_slip_path'] ?? null;
+                    } elseif ($pay['payment_method'] === 'card') {
+                        $slipPath = $payload['card_slip_path'] ?? null;
+                    }
+                }
+
                 SalePayment::create([
+                    'shop_id' => $sale->shop_id,
                     'sale_id' => $sale->id,
                     'payment_method' => $pay['payment_method'],
                     'amount' => (float) $pay['amount'],
                     'reference' => $pay['reference'] ?? null,
+                    'slip_path' => $slipPath,
                 ]);
             }
 

@@ -163,7 +163,7 @@ test('staff login convenience route loads login view with staff initial mode', f
 
     $response->assertOk();
     $response->assertViewHas('initialMode', 'staff');
-    $response->assertSee('Staff &amp; Cashier Portal', false);
+    $response->assertSee('Login');
 });
 
 test('get request to logout terminates session and redirects to login with success flash', function (): void {

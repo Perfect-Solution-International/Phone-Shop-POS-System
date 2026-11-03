@@ -51,7 +51,7 @@
                     </td>
                     <td>
                         @if($ret->sale)
-                            <a href="{{ route('shop.sales.show', $ret->sale) }}" target="_blank" style="font-family: monospace; font-weight: 700; color: #4f46e5; text-decoration: none;">
+                            <a href="{{ route('shop.sales.show', $ret->sale) }}" style="font-family: monospace; font-weight: 700; color: #4f46e5; text-decoration: none;">
                                 {{ $ret->sale->invoice_number }}
                             </a>
                         @else

@@ -30,7 +30,13 @@ class PhoneViewController extends Controller
         }
 
         if ($status = $request->input('status')) {
-            $query->where('status', $status);
+            if ($status === 'in_stock') {
+                $query->whereIn('status', ['in_stock', 'In Stock']);
+            } elseif ($status === 'sold') {
+                $query->whereIn('status', ['sold', 'Sold']);
+            } else {
+                $query->where('status', $status);
+            }
         }
 
         if ($condition = $request->input('condition')) {
@@ -41,7 +47,11 @@ class PhoneViewController extends Controller
         $brands = Brand::all();
         $suppliers = Supplier::all();
 
-        return view('shop.phones.index', compact('phones', 'brands', 'suppliers'));
+        $inStockCount = PhoneDevice::whereIn('status', ['in_stock', 'In Stock'])->count();
+        $soldCount = PhoneDevice::whereIn('status', ['sold', 'Sold'])->count();
+        $totalCount = PhoneDevice::count();
+
+        return view('shop.phones.index', compact('phones', 'brands', 'suppliers', 'inStockCount', 'soldCount', 'totalCount'));
     }
 
     public function store(Request $request): RedirectResponse
