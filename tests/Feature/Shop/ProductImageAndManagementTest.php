@@ -230,3 +230,62 @@ test('shop owner can create product with on-the-fly new category name', function
     expect($category)->not->toBeNull();
     expect($category->name)->toBe('Protective Back Covers');
 });
+
+test('shop owner can register and update product with supplier and view supplier relationship', function (): void {
+    $shop = Shop::factory()->create();
+    $owner = User::factory()->create(['shop_id' => $shop->id]);
+    $owner->assignRole('Shop Owner');
+
+    app()->instance('shop.id', $shop->id);
+    $supplier = \App\Models\Supplier::create([
+        'shop_id' => $shop->id,
+        'name' => 'Lanka Accessories Hub',
+        'phone' => '0771234567',
+    ]);
+    app()->forgetInstance('shop.id');
+
+    $response = $this->actingAs($owner, 'web')
+        ->post(route('shop.products.store'), [
+            'name' => 'Baseus 65W GaN Charger',
+            'cost_price' => 5000,
+            'selling_price' => 7500,
+            'stock_quantity' => 20,
+            'supplier_id' => $supplier->id,
+        ]);
+
+    $response->assertRedirect(route('shop.products'));
+
+    $product = Product::withoutGlobalScopes()->where('name', 'Baseus 65W GaN Charger')->first();
+    expect($product)->not->toBeNull();
+    expect($product->supplier_id)->toBe($supplier->id);
+
+    // Verify supplier is displayed in view
+    $viewResponse = $this->actingAs($owner, 'web')->get(route('shop.products'));
+    $viewResponse->assertOk();
+    $viewResponse->assertSee('Lanka Accessories Hub');
+
+    app()->instance('shop.id', $shop->id);
+    $supplier2 = \App\Models\Supplier::create([
+        'shop_id' => $shop->id,
+        'name' => 'Global Tech Importers',
+        'phone' => '0719876543',
+    ]);
+    app()->forgetInstance('shop.id');
+
+    $updateResponse = $this->actingAs($owner, 'web')
+        ->put(route('shop.products.update', $product), [
+            'name' => 'Baseus 65W GaN Charger Pro',
+            'category_id' => $product->category_id,
+            'cost_price' => 5200,
+            'selling_price' => 7800,
+            'stock_quantity' => 25,
+            'supplier_id' => $supplier2->id,
+        ]);
+
+    $updateResponse->assertRedirect(route('shop.products'));
+    expect($product->fresh()->supplier_id)->toBe($supplier2->id);
+
+    $viewResponse2 = $this->actingAs($owner, 'web')->get(route('shop.products'));
+    $viewResponse2->assertOk();
+    $viewResponse2->assertSee('Global Tech Importers');
+});

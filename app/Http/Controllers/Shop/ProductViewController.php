@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Product;
+use App\Models\Supplier;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -18,7 +19,7 @@ class ProductViewController extends Controller
 {
     public function index(Request $request): View
     {
-        $query = Product::with(['category', 'brand']);
+        $query = Product::with(['category', 'brand', 'supplier']);
 
         if ($search = $request->input('search')) {
             $query->where(function ($q) use ($search): void {
@@ -34,8 +35,9 @@ class ProductViewController extends Controller
         $products = $query->latest()->paginate(20)->withQueryString();
         $categories = Category::withCount('products')->orderBy('name')->get();
         $brands = Brand::withCount('products')->orderBy('name')->get();
+        $suppliers = Supplier::orderBy('name')->get();
 
-        return view('shop.products.index', compact('products', 'categories', 'brands'));
+        return view('shop.products.index', compact('products', 'categories', 'brands', 'suppliers'));
     }
 
     public function store(Request $request): RedirectResponse
@@ -62,6 +64,7 @@ class ProductViewController extends Controller
             'name' => 'required|string|max:255',
             'category_id' => ['required', Rule::exists('categories', 'id')->where('shop_id', $shopId)],
             'brand_id' => ['nullable', Rule::exists('brands', 'id')->where('shop_id', $shopId)],
+            'supplier_id' => ['nullable', Rule::exists('suppliers', 'id')->where('shop_id', $shopId)],
             'barcode' => 'nullable|string|max:100',
             'sku' => 'nullable|string|max:100',
             'cost_price' => 'required|numeric|min:0',
@@ -116,6 +119,7 @@ class ProductViewController extends Controller
             'name' => 'required|string|max:255',
             'category_id' => ['required', Rule::exists('categories', 'id')->where('shop_id', $shopId)],
             'brand_id' => ['nullable', Rule::exists('brands', 'id')->where('shop_id', $shopId)],
+            'supplier_id' => ['nullable', Rule::exists('suppliers', 'id')->where('shop_id', $shopId)],
             'barcode' => 'nullable|string|max:100',
             'sku' => 'nullable|string|max:100',
             'cost_price' => 'required|numeric|min:0',

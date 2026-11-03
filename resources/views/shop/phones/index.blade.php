@@ -7,60 +7,146 @@
 @include('shop.partials.inventory-subnav')
 
 <!-- Summary Stat Cards -->
-<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.25rem;">
-    <div style="background: #ffffff; border: 1.5px solid #bbf7d0; padding: 0.9rem 1.15rem; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.03); display: flex; align-items: center; justify-content: space-between;">
+<style>
+    .phone-stat-card {
+        background: #ffffff;
+        border-radius: 14px;
+        padding: 1rem 1.25rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        text-decoration: none;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+    }
+    .phone-stat-card:hover {
+        transform: translateY(-2px);
+    }
+    .btn-copy-imei {
+        background: none;
+        border: 1px solid transparent;
+        cursor: pointer;
+        padding: 2px 4px;
+        border-radius: 4px;
+        display: inline-flex;
+        align-items: center;
+        gap: 2px;
+        transition: all 0.15s ease;
+    }
+    .btn-copy-imei:hover {
+        background: rgba(0, 0, 0, 0.06);
+    }
+    .phone-table-row {
+        transition: background-color 0.15s ease;
+    }
+    .phone-table-row:hover {
+        background-color: #f8fafc;
+    }
+</style>
+
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-bottom: 1.25rem;">
+    <!-- Available In Stock Filter Card -->
+    <a href="{{ request('status') === 'in_stock' ? route('shop.phones') : route('shop.phones', ['status' => 'in_stock']) }}" 
+       class="phone-stat-card"
+       style="border: 1.5px solid {{ request('status') === 'in_stock' ? '#10b981' : '#bbf7d0' }}; box-shadow: {{ request('status') === 'in_stock' ? '0 0 0 3px rgba(16, 185, 129, 0.15), 0 4px 12px rgba(0,0,0,0.04)' : '0 1px 3px rgba(0,0,0,0.03)' }}; background: {{ request('status') === 'in_stock' ? '#f0fdf4' : '#ffffff' }};"
+       title="{{ request('status') === 'in_stock' ? 'Showing in-stock phones (Click to clear filter)' : 'Click to filter only in-stock phones' }}">
         <div>
-            <div style="font-size: 0.72rem; font-weight: 750; color: #166534; text-transform: uppercase; letter-spacing: 0.04em;">Available In Stock</div>
-            <div style="font-size: 1.45rem; font-weight: 900; color: #15803d; margin-top: 2px;">{{ number_format($inStockCount ?? 0) }} <span style="font-size: 0.8rem; font-weight: 600; color: #16a34a;">units</span></div>
+            <div style="font-size: 0.72rem; font-weight: 750; color: #166534; text-transform: uppercase; letter-spacing: 0.05em; display: flex; align-items: center; gap: 0.4rem;">
+                <span>Available In Stock</span>
+                @if(request('status') === 'in_stock')
+                    <span style="font-size: 0.62rem; padding: 1px 6px; border-radius: 9999px; background: #166534; color: #ffffff; font-weight: 800;">ACTIVE</span>
+                @endif
+            </div>
+            <div style="font-size: 1.55rem; font-weight: 850; color: #15803d; margin-top: 2px; display: flex; align-items: baseline; gap: 0.35rem;">
+                <span>{{ number_format($inStockCount ?? 0) }}</span>
+                <span style="font-size: 0.8rem; font-weight: 600; color: #16a34a;">{{ ($inStockCount ?? 0) === 1 ? 'unit' : 'units' }}</span>
+            </div>
         </div>
-        <div style="width: 40px; height: 40px; border-radius: 10px; background: #dcfce7; color: #16a34a; display: flex; align-items: center; justify-content: center;">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+        <div style="width: 42px; height: 42px; border-radius: 10px; background: #dcfce7; color: #16a34a; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
         </div>
-    </div>
-    <div style="background: #ffffff; border: 1.5px solid #fecaca; padding: 0.9rem 1.15rem; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.03); display: flex; align-items: center; justify-content: space-between;">
+    </a>
+
+    <!-- Sold Out Devices Filter Card -->
+    <a href="{{ request('status') === 'sold' ? route('shop.phones') : route('shop.phones', ['status' => 'sold']) }}" 
+       class="phone-stat-card"
+       style="border: 1.5px solid {{ request('status') === 'sold' ? '#f43f5e' : '#fecaca' }}; box-shadow: {{ request('status') === 'sold' ? '0 0 0 3px rgba(244, 63, 94, 0.15), 0 4px 12px rgba(0,0,0,0.04)' : '0 1px 3px rgba(0,0,0,0.03)' }}; background: {{ request('status') === 'sold' ? '#fff1f2' : '#ffffff' }};"
+       title="{{ request('status') === 'sold' ? 'Showing sold devices (Click to clear filter)' : 'Click to filter only sold devices' }}">
         <div>
-            <div style="font-size: 0.72rem; font-weight: 750; color: #991b1b; text-transform: uppercase; letter-spacing: 0.04em;">Sold Out Devices</div>
-            <div style="font-size: 1.45rem; font-weight: 900; color: #b91c1c; margin-top: 2px;">{{ number_format($soldCount ?? 0) }} <span style="font-size: 0.8rem; font-weight: 600; color: #dc2626;">units</span></div>
+            <div style="font-size: 0.72rem; font-weight: 750; color: #991b1b; text-transform: uppercase; letter-spacing: 0.05em; display: flex; align-items: center; gap: 0.4rem;">
+                <span>Sold Out Devices</span>
+                @if(request('status') === 'sold')
+                    <span style="font-size: 0.62rem; padding: 1px 6px; border-radius: 9999px; background: #991b1b; color: #ffffff; font-weight: 800;">ACTIVE</span>
+                @endif
+            </div>
+            <div style="font-size: 1.55rem; font-weight: 850; color: #b91c1c; margin-top: 2px; display: flex; align-items: baseline; gap: 0.35rem;">
+                <span>{{ number_format($soldCount ?? 0) }}</span>
+                <span style="font-size: 0.8rem; font-weight: 600; color: #dc2626;">{{ ($soldCount ?? 0) === 1 ? 'unit' : 'units' }}</span>
+            </div>
         </div>
-        <div style="width: 40px; height: 40px; border-radius: 10px; background: #fee2e2; color: #dc2626; display: flex; align-items: center; justify-content: center;">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        <div style="width: 42px; height: 42px; border-radius: 10px; background: #fee2e2; color: #dc2626; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
         </div>
-    </div>
-    <div style="background: #ffffff; border: 1.5px solid #e2e8f0; padding: 0.9rem 1.15rem; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.03); display: flex; align-items: center; justify-content: space-between;">
+    </a>
+
+    <!-- Total Registered Phones Card -->
+    <a href="{{ route('shop.phones') }}" 
+       class="phone-stat-card"
+       style="border: 1.5px solid {{ (!request('status') && !request('condition') && !request('search')) ? '#6366f1' : '#e2e8f0' }}; box-shadow: {{ (!request('status') && !request('condition') && !request('search')) ? '0 0 0 3px rgba(99, 102, 241, 0.12), 0 4px 12px rgba(0,0,0,0.04)' : '0 1px 3px rgba(0,0,0,0.03)' }}; background: {{ (!request('status') && !request('condition') && !request('search')) ? '#f5f3ff' : '#ffffff' }};"
+       title="Click to view all registered devices">
         <div>
-            <div style="font-size: 0.72rem; font-weight: 750; color: #475569; text-transform: uppercase; letter-spacing: 0.04em;">Total Registered Phones</div>
-            <div style="font-size: 1.45rem; font-weight: 900; color: #0f172a; margin-top: 2px;">{{ number_format($totalCount ?? 0) }} <span style="font-size: 0.8rem; font-weight: 600; color: #64748b;">units</span></div>
+            <div style="font-size: 0.72rem; font-weight: 750; color: #4338ca; text-transform: uppercase; letter-spacing: 0.05em; display: flex; align-items: center; gap: 0.4rem;">
+                <span>Total Registered Phones</span>
+                @if(!request('status') && !request('condition') && !request('search'))
+                    <span style="font-size: 0.62rem; padding: 1px 6px; border-radius: 9999px; background: #4338ca; color: #ffffff; font-weight: 800;">ALL</span>
+                @endif
+            </div>
+            <div style="font-size: 1.55rem; font-weight: 850; color: #0f172a; margin-top: 2px; display: flex; align-items: baseline; gap: 0.35rem;">
+                <span>{{ number_format($totalCount ?? 0) }}</span>
+                <span style="font-size: 0.8rem; font-weight: 600; color: #64748b;">{{ ($totalCount ?? 0) === 1 ? 'device' : 'devices' }}</span>
+            </div>
         </div>
-        <div style="width: 40px; height: 40px; border-radius: 10px; background: #f1f5f9; color: #475569; display: flex; align-items: center; justify-content: center;">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="5" y="2" width="14" height="20" rx="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
+        <div style="width: 42px; height: 42px; border-radius: 10px; background: #ede9fe; color: #6366f1; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="5" y="2" width="14" height="20" rx="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
         </div>
-    </div>
+    </a>
 </div>
 
-<div class="card">
-    <div class="card-header" style="flex-wrap: wrap; gap: 1rem;">
-        <form method="GET" action="{{ route('shop.phones') }}" style="display: flex; gap: 0.75rem; flex: 1; flex-wrap: wrap;">
-            <input type="text" name="search" class="form-control" style="max-width: 280px;" placeholder="Search IMEI 1, IMEI 2, Model..." value="{{ request('search') }}">
-            <select name="status" class="form-control" style="max-width: 150px;" onchange="this.form.submit()">
+<div class="card" style="border-radius: 14px; overflow: visible; box-shadow: 0 2px 8px rgba(0,0,0,0.04);">
+    <div class="card-header" style="flex-wrap: wrap; gap: 0.85rem; padding: 1rem 1.25rem; background: #ffffff; border-bottom: 1px solid var(--surface-border); display: flex; align-items: center; justify-content: space-between;">
+        <form method="GET" action="{{ route('shop.phones') }}" style="display: flex; gap: 0.65rem; flex: 1; flex-wrap: wrap; align-items: center;">
+            <div style="position: relative; flex: 1; min-width: 240px; max-width: 340px;">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2.3" style="position: absolute; left: 0.85rem; top: 50%; transform: translateY(-50%); pointer-events: none;">
+                    <circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+                <input type="text" name="search" class="form-control" style="padding-left: 2.35rem; border-radius: 9px; font-size: 0.85rem; height: 38px;" placeholder="Search IMEI 1, IMEI 2, Model, S/N..." value="{{ request('search') }}">
+            </div>
+            <select name="status" class="form-control" style="width: auto; min-width: 135px; border-radius: 9px; font-size: 0.85rem; height: 38px;" onchange="this.form.submit()">
                 <option value="">All Statuses</option>
-                <option value="in_stock" {{ request('status') === 'in_stock' ? 'selected' : '' }}>In Stock</option>
-                <option value="sold" {{ request('status') === 'sold' ? 'selected' : '' }}>Sold</option>
-                <option value="reserved" {{ request('status') === 'reserved' ? 'selected' : '' }}>Reserved</option>
-                <option value="returned" {{ request('status') === 'returned' ? 'selected' : '' }}>Returned</option>
+                <option value="in_stock" {{ request('status') === 'in_stock' ? 'selected' : '' }}>● In Stock</option>
+                <option value="sold" {{ request('status') === 'sold' ? 'selected' : '' }}>● Sold</option>
+                <option value="reserved" {{ request('status') === 'reserved' ? 'selected' : '' }}>● Reserved</option>
+                <option value="returned" {{ request('status') === 'returned' ? 'selected' : '' }}>● Returned</option>
             </select>
-            <select name="condition" class="form-control" style="max-width: 150px;" onchange="this.form.submit()">
+            <select name="condition" class="form-control" style="width: auto; min-width: 145px; border-radius: 9px; font-size: 0.85rem; height: 38px;" onchange="this.form.submit()">
                 <option value="">All Conditions</option>
-                <option value="new" {{ request('condition') === 'new' ? 'selected' : '' }}>Brand New</option>
-                <option value="used" {{ request('condition') === 'used' ? 'selected' : '' }}>Used / Pre-owned</option>
-                <option value="refurbished" {{ request('condition') === 'refurbished' ? 'selected' : '' }}>Refurbished</option>
+                <option value="new" {{ request('condition') === 'new' ? 'selected' : '' }}>✨ Brand New</option>
+                <option value="used" {{ request('condition') === 'used' ? 'selected' : '' }}>🔄 Pre-Owned</option>
+                <option value="refurbished" {{ request('condition') === 'refurbished' ? 'selected' : '' }}>🛠️ Refurbished</option>
             </select>
-            <button type="submit" class="btn btn-secondary btn-sm">Filter</button>
+            <button type="submit" class="btn btn-secondary" style="height: 38px; padding: 0 1rem; border-radius: 9px; font-weight: 600; font-size: 0.825rem;">
+                Filter
+            </button>
             @if(request()->hasAny(['search', 'status', 'condition']))
-                <a href="{{ route('shop.phones') }}" class="btn btn-sm btn-secondary" style="color: #64748b;">Clear</a>
+                <a href="{{ route('shop.phones') }}" class="btn btn-secondary" style="height: 38px; padding: 0 0.85rem; border-radius: 9px; font-weight: 600; font-size: 0.825rem; color: #ef4444; border-color: #fecaca; background: #fff5f5; display: inline-flex; align-items: center; gap: 0.3rem;" title="Clear all filters">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                    Clear
+                </a>
             @endif
         </form>
 
-        <button type="button" class="btn btn-primary" onclick="openModal('addPhoneModal')" style="display: inline-flex; align-items: center; gap: 0.4rem; font-weight: 700;">
+        <button type="button" class="btn btn-primary" onclick="openModal('addPhoneModal')" style="height: 38px; padding: 0 1.15rem; border-radius: 9px; font-weight: 700; font-size: 0.875rem; box-shadow: 0 2px 8px rgba(79, 70, 229, 0.25); display: inline-flex; align-items: center; gap: 0.4rem;">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
             Register Phone
         </button>
@@ -69,133 +155,176 @@
     <div class="table-responsive">
         <table class="data-table">
             <thead>
-                <tr>
-                    <th>Device &amp; Model</th>
-                    <th>IMEI 1 &amp; IMEI 2</th>
-                    <th>Specification</th>
-                    <th>In Stock</th>
-                    <th>Condition</th>
-                    <th>Purchase Cost</th>
-                    <th>Selling Price</th>
-                    <th>Status</th>
-                    <th style="text-align: right;">Actions</th>
+                <tr style="background: #f8fafc; border-bottom: 1.5px solid var(--surface-border);">
+                    <th style="padding: 0.85rem 1rem; font-size: 0.72rem; font-weight: 750; color: #64748b; letter-spacing: 0.05em; text-transform: uppercase;">Device &amp; Model</th>
+                    <th style="padding: 0.85rem 1rem; font-size: 0.72rem; font-weight: 750; color: #64748b; letter-spacing: 0.05em; text-transform: uppercase;">IMEI 1 &amp; IMEI 2</th>
+                    <th style="padding: 0.85rem 1rem; font-size: 0.72rem; font-weight: 750; color: #64748b; letter-spacing: 0.05em; text-transform: uppercase;">Specification</th>
+                    <th style="padding: 0.85rem 1rem; font-size: 0.72rem; font-weight: 750; color: #64748b; letter-spacing: 0.05em; text-transform: uppercase;">In Stock</th>
+                    <th style="padding: 0.85rem 1rem; font-size: 0.72rem; font-weight: 750; color: #64748b; letter-spacing: 0.05em; text-transform: uppercase;">Condition</th>
+                    <th style="padding: 0.85rem 1rem; font-size: 0.72rem; font-weight: 750; color: #64748b; letter-spacing: 0.05em; text-transform: uppercase;">Purchase Cost</th>
+                    <th style="padding: 0.85rem 1rem; font-size: 0.72rem; font-weight: 750; color: #64748b; letter-spacing: 0.05em; text-transform: uppercase;">Selling Price</th>
+                    <th style="padding: 0.85rem 1rem; font-size: 0.72rem; font-weight: 750; color: #64748b; letter-spacing: 0.05em; text-transform: uppercase;">Status</th>
+                    <th style="padding: 0.85rem 1rem; font-size: 0.72rem; font-weight: 750; color: #64748b; letter-spacing: 0.05em; text-transform: uppercase; text-align: right;">Actions</th>
                 </tr>
             </thead>
             <tbody>
                 @forelse($phones as $phone)
-                <tr>
+                <tr class="phone-table-row">
                     <td>
-                        <div style="display: flex; align-items: center; gap: 0.75rem;">
+                        <div style="display: flex; align-items: center; gap: 0.85rem;">
                             @if($phone->image_url)
                                 <div style="position: relative; display: inline-block; flex-shrink: 0;">
                                     <img src="{{ $phone->image_url }}" 
                                          alt="{{ $phone->brand }} {{ $phone->model }}"
                                          data-title="{{ $phone->brand }} {{ $phone->model }} (IMEI: {{ $phone->imei_1 }})"
                                          data-delete-url="{{ route('shop.phones.delete-image', $phone) }}"
-                                         style="width: 50px; height: 50px; min-width: 50px; object-fit: cover; border-radius: 8px; border: 1.5px solid var(--surface-border); box-shadow: 0 1px 3px rgba(0,0,0,0.06); cursor: pointer;"
+                                         style="width: 48px; height: 48px; min-width: 48px; object-fit: cover; border-radius: 10px; border: 1.5px solid #e2e8f0; box-shadow: 0 1px 4px rgba(0,0,0,0.06); cursor: pointer; transition: transform 0.15s ease;"
+                                         onmouseover="this.style.transform='scale(1.05)'"
+                                         onmouseout="this.style.transform='scale(1)'"
                                          onclick="handlePhoneLightboxClick(this)"
                                          title="Click to view full photo">
                                     <form method="POST" action="{{ route('shop.phones.delete-image', $phone) }}" data-confirm="Delete photo for {{ $phone->brand }} {{ $phone->model }}?" onsubmit="return confirm(this.getAttribute('data-confirm'));" style="margin: 0; position: absolute; top: -5px; right: -5px;">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" title="Delete image" style="width: 18px; height: 18px; border-radius: 50%; background: #dc2626; color: #ffffff; border: 2px solid #ffffff; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 11px; line-height: 1; padding: 0; box-shadow: 0 1px 3px rgba(0,0,0,0.2);">&times;</button>
+                                        <button type="submit" title="Delete image" style="width: 18px; height: 18px; border-radius: 50%; background: #ef4444; color: #ffffff; border: 2px solid #ffffff; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 11px; line-height: 1; padding: 0; box-shadow: 0 1px 3px rgba(0,0,0,0.2);">&times;</button>
                                     </form>
                                 </div>
                             @else
-                                <div style="width: 50px; height: 50px; min-width: 50px; border-radius: 8px; background: #f8fafc; border: 1.5px solid var(--surface-border); display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: #94a3b8;" title="No image uploaded">
-                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="5" y="2" width="14" height="20" rx="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
+                                <div style="width: 48px; height: 48px; min-width: 48px; border-radius: 10px; background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); border: 1.5px solid #e2e8f0; display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: #94a3b8;" title="No image uploaded">
+                                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="5" y="2" width="14" height="20" rx="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
                                 </div>
                             @endif
                             <div style="min-width: 0;">
-                                <strong style="color: var(--text-heading); font-size: 0.9375rem; display: block;">{{ $phone->brand }} {{ $phone->model }}</strong>
-                                @if($phone->serial_number)
-                                    <div style="font-size: 0.75rem; color: var(--text-muted);">S/N: {{ $phone->serial_number }}</div>
-                                @endif
-                                @if($phone->supplier)
-                                    <div style="font-size: 0.75rem; color: #4f46e5; margin-top: 2px;">
-                                        Supplier: {{ $phone->supplier->name }}
-                                    </div>
-                                @endif
+                                <div style="color: var(--text-heading); font-size: 0.9375rem; font-weight: 750; line-height: 1.25;">{{ $phone->brand }} {{ $phone->model }}</div>
+                                <div style="display: flex; flex-wrap: wrap; gap: 0.35rem; align-items: center; margin-top: 0.3rem;">
+                                    @if($phone->serial_number)
+                                        <span style="display: inline-flex; align-items: center; gap: 0.2rem; font-family: monospace; font-size: 0.7rem; background: #f1f5f9; color: #475569; padding: 0.12rem 0.4rem; border-radius: 4px; border: 1px solid #e2e8f0;" title="Serial Number">
+                                            SN: {{ $phone->serial_number }}
+                                        </span>
+                                    @endif
+                                    @if($phone->supplier)
+                                        <span style="display: inline-flex; align-items: center; gap: 0.25rem; font-size: 0.7rem; background: #eef2ff; color: #4f46e5; padding: 0.12rem 0.45rem; border-radius: 4px; border: 1px solid #c7d2fe; font-weight: 600;" title="Supplier">
+                                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                                            {{ $phone->supplier->name }}
+                                        </span>
+                                    @endif
+                                </div>
                             </div>
                         </div>
                     </td>
                     <td>
-                        <div style="font-family: monospace; font-size: 0.8125rem; font-weight: 600; color: #0284c7;">
-                            IMEI 1: {{ $phone->imei_1 }}
-                        </div>
-                        @if($phone->imei_2)
-                            <div style="font-family: monospace; font-size: 0.75rem; color: #64748b; margin-top: 2px;">
-                                IMEI 2: {{ $phone->imei_2 }}
+                        <div style="display: flex; flex-direction: column; gap: 0.35rem;">
+                            <div style="display: inline-flex; align-items: center; gap: 0.35rem; background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 6px; padding: 0.18rem 0.45rem; width: fit-content;">
+                                <span style="font-size: 0.68rem; font-weight: 800; color: #0284c7; text-transform: uppercase;">IMEI 1:</span>
+                                <span style="font-family: 'JetBrains Mono', monospace; font-size: 0.8125rem; font-weight: 700; color: #0369a1; letter-spacing: 0.02em;">{{ $phone->imei_1 }}</span>
+                                <button type="button" class="btn-copy-imei" onclick="copyImei('{{ $phone->imei_1 }}', this)" title="Copy IMEI 1">
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#0284c7" stroke-width="2.3"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                                </button>
                             </div>
-                        @endif
-                    </td>
-                    <td>
-                        <span style="font-size: 0.8125rem;">
-                            {{ $phone->color ?? 'Standard' }}
-                            @if($phone->storage || $phone->ram)
-                                • {{ $phone->ram ? $phone->ram.'/' : '' }}{{ $phone->storage }}
+                            @if($phone->imei_2)
+                                <div style="display: inline-flex; align-items: center; gap: 0.35rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 0.18rem 0.45rem; width: fit-content;">
+                                    <span style="font-size: 0.68rem; font-weight: 800; color: #64748b; text-transform: uppercase;">IMEI 2:</span>
+                                    <span style="font-family: 'JetBrains Mono', monospace; font-size: 0.775rem; font-weight: 600; color: #475569; letter-spacing: 0.02em;">{{ $phone->imei_2 }}</span>
+                                    <button type="button" class="btn-copy-imei" onclick="copyImei('{{ $phone->imei_2 }}', this)" title="Copy IMEI 2">
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2.3"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                                    </button>
+                                </div>
                             @endif
-                        </span>
+                        </div>
+                    </td>
+                    <td>
+                        <div>
+                            <div style="font-size: 0.8125rem; font-weight: 600; color: var(--text-heading);">{{ $phone->color ?? 'Standard Color' }}</div>
+                            @if($phone->storage || $phone->ram)
+                                <div style="font-size: 0.75rem; color: #64748b; margin-top: 2px; font-weight: 500;">
+                                    {{ $phone->ram ? $phone->ram.' RAM • ' : '' }}{{ $phone->storage ?? '' }}
+                                </div>
+                            @endif
+                        </div>
                     </td>
                     <td>
                         @if($phone->status === 'in_stock')
-                            <strong style="font-size: 1rem; color: #15803d;">1</strong>
-                            <span style="font-size: 0.75rem; color: var(--text-muted);">unit</span>
+                            <span style="display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.28rem 0.65rem; border-radius: 9999px; background: #ecfdf5; color: #047857; font-size: 0.78rem; font-weight: 750; border: 1px solid #a7f3d0; white-space: nowrap;">
+                                <span style="width: 7px; height: 7px; border-radius: 50%; background: #10b981; display: inline-block;"></span>
+                                1 in stock
+                            </span>
                         @elseif($phone->status === 'sold')
-                            <strong style="font-size: 1rem; color: #b91c1c;">0</strong>
-                            <span style="font-size: 0.75rem; color: var(--text-muted);">units</span>
+                            <span style="display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.28rem 0.65rem; border-radius: 9999px; background: #fff1f2; color: #be123c; font-size: 0.78rem; font-weight: 750; border: 1px solid #fecdd3; white-space: nowrap;">
+                                <span style="width: 7px; height: 7px; border-radius: 50%; background: #f43f5e; display: inline-block;"></span>
+                                0 in stock
+                            </span>
                         @else
-                            <strong style="font-size: 1rem; color: #d97706;">0</strong>
-                            <span style="font-size: 0.75rem; color: var(--text-muted);">units</span>
+                            <span style="display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.28rem 0.65rem; border-radius: 9999px; background: #fffbeb; color: #b45309; font-size: 0.78rem; font-weight: 750; border: 1px solid #fde68a; white-space: nowrap;">
+                                <span style="width: 7px; height: 7px; border-radius: 50%; background: #f59e0b; display: inline-block;"></span>
+                                0 units
+                            </span>
                         @endif
                     </td>
                     <td>
                         @if($phone->condition === 'new')
-                            <span class="badge badge-success">New</span>
+                            <span style="display: inline-flex; align-items: center; gap: 0.25rem; padding: 0.25rem 0.6rem; border-radius: 6px; font-size: 0.75rem; font-weight: 700; background: #ecfdf5; color: #059669; border: 1px solid #a7f3d0;">
+                                ✨ New
+                            </span>
                         @elseif($phone->condition === 'used')
-                            <span class="badge badge-warning">Used</span>
+                            <span style="display: inline-flex; align-items: center; gap: 0.25rem; padding: 0.25rem 0.6rem; border-radius: 6px; font-size: 0.75rem; font-weight: 700; background: #f0f9ff; color: #0284c7; border: 1px solid #bae6fd;">
+                                🔄 Used
+                            </span>
                         @else
-                            <span class="badge badge-purple">Refurbished</span>
+                            <span style="display: inline-flex; align-items: center; gap: 0.25rem; padding: 0.25rem 0.6rem; border-radius: 6px; font-size: 0.75rem; font-weight: 700; background: #f5f3ff; color: #7c3aed; border: 1px solid #ddd6fe;">
+                                🛠️ Refurbished
+                            </span>
                         @endif
                     </td>
-                    <td style="color: var(--text-muted); font-size: 0.8125rem;">LKR {{ number_format($phone->purchase_cost, 2) }}</td>
-                    <td style="font-weight: 700; color: #166534;">LKR {{ number_format($phone->selling_price, 2) }}</td>
+                    <td style="color: #64748b; font-size: 0.8125rem; font-weight: 600;">LKR {{ number_format($phone->purchase_cost, 2) }}</td>
+                    <td>
+                        <span style="font-weight: 800; color: #047857; font-size: 0.9375rem; letter-spacing: -0.01em;">
+                            LKR {{ number_format($phone->selling_price, 2) }}
+                        </span>
+                    </td>
                     <td>
                         @if($phone->status === 'in_stock')
-                            <span class="badge badge-success">In Stock</span>
+                            <span style="display: inline-flex; align-items: center; gap: 0.3rem; padding: 0.25rem 0.6rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 700; background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0;">
+                                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                                In Stock
+                            </span>
                         @elseif($phone->status === 'sold')
-                            <span class="badge badge-danger" style="font-size: 0.75rem; font-weight: 800;">✓ Sold (Stock Deducted)</span>
+                            <span style="display: inline-flex; align-items: center; gap: 0.3rem; padding: 0.25rem 0.6rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 750; background: #fee2e2; color: #991b1b; border: 1px solid #fecaca;">
+                                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                                Sold (Stock Deducted)
+                            </span>
                             @if($phone->sale && $phone->sale->customer)
-                                <div style="margin-top: 4px; padding: 0.35rem 0.5rem; background: #eff6ff; border-radius: 6px; border: 1px solid #bfdbfe; font-size: 0.75rem; line-height: 1.35; display: flex; flex-direction: column; gap: 0.15rem;">
-                                    <div style="font-weight: 800; color: #1e40af; display: inline-flex; align-items: center; gap: 0.25rem;">
-                                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                                <div style="margin-top: 6px; padding: 0.45rem 0.6rem; background: #eff6ff; border-radius: 8px; border: 1px solid #bfdbfe; font-size: 0.75rem; line-height: 1.35; display: flex; flex-direction: column; gap: 0.2rem;">
+                                    <div style="font-weight: 800; color: #1e40af; display: inline-flex; align-items: center; gap: 0.3rem;">
+                                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
                                         <span>{{ $phone->sale->customer->name }}</span>
                                     </div>
-                                    <div style="font-size: 0.7rem; color: #2563eb; font-weight: 600; display: inline-flex; align-items: center; gap: 0.25rem;">
-                                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
-                                        <span>{{ $phone->sale->customer->phone }}</span>
+                                    <div style="font-size: 0.72rem; color: #2563eb; font-weight: 600; display: inline-flex; align-items: center; gap: 0.3rem;">
+                                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                                        <a href="tel:{{ $phone->sale->customer->phone }}" style="color: inherit; text-decoration: none;">{{ $phone->sale->customer->phone }}</a>
                                     </div>
                                     @if($phone->sale->customer->nic)
-                                        <div style="font-size: 0.68rem; color: #64748b; display: inline-flex; align-items: center; gap: 0.25rem;">
-                                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="4" width="18" height="16" rx="2"></rect><line x1="7" y1="8" x2="17" y2="8"></line><line x1="7" y1="12" x2="13" y2="12"></line></svg>
+                                        <div style="font-size: 0.68rem; color: #64748b; display: inline-flex; align-items: center; gap: 0.3rem;">
+                                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="4" width="18" height="16" rx="2"></rect><line x1="7" y1="8" x2="17" y2="8"></line><line x1="7" y1="12" x2="13" y2="12"></line></svg>
                                             <span>{{ $phone->sale->customer->nic }}</span>
                                         </div>
                                     @endif
-                                    <div style="font-size: 0.68rem; color: #4338ca; font-family: monospace; margin-top: 2px;">
-                                        <a href="{{ route('shop.sales.show', $phone->sale) }}" style="text-decoration: underline; color: inherit;">
+                                    <div style="font-size: 0.7rem; color: #4338ca; font-family: monospace; font-weight: 700; margin-top: 2px;">
+                                        <a href="{{ route('shop.sales.show', $phone->sale) }}" style="text-decoration: underline; color: inherit; display: inline-flex; align-items: center; gap: 0.25rem;">
                                             #{{ $phone->sale->invoice_number }}
+                                            <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
                                         </a>
                                     </div>
                                 </div>
                             @elseif($phone->sale)
-                                <div style="font-size: 0.7rem; color: #4338ca; margin-top: 2px;">
-                                    <a href="{{ route('shop.sales.show', $phone->sale) }}" style="text-decoration: underline; color: inherit; font-family: monospace;">
+                                <div style="font-size: 0.72rem; color: #4338ca; margin-top: 4px; font-weight: 700;">
+                                    <a href="{{ route('shop.sales.show', $phone->sale) }}" style="text-decoration: underline; color: inherit; font-family: monospace; display: inline-flex; align-items: center; gap: 0.25rem;">
                                         #{{ $phone->sale->invoice_number }}
+                                        <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
                                     </a>
                                 </div>
                             @endif
                             @if($phone->sold_at)
-                                <div style="font-size: 0.68rem; color: #64748b; margin-top: 2px; display: inline-flex; align-items: center; gap: 0.25rem;">
+                                <div style="font-size: 0.7rem; color: #64748b; margin-top: 4px; display: inline-flex; align-items: center; gap: 0.3rem;">
                                     <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
                                     <span>{{ \Carbon\Carbon::parse($phone->sold_at)->format('M d, Y') }}</span>
                                 </div>
@@ -205,20 +334,21 @@
                         @endif
                     </td>
                     <td style="text-align: right; white-space: nowrap;">
-                        <div style="display: inline-flex; align-items: center; gap: 0.35rem;">
+                        <div style="display: inline-flex; align-items: center; gap: 0.4rem; justify-content: flex-end;">
                             <a href="{{ route('shop.labels.index', ['type' => 'phone', 'id' => $phone->id]) }}" 
                                class="btn btn-secondary btn-sm" 
                                title="Print IMEI Barcode Label" 
-                               style="padding: 0.3rem 0.55rem; font-size: 0.75rem; display: inline-flex; align-items: center; gap: 0.2rem; color: #4338ca; background: #eef2ff; border-color: #c7d2fe;">
-                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>
+                               style="padding: 0.32rem 0.65rem; font-size: 0.75rem; border-radius: 8px; font-weight: 600; display: inline-flex; align-items: center; gap: 0.25rem; color: #4338ca; background: #eef2ff; border-color: #c7d2fe;">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>
                                 Label
                             </a>
                             <button type="button" 
                                     class="btn btn-secondary btn-sm" 
-                                    onclick='openEditPhoneModal(@json($phone))' 
+                                    data-phone="{{ json_encode($phone) }}"
+                                    onclick="handleEditPhoneClick(this)" 
                                     title="Edit phone details" 
-                                    style="padding: 0.3rem 0.6rem; font-size: 0.75rem; display: inline-flex; align-items: center; gap: 0.25rem;">
-                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+                                    style="padding: 0.32rem 0.65rem; font-size: 0.75rem; border-radius: 8px; font-weight: 600; display: inline-flex; align-items: center; gap: 0.3rem;">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
                                 Edit
                             </button>
                             @if(! $phone->isSold() && ! $phone->sale_id)
@@ -228,12 +358,15 @@
                                 <button type="submit" 
                                         class="btn btn-danger btn-sm" 
                                         title="Delete device" 
-                                        style="padding: 0.3rem 0.55rem; font-size: 0.75rem; display: inline-flex; align-items: center; justify-content: center;">
-                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                                        style="padding: 0.32rem 0.55rem; font-size: 0.75rem; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center;">
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
                                 </button>
                             </form>
                             @else
-                            <span class="badge badge-secondary" style="font-size: 0.7rem;" title="Sold devices cannot be deleted">Sold</span>
+                            <span style="display: inline-flex; align-items: center; gap: 0.25rem; padding: 0.32rem 0.6rem; border-radius: 8px; background: #f8fafc; color: #94a3b8; font-size: 0.75rem; font-weight: 600; border: 1px solid #e2e8f0;" title="Sold devices cannot be deleted from inventory">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                                Sold
+                            </span>
                             @endif
                         </div>
                     </td>
@@ -244,10 +377,10 @@
                         <div style="width: 48px; height: 48px; border-radius: 50%; background: #f1f5f9; color: #94a3b8; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 0.75rem;">
                             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
                         </div>
-                        <div style="font-weight: 700; color: #334155; font-size: 0.95rem;">No serialized phone devices found</div>
-                        <div style="font-size: 0.8125rem; color: #94a3b8; margin: 0.25rem 0 1rem;">Register new or used phones with IMEI 1 &amp; IMEI 2 to start selling in POS.</div>
-                        <button type="button" class="btn btn-primary btn-sm" onclick="openModal('addPhoneModal')" style="display: inline-flex; align-items: center; gap: 0.35rem; font-weight: 600;">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                        <div style="font-weight: 750; color: #334155; font-size: 1rem;">No serialized phone devices found</div>
+                        <div style="font-size: 0.8125rem; color: #94a3b8; margin: 0.35rem 0 1.25rem;">Register new or pre-owned phones with IMEI 1 &amp; IMEI 2 to start selling on POS.</div>
+                        <button type="button" class="btn btn-primary btn-sm" onclick="openModal('addPhoneModal')" style="display: inline-flex; align-items: center; gap: 0.4rem; font-weight: 700; border-radius: 8px; padding: 0.5rem 1rem;">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
                             Register First Phone
                         </button>
                     </td>
@@ -571,24 +704,76 @@
 
 @push('scripts')
 <script>
+    function copyImei(text, btn) {
+        if (!text) return;
+        const doSuccess = () => {
+            const originalHTML = btn.innerHTML;
+            btn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
+            btn.setAttribute('title', 'Copied!');
+            setTimeout(() => {
+                btn.innerHTML = originalHTML;
+                btn.setAttribute('title', 'Copy IMEI');
+            }, 1800);
+        };
+
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(text).then(doSuccess).catch(() => {
+                fallbackCopyText(text, doSuccess);
+            });
+        } else {
+            fallbackCopyText(text, doSuccess);
+        }
+    }
+
+    function fallbackCopyText(text, cb) {
+        const temp = document.createElement('textarea');
+        temp.value = text;
+        temp.style.position = 'fixed';
+        temp.style.opacity = '0';
+        document.body.appendChild(temp);
+        temp.focus();
+        temp.select();
+        try {
+            document.execCommand('copy');
+            if (cb) cb();
+        } catch (e) {
+            console.warn('Copy command failed', e);
+        }
+        document.body.removeChild(temp);
+    }
+
+    function handleEditPhoneClick(btn) {
+        try {
+            const phone = JSON.parse(btn.getAttribute('data-phone'));
+            openEditPhoneModal(phone);
+        } catch (e) {
+            console.error('Failed to parse phone data for edit modal', e);
+        }
+    }
+
     function openEditPhoneModal(phone) {
         const form = document.getElementById('editPhoneForm');
         form.action = `/shop/phones/${phone.id}`;
 
-        document.getElementById('edit_phone_brand').value = phone.brand || '';
-        document.getElementById('edit_phone_model').value = phone.model || '';
-        document.getElementById('edit_phone_imei_1').value = phone.imei_1 || '';
-        document.getElementById('edit_phone_imei_2').value = phone.imei_2 || '';
-        document.getElementById('edit_phone_status').value = phone.status || 'in_stock';
-        document.getElementById('edit_phone_condition').value = phone.condition || 'new';
-        document.getElementById('edit_phone_color').value = phone.color || '';
-        document.getElementById('edit_phone_storage').value = phone.storage || '';
-        document.getElementById('edit_phone_ram').value = phone.ram || '';
-        document.getElementById('edit_phone_serial_number').value = phone.serial_number || '';
-        document.getElementById('edit_phone_purchase_cost').value = phone.purchase_cost || '0.00';
-        document.getElementById('edit_phone_selling_price').value = phone.selling_price || '0.00';
-        document.getElementById('edit_phone_supplier_id').value = phone.supplier_id || '';
-        document.getElementById('edit_phone_notes').value = phone.notes || '';
+        const setVal = (id, val) => {
+            const el = document.getElementById(id);
+            if (el) el.value = val ?? '';
+        };
+
+        setVal('edit_phone_brand', phone.brand);
+        setVal('edit_phone_model', phone.model);
+        setVal('edit_phone_imei_1', phone.imei_1);
+        setVal('edit_phone_imei_2', phone.imei_2);
+        setVal('edit_phone_status', phone.status || 'in_stock');
+        setVal('edit_phone_condition', phone.condition || 'new');
+        setVal('edit_phone_color', phone.color);
+        setVal('edit_phone_storage', phone.storage);
+        setVal('edit_phone_ram', phone.ram);
+        setVal('edit_phone_serial_number', phone.serial_number);
+        setVal('edit_phone_purchase_cost', phone.purchase_cost || '0.00');
+        setVal('edit_phone_selling_price', phone.selling_price || '0.00');
+        setVal('edit_phone_supplier_id', phone.supplier_id);
+        setVal('edit_phone_notes', phone.notes);
         updateEditPhoneStockQty(phone.status || 'in_stock');
 
         // Reset and populate image handling

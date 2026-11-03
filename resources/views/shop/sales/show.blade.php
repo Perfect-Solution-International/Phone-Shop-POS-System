@@ -193,6 +193,14 @@
                 @if($pay->reference)
                     <div style="font-size: 0.72rem; color: #64748b;">Ref: {{ $pay->reference }}</div>
                 @endif
+                @if($pay->slip_url || $sale->bank_slip_url)
+                    <div style="margin-top: 0.4rem;">
+                        <a href="{{ $pay->slip_url ?: $sale->bank_slip_url }}" target="_blank" class="btn btn-sm btn-secondary" style="font-size: 0.72rem; padding: 0.2rem 0.55rem; color: #2563eb; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 6px; font-weight: 700; text-decoration: none; display: inline-flex; align-items: center; gap: 0.25rem;">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path></svg>
+                            <span>{{ $pay->payment_method === 'card' ? 'View Card Slip' : 'View Bank Slip' }}</span>
+                        </a>
+                    </div>
+                @endif
             </div>
             @endforeach
         </div>

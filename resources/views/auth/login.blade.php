@@ -660,7 +660,7 @@
                             <circle cx="12" cy="12" r="10" stroke-opacity="0.25"></circle>
                             <path d="M12 2a10 10 0 0 1 10 10" stroke-linecap="round"></path>
                         </svg>
-                        <span id="loginSubmitText">Sign In to Workspace</span>
+                        <span id="loginSubmitText">Login</span>
                         <svg class="btn-arrow-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                             <line x1="5" y1="12" x2="19" y2="12"></line>
                             <polyline points="12 5 19 12 12 19"></polyline>

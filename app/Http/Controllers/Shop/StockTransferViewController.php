@@ -137,7 +137,7 @@ class StockTransferViewController extends Controller
                 if ($item->item_type === 'phone' && $item->phoneDevice) {
                     $item->phoneDevice->update([
                         'outlet_id' => $transfer->to_outlet_id,
-                        'status' => 'In Stock',
+                        'status' => 'in_stock',
                     ]);
                 } elseif ($item->item_type === 'product' && $item->product) {
                     $item->product->increment('stock_quantity', $item->quantity);
@@ -175,7 +175,7 @@ class StockTransferViewController extends Controller
             foreach ($transfer->items as $item) {
                 if ($item->item_type === 'phone' && $item->phoneDevice) {
                     $item->phoneDevice->update([
-                        'status' => 'In Stock',
+                        'status' => 'in_stock',
                     ]);
                 } elseif ($item->item_type === 'product' && $item->product) {
                     $item->product->increment('stock_quantity', $item->quantity);

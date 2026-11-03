@@ -339,7 +339,7 @@
         <span class="status-pill status-active" style="font-size: 0.7rem;">
             ● Live Isolation Active
         </span>
-        <span style="font-size: 0.75rem; color: #64748b;">Server Time: {{ now()->format('Y-m-d H:i') }}</span>
+        <span id="liveServerTime" style="font-size: 0.75rem; color: #64748b;" title="Sri Lanka Standard Time (Asia/Colombo)">Server Time: {{ now(config('app.business_timezone', 'Asia/Colombo'))->format('Y-m-d H:i') }}</span>
     </div>
 </div>
 
@@ -865,3 +865,26 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+    function updateLiveServerTime() {
+        const el = document.getElementById('liveServerTime');
+        if (!el) return;
+        const now = new Date();
+        const options = {
+            timeZone: 'Asia/Colombo',
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: false
+        };
+        const parts = new Intl.DateTimeFormat('en-CA', options).formatToParts(now);
+        const get = t => parts.find(p => p.type === t)?.value || '';
+        el.textContent = `Server Time: ${get('year')}-${get('month')}-${get('day')} ${get('hour')}:${get('minute')}`;
+    }
+    setInterval(updateLiveServerTime, 10000);
+</script>
+@endpush

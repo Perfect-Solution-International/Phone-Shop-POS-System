@@ -81,6 +81,14 @@
                                         <span style="color: #64748b; font-weight: normal;">• {{ $product->brand->name }}</span>
                                     @endif
                                 </div>
+                                @if($product->supplier)
+                                    <div style="margin-top: 0.25rem;">
+                                        <span style="display: inline-flex; align-items: center; gap: 0.25rem; font-size: 0.7rem; background: #eef2ff; color: #4f46e5; padding: 0.12rem 0.45rem; border-radius: 4px; border: 1px solid #c7d2fe; font-weight: 600;" title="Supplier">
+                                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                                            {{ $product->supplier->name }}
+                                        </span>
+                                    </div>
+                                @endif
                             </div>
                         </div>
                     </td>
@@ -209,6 +217,22 @@
 
                 <div class="form-row">
                     <div class="form-group">
+                        <label>Supplier (Optional)</label>
+                        <select name="supplier_id" id="product_supplier_id" class="form-control">
+                            <option value="">No Supplier / Store Direct</option>
+                            @foreach($suppliers as $sup)
+                                <option value="{{ $sup->id }}">{{ $sup->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>SKU Code (Auto-generated if blank)</label>
+                        <input type="text" name="sku" class="form-control" placeholder="e.g. SKU-CHARGER" style="font-family: monospace;">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
                         <label>Purchase Cost (LKR) *</label>
                         <input type="number" step="0.01" name="cost_price" class="form-control" placeholder="0.00" required>
                     </div>
@@ -309,6 +333,15 @@
                     <div class="form-group">
                         <label>SKU Code</label>
                         <input type="text" name="sku" id="edit_product_sku" class="form-control" style="font-family: monospace;" placeholder="SKU-XXXXXX">
+                    </div>
+                    <div class="form-group">
+                        <label>Supplier (Optional)</label>
+                        <select name="supplier_id" id="edit_product_supplier_id" class="form-control">
+                            <option value="">No Supplier / Store Direct</option>
+                            @foreach($suppliers as $sup)
+                                <option value="{{ $sup->id }}">{{ $sup->name }}</option>
+                            @endforeach
+                        </select>
                     </div>
                 </div>
 
@@ -855,6 +888,7 @@
         setVal('edit_product_name', product.name || '');
         setVal('edit_product_category_id', product.category_id || '');
         setVal('edit_product_brand_id', product.brand_id || '');
+        setVal('edit_product_supplier_id', product.supplier_id || '');
         setVal('edit_product_barcode', product.barcode || product.code || '');
         setVal('edit_product_sku', product.sku || product.code || '');
         setVal('edit_product_cost_price', product.cost_price || '0.00');

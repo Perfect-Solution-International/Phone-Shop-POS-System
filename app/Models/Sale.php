@@ -24,9 +24,19 @@ class Sale extends Model
         'total_amount',
         'paid_amount',
         'payment_method',
+        'bank_slip_path',
         'status',
         'notes',
     ];
+
+    protected $appends = [
+        'bank_slip_url',
+    ];
+
+    public function getBankSlipUrlAttribute(): ?string
+    {
+        return $this->bank_slip_path ? asset('storage/' . $this->bank_slip_path) : null;
+    }
 
     protected $casts = [
         'sale_date' => 'date:Y-m-d',

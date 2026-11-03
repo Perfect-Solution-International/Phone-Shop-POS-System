@@ -43,7 +43,7 @@ class TradeInViewController extends Controller
 
         $totalValuation = PhoneTradeIn::where('shop_id', $shopId)->sum('valuation_amount');
         $totalDevices = PhoneTradeIn::where('shop_id', $shopId)->count();
-        $inStockUsed = PhoneDevice::where('shop_id', $shopId)->where('condition', 'Used')->where('status', 'In Stock')->count();
+        $inStockUsed = PhoneDevice::where('shop_id', $shopId)->whereIn('condition', ['Used', 'used'])->whereIn('status', ['in_stock', 'In Stock'])->count();
 
         $outlets = Outlet::where('shop_id', $shopId)->orderBy('name')->get();
         $customers = Customer::where('shop_id', $shopId)->orderBy('name')->get();
@@ -129,7 +129,7 @@ class TradeInViewController extends Controller
                 'imei_1' => $data['imei_1'],
                 'imei_2' => $data['imei_2'] ?? null,
                 'condition' => 'Used',
-                'status' => 'In Stock',
+                'status' => 'in_stock',
                 'purchase_cost' => $data['valuation_amount'],
                 'selling_price' => $resalePrice,
                 'notes' => "Used Phone Trade-In from {$data['customer_name']} (NIC: " . ($data['customer_nic'] ?? 'N/A') . ")",

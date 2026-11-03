@@ -49,7 +49,7 @@ class QuotationViewController extends Controller
 
         $customers = Customer::where('shop_id', $shopId)->orderBy('name')->get();
         $products = Product::where('shop_id', $shopId)->where('stock_quantity', '>', 0)->orderBy('name')->get();
-        $phones = PhoneDevice::where('shop_id', $shopId)->where('status', 'In Stock')->orderBy('brand')->orderBy('model')->get();
+        $phones = PhoneDevice::where('shop_id', $shopId)->whereIn('status', ['in_stock', 'In Stock'])->orderBy('brand')->orderBy('model')->get();
         $outlets = Outlet::where('shop_id', $shopId)->orderBy('name')->get();
 
         return view('shop.quotations.index', compact(
