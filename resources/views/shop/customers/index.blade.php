@@ -134,6 +134,7 @@
     @endif
 </div>
 
+@if(auth()->user()?->isOwnerOrAdmin())
 <!-- Modal: Add Customer -->
 <div class="modal-backdrop" id="addCustomerModal">
     <div class="modal-box" style="max-width: 520px;">
@@ -234,6 +235,7 @@
         </form>
     </div>
 </div>
+@endif
 
 <!-- Modal: Settle Customer Debt -->
 <div class="modal-backdrop" id="settleDebtModal">

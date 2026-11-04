@@ -181,6 +181,7 @@
     @endif
 </div>
 
+@if(auth()->user()?->isOwnerOrAdmin())
 <!-- Modal: Record Expense -->
 <div class="modal-backdrop" id="newExpenseModal">
     <div class="modal-box" style="max-width: 520px;">
@@ -261,6 +262,7 @@
         </form>
     </div>
 </div>
+@endif
 @endsection
 
 @push('scripts')

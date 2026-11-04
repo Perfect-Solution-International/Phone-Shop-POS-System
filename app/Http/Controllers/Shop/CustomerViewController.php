@@ -8,11 +8,9 @@ use App\Models\CustomerDebtPayment;
 use App\Models\PhoneTradeIn;
 use App\Models\RepairJob;
 use App\Models\SalePayment;
-use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\View\View;
 
 class CustomerViewController extends Controller

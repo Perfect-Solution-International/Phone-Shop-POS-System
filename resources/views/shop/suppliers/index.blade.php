@@ -101,6 +101,7 @@
     @endif
 </div>
 
+@if(auth()->user()?->isOwnerOrAdmin())
 <!-- Modal Supplier (Add / Edit) -->
 <div class="modal-backdrop" id="supplierModal">
     <div class="modal-box" style="max-width: 520px;">
@@ -147,6 +148,7 @@
         </form>
     </div>
 </div>
+@endif
 
 @push('scripts')
 <script>

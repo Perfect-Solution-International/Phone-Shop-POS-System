@@ -123,6 +123,7 @@
     @endif
 </div>
 
+@if(auth()->user()?->isOwnerOrAdmin())
 <!-- Modal: New Inbound Stock Purchase -->
 <div class="modal-backdrop" id="purchaseModal">
     <div class="modal-box" style="max-width: 780px;">
@@ -190,6 +191,7 @@
         </form>
     </div>
 </div>
+@endif
 
 @push('scripts')
 <script>

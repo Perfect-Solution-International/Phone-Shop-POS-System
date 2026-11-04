@@ -186,6 +186,7 @@
     @endif
 </div>
 
+@if(auth()->user()?->isOwnerOrAdmin())
 <!-- Modal: Evaluate & Buy Used Phone -->
 <div class="modal-backdrop" id="tradeInModal">
     <div class="modal-box" style="max-width: 640px;">
@@ -353,6 +354,7 @@
         </form>
     </div>
 </div>
+@endif
 
 <!-- Modal: Printable Receipt -->
 <div class="modal-backdrop" id="tradeInReceiptModal">
