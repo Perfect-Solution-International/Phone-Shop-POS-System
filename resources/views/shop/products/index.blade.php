@@ -217,13 +217,20 @@
 
                 <div class="form-row">
                     <div class="form-group">
-                        <label>Supplier (Optional)</label>
-                        <select name="supplier_id" id="product_supplier_id" class="form-control">
-                            <option value="">No Supplier / Store Direct</option>
+                        <label for="product_supplier_name">Supplier (Optional)</label>
+                        <input type="text" 
+                               name="supplier_name" 
+                               id="product_supplier_name" 
+                               list="product_supplier_list" 
+                               class="form-control" 
+                               placeholder="Type or select supplier (Optional)" 
+                               autocomplete="off">
+                        <datalist id="product_supplier_list">
+                            <option value="No Supplier / Store Direct"></option>
                             @foreach($suppliers as $sup)
-                                <option value="{{ $sup->id }}">{{ $sup->name }}</option>
+                                <option value="{{ $sup->name }}">{{ $sup->company_name ?? '' }}</option>
                             @endforeach
-                        </select>
+                        </datalist>
                     </div>
                     <div class="form-group">
                         <label>SKU Code (Auto-generated if blank)</label>
@@ -335,13 +342,20 @@
                         <input type="text" name="sku" id="edit_product_sku" class="form-control" style="font-family: monospace;" placeholder="SKU-XXXXXX">
                     </div>
                     <div class="form-group">
-                        <label>Supplier (Optional)</label>
-                        <select name="supplier_id" id="edit_product_supplier_id" class="form-control">
-                            <option value="">No Supplier / Store Direct</option>
+                        <label for="edit_product_supplier_name">Supplier (Optional)</label>
+                        <input type="text" 
+                               name="supplier_name" 
+                               id="edit_product_supplier_name" 
+                               list="edit_product_supplier_list" 
+                               class="form-control" 
+                               placeholder="Type or select supplier (Optional)" 
+                               autocomplete="off">
+                        <datalist id="edit_product_supplier_list">
+                            <option value="No Supplier / Store Direct"></option>
                             @foreach($suppliers as $sup)
-                                <option value="{{ $sup->id }}">{{ $sup->name }}</option>
+                                <option value="{{ $sup->name }}">{{ $sup->company_name ?? '' }}</option>
                             @endforeach
-                        </select>
+                        </datalist>
                     </div>
                 </div>
 
@@ -889,6 +903,7 @@
         setVal('edit_product_category_id', product.category_id || '');
         setVal('edit_product_brand_id', product.brand_id || '');
         setVal('edit_product_supplier_id', product.supplier_id || '');
+        setVal('edit_product_supplier_name', product.supplier ? product.supplier.name : '');
         setVal('edit_product_barcode', product.barcode || product.code || '');
         setVal('edit_product_sku', product.sku || product.code || '');
         setVal('edit_product_cost_price', product.cost_price || '0.00');

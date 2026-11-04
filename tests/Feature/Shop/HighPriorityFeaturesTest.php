@@ -90,7 +90,7 @@ class HighPriorityFeaturesTest extends TestCase
             'model' => 'iPhone 12 Pro',
             'imei_1' => '359876543210999',
             'condition' => 'Used',
-            'status' => 'In Stock',
+            'status' => 'in_stock',
             'purchase_cost' => 110000.00,
             'selling_price' => 135000.00,
         ]);
@@ -165,9 +165,9 @@ class HighPriorityFeaturesTest extends TestCase
         $transfer = StockTransfer::withoutGlobalScopes()->where('shop_id', $shop->id)->first();
         $this->assertEquals('in_transit', $transfer->status);
 
-        // Verify phone status is In Transit
+        // Verify phone status is in_transit
         $phone->refresh();
-        $this->assertEquals('In Transit', $phone->status);
+        $this->assertEquals('in_transit', $phone->status);
 
         // 2. Receive and confirm Transfer at Outlet B
         $receiveRes = $this->actingAs($manager)->patch("/shop/transfers/{$transfer->id}/receive");
@@ -176,9 +176,9 @@ class HighPriorityFeaturesTest extends TestCase
         $transfer->refresh();
         $this->assertEquals('received', $transfer->status);
 
-        // Verify phone is now In Stock at Outlet B
+        // Verify phone is now in_stock at Outlet B
         $phone->refresh();
-        $this->assertEquals('In Stock', $phone->status);
+        $this->assertEquals('in_stock', $phone->status);
         $this->assertEquals($outletB->id, $phone->outlet_id);
     }
 
@@ -215,7 +215,7 @@ class HighPriorityFeaturesTest extends TestCase
         $this->assertEquals('cancelled', $transfer->status);
 
         $phone->refresh();
-        $this->assertEquals('In Stock', $phone->status);
+        $this->assertEquals('in_stock', $phone->status);
         $this->assertEquals($outletA->id, $phone->outlet_id);
     }
 

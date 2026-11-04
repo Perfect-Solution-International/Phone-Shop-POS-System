@@ -60,6 +60,18 @@ class ProductViewController extends Controller
             $request->merge(['category_id' => $defaultCat->id]);
         }
 
+        if ($request->has('supplier_name')) {
+            $supName = trim((string) $request->input('supplier_name'));
+            if (! empty($supName) && strtolower($supName) !== 'no supplier / store direct' && strtolower($supName) !== 'none') {
+                $supplier = Supplier::withoutGlobalScopes()->firstOrCreate(
+                    ['shop_id' => $shopId, 'name' => $supName]
+                );
+                $request->merge(['supplier_id' => $supplier->id]);
+            } else {
+                $request->merge(['supplier_id' => null]);
+            }
+        }
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'category_id' => ['required', Rule::exists('categories', 'id')->where('shop_id', $shopId)],
@@ -113,6 +125,18 @@ class ProductViewController extends Controller
                 ['slug' => 'general-accessories-'.$shopId]
             );
             $request->merge(['category_id' => $defaultCat->id]);
+        }
+
+        if ($request->has('supplier_name')) {
+            $supName = trim((string) $request->input('supplier_name'));
+            if (! empty($supName) && strtolower($supName) !== 'no supplier / store direct' && strtolower($supName) !== 'none') {
+                $supplier = Supplier::withoutGlobalScopes()->firstOrCreate(
+                    ['shop_id' => $shopId, 'name' => $supName]
+                );
+                $request->merge(['supplier_id' => $supplier->id]);
+            } else {
+                $request->merge(['supplier_id' => null]);
+            }
         }
 
         $validated = $request->validate([

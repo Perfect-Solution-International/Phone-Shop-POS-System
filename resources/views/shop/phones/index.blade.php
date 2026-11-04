@@ -131,9 +131,9 @@
             </select>
             <select name="condition" class="form-control" style="width: auto; min-width: 145px; border-radius: 9px; font-size: 0.85rem; height: 38px;" onchange="this.form.submit()">
                 <option value="">All Conditions</option>
-                <option value="new" {{ request('condition') === 'new' ? 'selected' : '' }}>✨ Brand New</option>
-                <option value="used" {{ request('condition') === 'used' ? 'selected' : '' }}>🔄 Pre-Owned</option>
-                <option value="refurbished" {{ request('condition') === 'refurbished' ? 'selected' : '' }}>🛠️ Refurbished</option>
+                <option value="new" {{ request('condition') === 'new' ? 'selected' : '' }}>Brand New</option>
+                <option value="used" {{ request('condition') === 'used' ? 'selected' : '' }}>Pre-Owned</option>
+                <option value="refurbished" {{ request('condition') === 'refurbished' ? 'selected' : '' }}>Refurbished</option>
             </select>
             <button type="submit" class="btn btn-secondary" style="height: 38px; padding: 0 1rem; border-radius: 9px; font-weight: 600; font-size: 0.825rem;">
                 Filter
@@ -262,16 +262,19 @@
                     </td>
                     <td>
                         @if($phone->condition === 'new')
-                            <span style="display: inline-flex; align-items: center; gap: 0.25rem; padding: 0.25rem 0.6rem; border-radius: 6px; font-size: 0.75rem; font-weight: 700; background: #ecfdf5; color: #059669; border: 1px solid #a7f3d0;">
-                                ✨ New
+                            <span style="display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.25rem 0.6rem; border-radius: 6px; font-size: 0.75rem; font-weight: 700; background: #ecfdf5; color: #059669; border: 1px solid #a7f3d0;">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.4 7.2L22 12l-7.6 2.8L12 22l-2.4-7.2L2 12l7.6-2.8z"></path></svg>
+                                <span>New</span>
                             </span>
                         @elseif($phone->condition === 'used')
-                            <span style="display: inline-flex; align-items: center; gap: 0.25rem; padding: 0.25rem 0.6rem; border-radius: 6px; font-size: 0.75rem; font-weight: 700; background: #f0f9ff; color: #0284c7; border: 1px solid #bae6fd;">
-                                🔄 Used
+                            <span style="display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.25rem 0.6rem; border-radius: 6px; font-size: 0.75rem; font-weight: 700; background: #f0f9ff; color: #0284c7; border: 1px solid #bae6fd;">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+                                <span>Used</span>
                             </span>
                         @else
-                            <span style="display: inline-flex; align-items: center; gap: 0.25rem; padding: 0.25rem 0.6rem; border-radius: 6px; font-size: 0.75rem; font-weight: 700; background: #f5f3ff; color: #7c3aed; border: 1px solid #ddd6fe;">
-                                🛠️ Refurbished
+                            <span style="display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.25rem 0.6rem; border-radius: 6px; font-size: 0.75rem; font-weight: 700; background: #f5f3ff; color: #7c3aed; border: 1px solid #ddd6fe;">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>
+                                <span>Refurbished</span>
                             </span>
                         @endif
                     </td>
@@ -477,13 +480,20 @@
                         <input type="text" name="serial_number" class="form-control" placeholder="Device Serial Number">
                     </div>
                     <div class="form-group">
-                        <label>Supplier (Optional)</label>
-                        <select name="supplier_id" class="form-control">
-                            <option value="">No Supplier / Store Direct</option>
+                        <label for="phone_supplier_name">Supplier (Optional)</label>
+                        <input type="text" 
+                               name="supplier_name" 
+                               id="phone_supplier_name" 
+                               list="phone_supplier_list" 
+                               class="form-control" 
+                               placeholder="Type or select supplier (Optional)" 
+                               autocomplete="off">
+                        <datalist id="phone_supplier_list">
+                            <option value="No Supplier / Store Direct"></option>
                             @foreach($suppliers as $sup)
-                                <option value="{{ $sup->id }}">{{ $sup->name }}</option>
+                                <option value="{{ $sup->name }}">{{ $sup->company_name ?? '' }}</option>
                             @endforeach
-                        </select>
+                        </datalist>
                     </div>
                 </div>
 
@@ -614,13 +624,20 @@
                 </div>
 
                 <div class="form-group">
-                    <label>Supplier (Optional)</label>
-                    <select name="supplier_id" id="edit_phone_supplier_id" class="form-control">
-                        <option value="">No Supplier / Store Direct</option>
+                    <label for="edit_phone_supplier_name">Supplier (Optional)</label>
+                    <input type="text" 
+                           name="supplier_name" 
+                           id="edit_phone_supplier_name" 
+                           list="edit_phone_supplier_list" 
+                           class="form-control" 
+                           placeholder="Type or select supplier (Optional)" 
+                           autocomplete="off">
+                    <datalist id="edit_phone_supplier_list">
+                        <option value="No Supplier / Store Direct"></option>
                         @foreach($suppliers as $sup)
-                            <option value="{{ $sup->id }}">{{ $sup->name }}</option>
+                            <option value="{{ $sup->name }}">{{ $sup->company_name ?? '' }}</option>
                         @endforeach
-                    </select>
+                    </datalist>
                 </div>
 
                 <!-- Device Image Upload (Edit) -->
@@ -773,6 +790,7 @@
         setVal('edit_phone_purchase_cost', phone.purchase_cost || '0.00');
         setVal('edit_phone_selling_price', phone.selling_price || '0.00');
         setVal('edit_phone_supplier_id', phone.supplier_id);
+        setVal('edit_phone_supplier_name', phone.supplier ? phone.supplier.name : '');
         setVal('edit_phone_notes', phone.notes);
         updateEditPhoneStockQty(phone.status || 'in_stock');
 

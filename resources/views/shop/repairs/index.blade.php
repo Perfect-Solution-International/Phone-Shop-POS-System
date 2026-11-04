@@ -43,6 +43,25 @@
     .stage-pill.active .stage-count {
         background: rgba(255, 255, 255, 0.2);
     }
+
+    .combobox-item {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.8125rem;
+        color: #1e293b;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.12s ease;
+    }
+    .combobox-item:hover {
+        background: #eef2ff;
+        color: #4338ca;
+        font-weight: 600;
+    }
+    .combobox-item.selected {
+        background: #e0e7ff;
+        color: #3730a3;
+        font-weight: 700;
+    }
 </style>
 
 <!-- Stage Filter Pills -->
@@ -201,19 +220,34 @@
         <form method="POST" action="{{ route('shop.repairs.store') }}">
             @csrf
             <div class="modal-body">
-                <div class="form-row">
-                    <div class="form-group" style="flex: 1.3;">
-                        <label>Customer *</label>
-                        <select name="customer_id" id="selRepairCustomer" class="form-control" required onchange="onRepairCustomerChange(this)">
-                            <option value="">Select Customer</option>
-                            @foreach($customers as $c)
-                                <option value="{{ $c->id }}" data-nic="{{ $c->nic }}">{{ $c->name }} ({{ $c->phone }})</option>
-                            @endforeach
-                        </select>
+                <div class="form-row" style="grid-template-columns: 1.3fr 1fr 1fr;">
+                    <div class="form-group">
+                        <label for="inpRepairCustomerName">Customer Name *</label>
+                        <input 
+                            type="text" 
+                            name="customer_name" 
+                            id="inpRepairCustomerName" 
+                            class="form-control" 
+                            required 
+                            placeholder="Customer Name" 
+                            autocomplete="off"
+                        >
                     </div>
-                    <div class="form-group" style="flex: 1;">
-                        <label>Customer ID / NIC Number</label>
-                        <input type="text" name="customer_nic" id="inpRepairCustomerNic" class="form-control" placeholder="e.g. 199512345678 or 951234567V">
+                    <div class="form-group">
+                        <label for="inpRepairCustomerPhone">Contact Phone</label>
+                        <input type="text" 
+                               name="customer_phone" 
+                               id="inpRepairCustomerPhone" 
+                               class="form-control" 
+                               placeholder="07XXXXXXXX">
+                    </div>
+                    <div class="form-group">
+                        <label for="inpRepairCustomerNic">Customer ID / NIC Number</label>
+                        <input type="text" 
+                               name="customer_nic" 
+                               id="inpRepairCustomerNic" 
+                               class="form-control" 
+                               placeholder="e.g. 199512345678 or 951234567V">
                     </div>
                 </div>
 
@@ -554,15 +588,6 @@
         document.getElementById('jcTrackUrl').innerText = trackUrl;
 
         openModal('jobCardModal');
-    }
-
-    function onRepairCustomerChange(sel) {
-        const opt = sel.options[sel.selectedIndex];
-        const nic = opt ? opt.getAttribute('data-nic') : '';
-        const nicInput = document.getElementById('inpRepairCustomerNic');
-        if (nicInput) {
-            nicInput.value = nic || '';
-        }
     }
 
     function printJobCard() {

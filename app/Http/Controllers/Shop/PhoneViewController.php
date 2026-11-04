@@ -56,6 +56,20 @@ class PhoneViewController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
+        $shopId = auth()->user()->shop_id;
+
+        if ($request->has('supplier_name')) {
+            $supName = trim((string) $request->input('supplier_name'));
+            if (! empty($supName) && strtolower($supName) !== 'no supplier / store direct' && strtolower($supName) !== 'none') {
+                $supplier = Supplier::withoutGlobalScopes()->firstOrCreate(
+                    ['shop_id' => $shopId, 'name' => $supName]
+                );
+                $request->merge(['supplier_id' => $supplier->id]);
+            } else {
+                $request->merge(['supplier_id' => null]);
+            }
+        }
+
         $validated = $request->validate([
             'brand' => 'required|string|max:100',
             'model' => 'required|string|max:100',
@@ -86,6 +100,18 @@ class PhoneViewController extends Controller
     public function update(Request $request, PhoneDevice $phone): RedirectResponse
     {
         $shopId = auth()->user()->shop_id;
+
+        if ($request->has('supplier_name')) {
+            $supName = trim((string) $request->input('supplier_name'));
+            if (! empty($supName) && strtolower($supName) !== 'no supplier / store direct' && strtolower($supName) !== 'none') {
+                $supplier = Supplier::withoutGlobalScopes()->firstOrCreate(
+                    ['shop_id' => $shopId, 'name' => $supName]
+                );
+                $request->merge(['supplier_id' => $supplier->id]);
+            } else {
+                $request->merge(['supplier_id' => null]);
+            }
+        }
 
         $validated = $request->validate([
             'brand' => 'required|string|max:100',
