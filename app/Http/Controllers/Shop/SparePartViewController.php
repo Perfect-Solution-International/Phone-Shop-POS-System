@@ -35,6 +35,8 @@ class SparePartViewController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
+        abort_unless(auth()->user()?->isOwnerOrAdmin(), 403, 'Only shop owners and administrators can add spare parts.');
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'part_number' => 'required|string|max:100',
@@ -58,6 +60,8 @@ class SparePartViewController extends Controller
 
     public function update(Request $request, SparePart $sparePart): RedirectResponse
     {
+        abort_unless(auth()->user()?->isOwnerOrAdmin(), 403, 'Only shop owners and administrators can edit spare parts.');
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'part_number' => 'required|string|max:100',
@@ -92,6 +96,8 @@ class SparePartViewController extends Controller
 
     public function destroy(SparePart $sparePart): RedirectResponse
     {
+        abort_unless(auth()->user()?->isOwnerOrAdmin(), 403, 'Only shop owners and administrators can delete spare parts.');
+
         if ($sparePart->image_path && Storage::disk('public')->exists($sparePart->image_path)) {
             Storage::disk('public')->delete($sparePart->image_path);
         }
@@ -104,6 +110,7 @@ class SparePartViewController extends Controller
 
     public function deleteImage(SparePart $sparePart): JsonResponse|RedirectResponse
     {
+        abort_unless(auth()->user()?->isOwnerOrAdmin(), 403, 'Only shop owners and administrators can manage spare part images.');
         if ($sparePart->image_path && Storage::disk('public')->exists($sparePart->image_path)) {
             Storage::disk('public')->delete($sparePart->image_path);
         }

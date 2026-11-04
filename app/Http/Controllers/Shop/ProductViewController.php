@@ -42,6 +42,8 @@ class ProductViewController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
+        abort_unless(auth()->user()?->isOwnerOrAdmin(), 403, 'Only shop owners and administrators can add products.');
+
         $shopId = (int) auth()->user()?->shop_id;
 
         // Auto-handle category so shop user is never blocked
@@ -109,6 +111,8 @@ class ProductViewController extends Controller
 
     public function update(Request $request, Product $product): RedirectResponse
     {
+        abort_unless(auth()->user()?->isOwnerOrAdmin(), 403, 'Only shop owners and administrators can edit products.');
+
         $shopId = (int) auth()->user()?->shop_id;
 
         // Auto-handle category so shop user is never blocked
@@ -182,6 +186,8 @@ class ProductViewController extends Controller
 
     public function destroy(Product $product): RedirectResponse
     {
+        abort_unless(auth()->user()?->isOwnerOrAdmin(), 403, 'Only shop owners and administrators can delete products.');
+
         if ($product->image_path && Storage::disk('public')->exists($product->image_path)) {
             Storage::disk('public')->delete($product->image_path);
         }
@@ -194,6 +200,7 @@ class ProductViewController extends Controller
 
     public function deleteImage(Product $product): JsonResponse|RedirectResponse
     {
+        abort_unless(auth()->user()?->isOwnerOrAdmin(), 403, 'Only shop owners and administrators can manage product images.');
         if ($product->image_path && Storage::disk('public')->exists($product->image_path)) {
             Storage::disk('public')->delete($product->image_path);
         }

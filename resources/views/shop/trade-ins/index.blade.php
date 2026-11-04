@@ -77,10 +77,12 @@
     </div>
 
     <!-- Quick Action Button -->
+    @if(auth()->user()?->isOwnerOrAdmin())
     <button type="button" class="btn btn-primary" onclick="openModal('tradeInModal')" style="height: 42px; padding: 0 1.25rem; font-weight: 700; font-size: 0.85rem; border-radius: 9px; box-shadow: 0 2px 8px rgba(79, 70, 229, 0.25); display: inline-flex; align-items: center; gap: 0.45rem; white-space: nowrap; flex-shrink: 0;">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
         Buy Used Phone / Trade-In
     </button>
+    @endif
 </div>
 
 <div class="card" style="border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">

@@ -65,4 +65,20 @@ class User extends Authenticatable implements MustVerifyEmail
 
         $this->notify(new \Illuminate\Auth\Notifications\VerifyEmail);
     }
+
+    /**
+     * Determine if the user is a Shop Owner or Administrator.
+     */
+    public function isOwnerOrAdmin(): bool
+    {
+        return $this->hasRole(['Shop Owner', 'Administrator', 'Super Administrator']);
+    }
+
+    /**
+     * Determine if the user is a staff member (non-owner/non-admin).
+     */
+    public function isStaff(): bool
+    {
+        return ! $this->isOwnerOrAdmin();
+    }
 }

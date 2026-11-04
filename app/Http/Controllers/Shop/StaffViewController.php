@@ -21,6 +21,8 @@ class StaffViewController extends Controller
 {
     public function index(Request $request): View
     {
+        abort_unless(auth()->user()?->isOwnerOrAdmin(), 403, 'Unauthorized. Staff and payroll directory is restricted to Shop Owner / Administrator.');
+
         $shopId = auth()->user()->shop_id ?? session('superadmin_active_shop_id');
         $tab = $request->input('tab', 'employees');
 
@@ -91,6 +93,8 @@ class StaffViewController extends Controller
 
     public function storeEmployee(Request $request): RedirectResponse
     {
+        abort_unless(auth()->user()?->isOwnerOrAdmin(), 403, 'Only shop owners and administrators can register employees.');
+
         $shopId = auth()->user()->shop_id ?? session('superadmin_active_shop_id');
 
         $data = $request->validate([
@@ -187,6 +191,8 @@ class StaffViewController extends Controller
 
     public function updateEmployee(Request $request, Employee $employee): RedirectResponse
     {
+        abort_unless(auth()->user()?->isOwnerOrAdmin(), 403, 'Only shop owners and administrators can edit employees.');
+
         $shopId = auth()->user()->shop_id ?? session('superadmin_active_shop_id');
 
         $data = $request->validate([
@@ -270,6 +276,8 @@ class StaffViewController extends Controller
 
     public function destroyEmployee(Employee $employee): RedirectResponse
     {
+        abort_unless(auth()->user()?->isOwnerOrAdmin(), 403, 'Only shop owners and administrators can remove employees.');
+
         $name = $employee->name;
         if ($employee->user) {
             $employee->user->delete();
@@ -338,6 +346,8 @@ class StaffViewController extends Controller
 
     public function updateLeaveStatus(Request $request, Leave $leave): RedirectResponse
     {
+        abort_unless(auth()->user()?->isOwnerOrAdmin(), 403, 'Only shop owners and administrators can approve or reject leaves.');
+
         $data = $request->validate([
             'status' => ['required', 'in:approved,rejected,pending'],
         ]);
@@ -350,6 +360,8 @@ class StaffViewController extends Controller
 
     public function storePayroll(Request $request): RedirectResponse
     {
+        abort_unless(auth()->user()?->isOwnerOrAdmin(), 403, 'Only shop owners and administrators can manage payroll.');
+
         $shopId = auth()->user()->shop_id ?? session('superadmin_active_shop_id');
 
         $data = $request->validate([
@@ -385,6 +397,8 @@ class StaffViewController extends Controller
 
     public function updatePayroll(Request $request, Payroll $payroll): RedirectResponse
     {
+        abort_unless(auth()->user()?->isOwnerOrAdmin(), 403, 'Only shop owners and administrators can manage payroll.');
+
         $data = $request->validate([
             'basic_salary' => ['required', 'numeric', 'min:0'],
             'allowances' => ['nullable', 'numeric', 'min:0'],
@@ -408,6 +422,8 @@ class StaffViewController extends Controller
 
     public function autoGeneratePayroll(Request $request): RedirectResponse
     {
+        abort_unless(auth()->user()?->isOwnerOrAdmin(), 403, 'Only shop owners and administrators can manage payroll.');
+
         $shopId = auth()->user()->shop_id ?? session('superadmin_active_shop_id');
 
         $data = $request->validate([
@@ -506,6 +522,8 @@ class StaffViewController extends Controller
 
     public function markPayrollPaid(Request $request, Payroll $payroll): RedirectResponse
     {
+        abort_unless(auth()->user()?->isOwnerOrAdmin(), 403, 'Only shop owners and administrators can manage payroll.');
+
         $data = $request->validate([
             'payment_method' => ['nullable', 'string', 'in:cash,bank_transfer,cheque,card,other'],
             'paid_at' => ['nullable', 'date'],
@@ -523,6 +541,8 @@ class StaffViewController extends Controller
 
     public function destroyPayroll(Payroll $payroll): RedirectResponse
     {
+        abort_unless(auth()->user()?->isOwnerOrAdmin(), 403, 'Only shop owners and administrators can manage payroll.');
+
         $periodMonth = Carbon::parse($payroll->period)->format('Y-m');
         $employeeName = $payroll->employee->name ?? 'Staff';
 

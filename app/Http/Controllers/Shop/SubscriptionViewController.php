@@ -16,6 +16,8 @@ class SubscriptionViewController extends Controller
 {
     public function index(): View
     {
+        abort_unless(auth()->user()?->isOwnerOrAdmin(), 403, 'Unauthorized. Subscription billing is restricted to Shop Owner / Administrator.');
+
         $shopId = auth()->user()->shop_id ?? session('superadmin_active_shop_id');
         $shop = Shop::with(['subscription.plan', 'activeSubscription.plan'])->findOrFail($shopId);
 

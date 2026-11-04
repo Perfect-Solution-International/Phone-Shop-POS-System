@@ -62,6 +62,8 @@ class TradeInViewController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
+        abort_unless(auth()->user()?->isOwnerOrAdmin(), 403, 'Only shop owners and administrators can evaluate and buy trade-in devices.');
+
         $shopId = auth()->user()->shop_id ?? session('superadmin_active_shop_id');
         $outletId = $request->input('outlet_id') ?: (session('active_outlet_id') ?: Outlet::where('shop_id', $shopId)->value('id'));
 

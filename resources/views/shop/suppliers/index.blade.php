@@ -20,10 +20,12 @@
             <div style="font-size: 0.8125rem; background: #fff1f2; color: #be123c; padding: 0.45rem 0.85rem; border-radius: 8px; font-weight: 700; border: 1px solid #fecdd3;">
                 Total Outstanding: LKR {{ number_format($totalBalanceOwed, 2) }}
             </div>
+            @if(auth()->user()?->isOwnerOrAdmin())
             <button type="button" class="btn btn-primary" onclick="openAddSupplierModal()">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
                 Register Supplier
             </button>
+            @endif
         </div>
     </div>
 
@@ -69,12 +71,16 @@
                         @endif
                     </td>
                     <td style="text-align: right; white-space: nowrap;">
+                        @if(auth()->user()?->isOwnerOrAdmin())
                         <button type="button" class="btn btn-secondary btn-sm" onclick='openEditSupplierModal(@json($supplier))' style="padding: 0.3rem 0.6rem;">Edit</button>
                         <form action="{{ route('shop.suppliers.destroy', $supplier) }}" method="POST" style="display: inline-block;" onsubmit="return confirm('Are you sure you want to delete supplier {{ $supplier->name }}?');">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="btn btn-sm" style="background: #fee2e2; color: #b91c1c; border: 1px solid #fecaca; padding: 0.3rem 0.6rem;">Delete</button>
                         </form>
+                        @else
+                        <span class="badge" style="background: #f1f5f9; color: #64748b; font-size: 0.72rem;">View Only</span>
+                        @endif
                     </td>
                 </tr>
                 @empty

@@ -41,7 +41,7 @@ class CriticalSecurityAndFixesTest extends TestCase
         ]);
 
         $manager = User::factory()->create(['shop_id' => $shop->id]);
-        $manager->assignRole('Shop Manager');
+        $manager->assignRole('Shop Owner');
 
         $outlet = Outlet::create([
             'shop_id' => $shop->id,

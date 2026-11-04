@@ -31,6 +31,8 @@ class SupplierViewController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
+        abort_unless(auth()->user()?->isOwnerOrAdmin(), 403, 'Only shop owners and administrators can register suppliers.');
+
         $data = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'company_name' => ['nullable', 'string', 'max:255'],
@@ -49,6 +51,8 @@ class SupplierViewController extends Controller
 
     public function update(Request $request, Supplier $supplier): RedirectResponse
     {
+        abort_unless(auth()->user()?->isOwnerOrAdmin(), 403, 'Only shop owners and administrators can edit suppliers.');
+
         $data = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'company_name' => ['nullable', 'string', 'max:255'],
@@ -65,6 +69,8 @@ class SupplierViewController extends Controller
 
     public function destroy(Supplier $supplier): RedirectResponse
     {
+        abort_unless(auth()->user()?->isOwnerOrAdmin(), 403, 'Only shop owners and administrators can delete suppliers.');
+
         $name = $supplier->name;
         $supplier->delete();
 

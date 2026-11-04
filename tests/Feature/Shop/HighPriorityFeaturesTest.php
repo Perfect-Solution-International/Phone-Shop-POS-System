@@ -30,7 +30,7 @@ class HighPriorityFeaturesTest extends TestCase
     {
         $shop = Shop::factory()->create(['name' => 'Cellular Point']);
         $manager = User::factory()->create(['shop_id' => $shop->id]);
-        $manager->assignRole('Shop Manager');
+        $manager->assignRole('Shop Owner');
 
         $outletA = Outlet::create([
             'shop_id' => $shop->id,

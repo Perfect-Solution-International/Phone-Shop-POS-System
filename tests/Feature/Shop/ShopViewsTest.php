@@ -85,7 +85,7 @@ test('shop cashier can access pos counter and complete sale with split tender', 
 test('shop staff can register serialized phone with dual IMEI from web view', function (): void {
     $shop = Shop::factory()->create();
     $user = User::factory()->create(['shop_id' => $shop->id]);
-    $user->assignRole('Shop Manager');
+    $user->assignRole('Shop Owner');
 
     $this->actingAs($user)->get('/shop/phones')->assertOk()->assertViewIs('shop.phones.index');
 
@@ -115,7 +115,7 @@ test('shop staff can register serialized phone with dual IMEI from web view', fu
 test('shop staff can register phone device with supplier and view relationship on phones page', function (): void {
     $shop = Shop::factory()->create();
     $user = User::factory()->create(['shop_id' => $shop->id]);
-    $user->assignRole('Shop Manager');
+    $user->assignRole('Shop Owner');
 
     app()->instance('shop.id', $shop->id);
     $supplier = \App\Models\Supplier::create([
@@ -151,7 +151,7 @@ test('shop staff can register phone device with supplier and view relationship o
 test('shop staff can register phone device with typed supplier name', function (): void {
     $shop = Shop::factory()->create();
     $user = User::factory()->create(['shop_id' => $shop->id]);
-    $user->assignRole('Shop Manager');
+    $user->assignRole('Shop Owner');
 
     $payload = [
         'brand' => 'OnePlus',
@@ -185,7 +185,7 @@ test('shop staff can register phone device with typed supplier name', function (
 test('shop staff can update phone device details and pricing', function (): void {
     $shop = Shop::factory()->create();
     $user = User::factory()->create(['shop_id' => $shop->id]);
-    $user->assignRole('Shop Manager');
+    $user->assignRole('Shop Owner');
 
     app()->instance('shop.id', $shop->id);
     $device = \App\Models\PhoneDevice::create([
@@ -234,7 +234,7 @@ test('shop staff can update phone device details and pricing', function (): void
 test('shop staff can delete an unsold phone device', function (): void {
     $shop = Shop::factory()->create();
     $user = User::factory()->create(['shop_id' => $shop->id]);
-    $user->assignRole('Shop Manager');
+    $user->assignRole('Shop Owner');
 
     app()->instance('shop.id', $shop->id);
     $device = \App\Models\PhoneDevice::create([
@@ -259,7 +259,7 @@ test('shop staff can delete an unsold phone device', function (): void {
 test('shop staff cannot delete an already sold phone device', function (): void {
     $shop = Shop::factory()->create();
     $user = User::factory()->create(['shop_id' => $shop->id]);
-    $user->assignRole('Shop Manager');
+    $user->assignRole('Shop Owner');
 
     app()->instance('shop.id', $shop->id);
     $device = \App\Models\PhoneDevice::create([
@@ -413,7 +413,7 @@ test('shop staff can issue warranty certificate and file claim', function (): vo
 test('spare parts and customer directory endpoints function properly', function (): void {
     $shop = Shop::factory()->create();
     $user = User::factory()->create(['shop_id' => $shop->id]);
-    $user->assignRole('Shop Manager');
+    $user->assignRole('Shop Owner');
 
     // Spare parts
     $this->actingAs($user)->get('/shop/spare-parts')->assertOk()->assertViewIs('shop.spare-parts.index');
@@ -633,7 +633,7 @@ test('shop staff can register phone device with uploaded photo and manage image'
 
     $shop = Shop::factory()->create();
     $user = User::factory()->create(['shop_id' => $shop->id]);
-    $user->assignRole('Shop Manager');
+    $user->assignRole('Shop Owner');
 
     $image = \Illuminate\Http\UploadedFile::fake()->create('iphone-15.jpg', 200, 'image/jpeg');
 

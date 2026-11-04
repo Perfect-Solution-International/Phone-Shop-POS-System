@@ -146,10 +146,12 @@
             @endif
         </form>
 
+        @if(auth()->user()?->isOwnerOrAdmin())
         <button type="button" class="btn btn-primary" onclick="openModal('addPhoneModal')" style="height: 38px; padding: 0 1.15rem; border-radius: 9px; font-weight: 700; font-size: 0.875rem; box-shadow: 0 2px 8px rgba(79, 70, 229, 0.25); display: inline-flex; align-items: center; gap: 0.4rem;">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
             Register Phone
         </button>
+        @endif
     </div>
 
     <div class="table-responsive">
@@ -161,7 +163,9 @@
                     <th style="padding: 0.85rem 1rem; font-size: 0.72rem; font-weight: 750; color: #64748b; letter-spacing: 0.05em; text-transform: uppercase;">Specification</th>
                     <th style="padding: 0.85rem 1rem; font-size: 0.72rem; font-weight: 750; color: #64748b; letter-spacing: 0.05em; text-transform: uppercase;">In Stock</th>
                     <th style="padding: 0.85rem 1rem; font-size: 0.72rem; font-weight: 750; color: #64748b; letter-spacing: 0.05em; text-transform: uppercase;">Condition</th>
+                    @if(auth()->user()?->isOwnerOrAdmin())
                     <th style="padding: 0.85rem 1rem; font-size: 0.72rem; font-weight: 750; color: #64748b; letter-spacing: 0.05em; text-transform: uppercase;">Purchase Cost</th>
+                    @endif
                     <th style="padding: 0.85rem 1rem; font-size: 0.72rem; font-weight: 750; color: #64748b; letter-spacing: 0.05em; text-transform: uppercase;">Selling Price</th>
                     <th style="padding: 0.85rem 1rem; font-size: 0.72rem; font-weight: 750; color: #64748b; letter-spacing: 0.05em; text-transform: uppercase;">Status</th>
                     <th style="padding: 0.85rem 1rem; font-size: 0.72rem; font-weight: 750; color: #64748b; letter-spacing: 0.05em; text-transform: uppercase; text-align: right;">Actions</th>
@@ -278,7 +282,9 @@
                             </span>
                         @endif
                     </td>
+                    @if(auth()->user()?->isOwnerOrAdmin())
                     <td style="color: #64748b; font-size: 0.8125rem; font-weight: 600;">LKR {{ number_format($phone->purchase_cost, 2) }}</td>
+                    @endif
                     <td>
                         <span style="font-weight: 800; color: #047857; font-size: 0.9375rem; letter-spacing: -0.01em;">
                             LKR {{ number_format($phone->selling_price, 2) }}
@@ -345,6 +351,7 @@
                                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>
                                 Label
                             </a>
+                            @if(auth()->user()?->isOwnerOrAdmin())
                             <button type="button" 
                                     class="btn btn-secondary btn-sm" 
                                     data-phone="{{ json_encode($phone) }}"
@@ -371,21 +378,24 @@
                                 Sold
                             </span>
                             @endif
+                            @endif
                         </div>
                     </td>
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="9" style="text-align: center; color: var(--text-muted); padding: 3.5rem 1rem;">
+                    <td colspan="{{ auth()->user()?->isOwnerOrAdmin() ? '9' : '8' }}" style="text-align: center; color: var(--text-muted); padding: 3.5rem 1rem;">
                         <div style="width: 48px; height: 48px; border-radius: 50%; background: #f1f5f9; color: #94a3b8; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 0.75rem;">
                             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
                         </div>
                         <div style="font-weight: 750; color: #334155; font-size: 1rem;">No serialized phone devices found</div>
                         <div style="font-size: 0.8125rem; color: #94a3b8; margin: 0.35rem 0 1.25rem;">Register new or pre-owned phones with IMEI 1 &amp; IMEI 2 to start selling on POS.</div>
+                        @if(auth()->user()?->isOwnerOrAdmin())
                         <button type="button" class="btn btn-primary btn-sm" onclick="openModal('addPhoneModal')" style="display: inline-flex; align-items: center; gap: 0.4rem; font-weight: 700; border-radius: 8px; padding: 0.5rem 1rem;">
                             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
                             Register First Phone
                         </button>
+                        @endif
                     </td>
                 </tr>
                 @endforelse
@@ -400,6 +410,7 @@
     @endif
 </div>
 
+@if(auth()->user()?->isOwnerOrAdmin())
 <!-- Modal: Register Serialized Phone -->
 <div class="modal-backdrop" id="addPhoneModal">
     <div class="modal-box">
@@ -694,6 +705,7 @@
         </form>
     </div>
 </div>
+@endif
 
 <!-- Modal: Image Lightbox Preview -->
 <div class="modal-backdrop" id="phoneImageLightboxModal" style="z-index: 1070;" onclick="closeModal('phoneImageLightboxModal')">

@@ -27,10 +27,12 @@
             @endif
         </form>
 
+        @if(auth()->user()?->isOwnerOrAdmin())
         <button type="button" class="btn btn-primary" onclick="openModal('addPartModal')">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
             Add Spare Part
         </button>
+        @endif
     </div>
 
     <div class="table-responsive">
@@ -41,7 +43,9 @@
                     <th>Compatible Models</th>
                     <th>Quality</th>
                     <th>In Stock</th>
+                    @if(auth()->user()?->isOwnerOrAdmin())
                     <th>Cost Price</th>
+                    @endif
                     <th>Selling Price</th>
                     <th>Stock Alert</th>
                     <th style="text-align: right; min-width: 110px;">Actions</th>
@@ -98,7 +102,9 @@
                         </strong>
                         <span style="font-size: 0.75rem; color: var(--text-muted);">units</span>
                     </td>
+                    @if(auth()->user()?->isOwnerOrAdmin())
                     <td style="color: var(--text-muted); font-size: 0.8125rem;">LKR {{ number_format($part->cost_price, 2) }}</td>
+                    @endif
                     <td style="font-weight: 700; color: #166534;">LKR {{ number_format($part->selling_price, 2) }}</td>
                     <td>
                         @if($part->stock_quantity <= ($part->alert_quantity ?? 2))
@@ -109,6 +115,7 @@
                     </td>
                     <td style="text-align: right; white-space: nowrap;">
                         <div style="display: inline-flex; align-items: center; gap: 0.35rem;">
+                            @if(auth()->user()?->isOwnerOrAdmin())
                             <button type="button" 
                                     class="btn btn-secondary btn-sm" 
                                     data-part="{{ json_encode($part) }}" 
@@ -128,12 +135,15 @@
                                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
                                 </button>
                             </form>
+                            @else
+                            <span class="badge" style="background: #f1f5f9; color: #64748b; font-size: 0.72rem;">View Only</span>
+                            @endif
                         </div>
                     </td>
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="8" style="text-align: center; color: var(--text-muted); padding: 3rem;">
+                    <td colspan="{{ auth()->user()?->isOwnerOrAdmin() ? '8' : '7' }}" style="text-align: center; color: var(--text-muted); padding: 3rem;">
                         No spare parts found in inventory.
                     </td>
                 </tr>
@@ -149,6 +159,7 @@
     @endif
 </div>
 
+@if(auth()->user()?->isOwnerOrAdmin())
 <!-- Modal: Add Spare Part -->
 <div class="modal-backdrop" id="addPartModal">
     <div class="modal-box">
@@ -343,6 +354,7 @@
         </form>
     </div>
 </div>
+@endif
 
 <!-- Modal: Image Lightbox Preview -->
 <div class="modal-backdrop" id="imageLightboxModal" style="z-index: 1070;" onclick="closeModal('imageLightboxModal')">
