@@ -227,9 +227,9 @@
         max-height: calc(100vh - 270px);
     }
 
-    /* Clean, Soothing, Minimalist POS Item Card */
+    /* Clean, Elegant Outlined POS Item Card */
     .pos-item-card {
-        border: 1px solid #e8edf5;
+        border: 1.5px solid #e2e8f0;
         border-radius: 14px;
         padding: 1.05rem;
         background: #ffffff;
@@ -238,58 +238,63 @@
         flex-direction: column;
         justify-content: space-between;
         position: relative;
-        box-shadow: 0 1px 3px rgba(15, 23, 42, 0.03);
+        box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
     }
 
     .pos-item-card:hover {
-        border-color: #c7d2fe;
-        box-shadow: 0 10px 22px -4px rgba(79, 70, 229, 0.12);
+        border-color: #818cf8;
+        box-shadow: 0 10px 24px -4px rgba(99, 102, 241, 0.14);
         transform: translateY(-2px);
     }
 
     .pos-item-card.item-sold {
-        background: #fafbfc;
-        border-color: #f1f5f9;
+        background: #fbfcfd;
+        border-color: #e2e8f0;
     }
 
     .pos-item-card.item-sold:hover {
-        border-color: #e2e8f0;
+        border-color: #cbd5e1;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
         transform: none;
     }
 
-    /* Clean Brand Label & Header */
+    /* Outlined Brand Badge & Header */
     .pos-card-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        line-height: 1;
-        min-height: 18px;
+        gap: 0.5rem;
+        min-height: 24px;
     }
 
     .pos-item-brand {
         font-size: 0.68rem;
         font-weight: 750;
         text-transform: uppercase;
-        letter-spacing: 0.06em;
-        color: #64748b;
-        background: transparent;
-        padding: 0;
-        border: none;
-        line-height: 1;
+        letter-spacing: 0.05em;
+        color: #1d4ed8;
+        background: #eff6ff;
+        border: 1px solid #bfdbfe;
+        padding: 0.2rem 0.55rem;
+        border-radius: 6px;
+        line-height: 1.2;
         display: inline-flex;
         align-items: center;
     }
 
-    /* Status Badges */
+    /* Outlined Status Badges */
     .badge-status-instock {
         display: inline-flex;
         align-items: center;
         gap: 0.35rem;
-        color: #059669;
+        color: #15803d;
+        background: #f0fdf4;
+        border: 1px solid #86efac;
+        padding: 0.2rem 0.6rem;
+        border-radius: 20px;
         font-size: 0.72rem;
-        font-weight: 650;
-        line-height: 1;
+        font-weight: 700;
+        line-height: 1.2;
         white-space: nowrap;
     }
 
@@ -297,8 +302,8 @@
         width: 6px;
         height: 6px;
         border-radius: 50%;
-        background: #10b981;
-        box-shadow: 0 0 6px rgba(16, 185, 129, 0.6);
+        background: #16a34a;
+        box-shadow: 0 0 6px rgba(22, 163, 74, 0.5);
         display: inline-block;
         flex-shrink: 0;
     }
@@ -307,10 +312,14 @@
         display: inline-flex;
         align-items: center;
         gap: 0.35rem;
-        color: #64748b;
+        color: #b91c1c;
+        background: #fef2f2;
+        border: 1px solid #fecaca;
+        padding: 0.2rem 0.6rem;
+        border-radius: 20px;
         font-size: 0.72rem;
-        font-weight: 600;
-        line-height: 1;
+        font-weight: 700;
+        line-height: 1.2;
         white-space: nowrap;
     }
 
@@ -318,60 +327,94 @@
         width: 6px;
         height: 6px;
         border-radius: 50%;
-        background: #94a3b8;
+        background: #ef4444;
         display: inline-block;
         flex-shrink: 0;
     }
 
-    /* Model & Clean Specs */
+    /* Model & Outlined Specs */
     .pos-card-model {
         font-weight: 800;
         font-size: 1.125rem;
         color: #0f172a;
         line-height: 1.25;
-        margin-top: 0.35rem;
-        margin-bottom: 0.3rem;
+        margin-top: 0.45rem;
+        margin-bottom: 0.4rem;
         letter-spacing: -0.01em;
     }
 
     .pos-card-specs {
-        font-size: 0.78rem;
-        color: #475569;
         display: flex;
+        flex-wrap: wrap;
         align-items: center;
-        gap: 0.4rem;
+        gap: 0.35rem;
         line-height: 1;
-        margin-bottom: 0.35rem;
+        margin-bottom: 0.45rem;
     }
 
-    .pos-spec-dot {
-        width: 3.5px;
-        height: 3.5px;
-        border-radius: 50%;
-        background: #94a3b8;
-        display: inline-block;
-        flex-shrink: 0;
-        opacity: 0.65;
+    /* Micro Outline Spec Chips */
+    .spec-outline-chip {
+        font-size: 0.72rem;
+        font-weight: 600;
+        color: #475569;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 6px;
+        padding: 0.18rem 0.45rem;
+        display: inline-flex;
+        align-items: center;
+        white-space: nowrap;
+        line-height: 1.2;
     }
 
-    /* Minimal Monospace IMEI Line */
+    .spec-chip-storage {
+        font-weight: 750;
+        color: #0f172a;
+        background: #f1f5f9;
+        border-color: #cbd5e1;
+    }
+
+    .spec-chip-new {
+        color: #16a34a;
+        background: #f0fdf4;
+        border-color: #86efac;
+        font-weight: 700;
+    }
+
+    .spec-chip-used {
+        color: #c2410c;
+        background: #fff7ed;
+        border-color: #fed7aa;
+        font-weight: 700;
+    }
+
+    .spec-chip-refurb {
+        color: #6d28d9;
+        background: #f5f3ff;
+        border-color: #ddd6fe;
+        font-weight: 700;
+    }
+
+    /* Outlined Monospace IMEI Container */
     .pos-imei-chip {
         font-size: 0.72rem;
         color: #64748b;
         display: inline-flex;
         align-items: center;
-        gap: 0.35rem;
+        gap: 0.4rem;
         cursor: pointer;
-        transition: color 0.15s ease;
+        transition: all 0.15s ease;
         width: fit-content;
-        background: transparent;
-        border: none;
-        padding: 0;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 7px;
+        padding: 0.28rem 0.55rem;
         line-height: 1;
     }
 
     .pos-imei-chip:hover {
-        color: #0284c7;
+        border-color: #38bdf8;
+        background: #f0f9ff;
     }
 
     .pos-imei-chip:hover .pos-imei-icon {
@@ -380,18 +423,18 @@
     }
 
     .pos-imei-label {
-        font-size: 0.66rem;
-        font-weight: 700;
-        color: #94a3b8;
-        letter-spacing: 0.04em;
+        font-size: 0.64rem;
+        font-weight: 800;
+        color: #64748b;
+        letter-spacing: 0.05em;
         text-transform: uppercase;
         line-height: 1;
     }
 
     .pos-imei-val {
         font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
-        font-size: 0.73rem;
-        font-weight: 600;
+        font-size: 0.75rem;
+        font-weight: 650;
         color: #0284c7;
         letter-spacing: 0.02em;
         line-height: 1;
@@ -404,22 +447,66 @@
         vertical-align: middle;
     }
 
-    /* Seamless Buyer Info - No Clunky Nested Box */
+    /* Outlined Buyer Info Box (Shown on sold phones) */
     .phone-buyer-box {
-        margin-top: 0.65rem;
-        padding-top: 0.55rem;
-        border-top: 1px dashed #e2e8f0;
-        background: transparent;
+        margin-top: 0.55rem;
+        padding: 0.5rem 0.65rem;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 9px;
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
     }
 
-    /* Card Footer Price & Button */
+    .phone-buyer-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.35rem;
+    }
+
+    .phone-buyer-name-row {
+        font-size: 0.78rem;
+        font-weight: 750;
+        color: #1e293b;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+    }
+
+    .phone-buyer-inv {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.64rem;
+        font-weight: 600;
+        color: #64748b;
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        padding: 0.1rem 0.35rem;
+        border-radius: 5px;
+        flex-shrink: 0;
+    }
+
+    .phone-buyer-contact {
+        font-size: 0.72rem;
+        color: #2563eb;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+    }
+
+    /* Card Footer Price & Outlined Actions */
     .pos-item-footer {
         display: flex;
         align-items: center;
         justify-content: space-between;
         margin-top: 0.85rem;
         padding-top: 0.7rem;
-        border-top: 1px solid #f1f5f9;
+        border-top: 1px solid #e2e8f0;
         gap: 0.5rem;
     }
 
@@ -442,7 +529,7 @@
         color: #ffffff;
         font-weight: 750;
         font-size: 0.8rem;
-        border: none;
+        border: 1px solid #047857;
         box-shadow: 0 2px 8px rgba(16, 185, 129, 0.32);
         cursor: pointer;
         transition: all 0.18s ease;
@@ -457,7 +544,7 @@
 
     .btn-out-of-stock {
         height: 32px;
-        padding: 0 0.5rem;
+        padding: 0 0.75rem;
         color: #94a3b8;
         font-weight: 700;
         font-size: 0.74rem;
@@ -466,8 +553,9 @@
         justify-content: center;
         cursor: default;
         white-space: nowrap;
-        background: transparent;
-        border: none;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
     }
 
     /* Customer Purchases Panel (Right) */
@@ -1215,35 +1303,46 @@
                         <!-- Model Name -->
                         <div class="pos-card-model">{{ $phone->model }}</div>
 
-                        <!-- Clean Unified Specs Row -->
-                        <div class="pos-card-specs">@if($phone->storage)<span style="font-weight: 700; color: #0f172a;">{{ $phone->storage }}</span>@endif @if($phone->color)@if($phone->storage)<span class="pos-spec-dot"></span>@endif<span>{{ $phone->color }}</span>@endif @if($phone->condition)@php
-                                $cond = strtolower(trim($phone->condition));
-                                $condColor = match($cond) {
-                                    'new' => '#059669',
-                                    'refurbished' => '#7c3aed',
-                                    default => '#b45309',
-                                };
-                            @endphp<span class="pos-spec-dot"></span><span style="color: {{ $condColor }}; font-weight: 650; text-transform: capitalize;">{{ $phone->condition }}</span>@endif</div>
+                        <!-- Clean Outlined Specs Row -->
+                        <div class="pos-card-specs">
+                            @if($phone->storage)
+                                <span class="spec-outline-chip spec-chip-storage">{{ $phone->storage }}</span>
+                            @endif
+                            @if($phone->color)
+                                <span class="spec-outline-chip">{{ $phone->color }}</span>
+                            @endif
+                            @if($phone->condition)
+                                @php
+                                    $cond = strtolower(trim($phone->condition));
+                                    $condClass = match($cond) {
+                                        'new' => 'spec-chip-new',
+                                        'refurbished' => 'spec-chip-refurb',
+                                        default => 'spec-chip-used',
+                                    };
+                                @endphp
+                                <span class="spec-outline-chip {{ $condClass }}">{{ ucfirst($phone->condition) }}</span>
+                            @endif
+                        </div>
 
-                        <!-- Minimal Monospace IMEI Row with Click-to-Copy -->
+                        <!-- Outlined Monospace IMEI Row with Click-to-Copy -->
                         <div class="pos-imei-chip" title="Click to copy IMEI" onclick="navigator.clipboard && navigator.clipboard.writeText('{{ $phone->imei_1 }}'); showCopiedToast('IMEI {{ $phone->imei_1 }}')">
                             <span class="pos-imei-label">IMEI</span>
                             <span class="pos-imei-val">{{ $phone->imei_1 }}</span>
                             <svg class="pos-imei-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
                         </div>
 
-                        <!-- Buyer Customer Info (Shown on sold phones - Seamless divider layout) -->
+                        <!-- Buyer Customer Info (Shown on sold phones - Clean outlined box) -->
                         <div id="phoneBuyerBox{{ $phone->id }}" class="phone-buyer-box" style="{{ $isSold && $phone->sale && $phone->sale->customer ? 'display: block;' : 'display: none;' }}">
-                            <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 0.4rem;">
-                                <div style="font-size: 0.8125rem; font-weight: 700; color: #1e293b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; align-items: center; gap: 0.25rem;">
-                                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                            <div class="phone-buyer-header">
+                                <div class="phone-buyer-name-row">
+                                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
                                     <span id="phoneBuyerName{{ $phone->id }}">{{ $phone->sale->customer->name ?? '' }}</span>
                                 </div>
                                 @if($phone->sale)
-                                    <span style="font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; color: #94a3b8; font-weight: 500; flex-shrink: 0;">#{{ $phone->sale->invoice_number }}</span>
+                                    <span class="phone-buyer-inv">#{{ $phone->sale->invoice_number }}</span>
                                 @endif
                             </div>
-                            <div style="font-size: 0.72rem; color: #2563eb; font-weight: 500; margin-top: 2px; display: flex; align-items: center; gap: 0.25rem;">
+                            <div class="phone-buyer-contact">
                                 <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
                                 <span id="phoneBuyerPhone{{ $phone->id }}">{{ $phone->sale->customer->phone ?? '' }}</span>
                             </div>
@@ -1303,10 +1402,9 @@
                         <div class="pos-card-model">{{ $product->name }}</div>
 
                         <div class="pos-card-specs">
-                            <span>SKU: {{ $product->sku ?? 'N/A' }}</span>
+                            <span class="spec-outline-chip">SKU: {{ $product->sku ?? 'N/A' }}</span>
                             @if($product->barcode)
-                                <span class="pos-spec-dot"></span>
-                                <span>Barcode: {{ $product->barcode }}</span>
+                                <span class="spec-outline-chip">Barcode: {{ $product->barcode }}</span>
                             @endif
                         </div>
                     </div>
