@@ -230,50 +230,48 @@
         max-height: calc(100vh - 280px);
     }
 
-    /* POS Item Card */
+    /* Clean, Soothing, Minimalist POS Item Card */
     .pos-item-card {
-        border: 1.5px solid #e2e8f0;
-        border-radius: 16px;
-        padding: 1rem;
+        border: 1px solid #e8edf5;
+        border-radius: 14px;
+        padding: 1.05rem;
         background: #ffffff;
-        transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+        transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
         display: flex;
         flex-direction: column;
         justify-content: space-between;
         position: relative;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02), 0 3px 8px -2px rgba(0, 0, 0, 0.02);
+        box-shadow: 0 1px 3px rgba(15, 23, 42, 0.03);
     }
 
     .pos-item-card:hover {
-        border-color: #818cf8;
-        box-shadow: 0 12px 28px -4px rgba(79, 70, 229, 0.14);
+        border-color: #c7d2fe;
+        box-shadow: 0 10px 22px -4px rgba(79, 70, 229, 0.12);
         transform: translateY(-2px);
     }
 
     .pos-item-card.item-sold {
-        background: #fbfcfe;
-        border-color: #edf2f7;
+        background: #fafbfc;
+        border-color: #f1f5f9;
     }
 
     .pos-item-card.item-sold:hover {
-        border-color: #cbd5e1;
-        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
+        border-color: #e2e8f0;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
         transform: none;
     }
 
-    /* Brand Chip */
+    /* Clean Brand Label */
     .pos-item-brand {
-        display: inline-block;
         font-size: 0.68rem;
         font-weight: 800;
         text-transform: uppercase;
-        letter-spacing: 0.05em;
-        color: #0284c7;
-        background: #f0f9ff;
-        border: 1px solid #bae6fd;
-        padding: 0.2rem 0.55rem;
-        border-radius: 6px;
-        line-height: 1.2;
+        letter-spacing: 0.06em;
+        color: #64748b;
+        background: transparent;
+        padding: 0;
+        border: none;
+        line-height: 1;
     }
 
     /* Status Badges */
@@ -281,13 +279,9 @@
         display: inline-flex;
         align-items: center;
         gap: 0.35rem;
-        background: #ecfdf5;
-        color: #047857;
-        border: 1px solid #a7f3d0;
-        font-size: 0.68rem;
-        font-weight: 750;
-        padding: 0.2rem 0.6rem;
-        border-radius: 9999px;
+        color: #059669;
+        font-size: 0.72rem;
+        font-weight: 700;
         white-space: nowrap;
     }
 
@@ -296,189 +290,83 @@
         height: 6px;
         border-radius: 50%;
         background: #10b981;
-        box-shadow: 0 0 6px #10b981;
+        box-shadow: 0 0 6px rgba(16, 185, 129, 0.6);
         display: inline-block;
     }
 
     .badge-status-sold {
         display: inline-flex;
         align-items: center;
-        gap: 0.3rem;
-        background: #fef2f2;
-        color: #dc2626;
-        border: 1px solid #fecaca;
-        font-size: 0.68rem;
-        font-weight: 750;
-        padding: 0.2rem 0.6rem;
-        border-radius: 9999px;
+        gap: 0.35rem;
+        color: #64748b;
+        font-size: 0.72rem;
+        font-weight: 650;
         white-space: nowrap;
     }
 
-    /* Model & Specs */
-    .pos-card-model {
-        font-weight: 800;
-        font-size: 1.05rem;
-        color: #0f172a;
-        line-height: 1.3;
-        margin-top: 0.45rem;
-        margin-bottom: 0.35rem;
+    .status-dot-sold {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: #94a3b8;
+        display: inline-block;
     }
 
-    .pos-card-specs {
-        display: flex;
-        align-items: center;
-        gap: 0.25rem;
-        flex-wrap: wrap;
+    /* Model & Clean Specs */
+    .pos-card-model {
+        font-weight: 800;
+        font-size: 1.1rem;
+        color: #0f172a;
+        line-height: 1.25;
         margin-top: 0.25rem;
     }
 
-    .pos-spec-chip {
-        font-size: 0.68rem;
-        font-weight: 650;
-        padding: 0.14rem 0.45rem;
-        border-radius: 6px;
-        display: inline-flex;
-        align-items: center;
-        gap: 0.25rem;
-        line-height: 1.2;
-        white-space: nowrap;
-    }
-
-    .pos-spec-chip.chip-storage {
-        background: #eff6ff;
-        color: #2563eb;
-        border: 1px solid #dbeafe;
-        font-weight: 750;
-    }
-
-    .pos-spec-chip.chip-color {
-        background: #f8fafc;
-        color: #475569;
-        border: 1px solid #e2e8f0;
-    }
-
-    .pos-spec-chip.chip-condition-new {
-        background: #ecfdf5;
-        color: #059669;
-        border: 1px solid #a7f3d0;
-        font-weight: 700;
-    }
-
-    .pos-spec-chip.chip-condition-used {
-        background: #fef3c7;
-        color: #b45309;
-        border: 1px solid #fde68a;
-        font-weight: 700;
-    }
-
-    .pos-spec-chip.chip-condition-refurbished {
-        background: #f3e8ff;
-        color: #7e22ce;
-        border: 1px solid #e9d5ff;
-        font-weight: 700;
-    }
-
-    /* IMEI Chip */
-    .pos-imei-chip {
-        font-family: 'JetBrains Mono', monospace;
-        font-size: 0.68rem;
-        color: #475569;
-        margin-top: 0.45rem;
-        background: #f8fafc;
-        padding: 0.28rem 0.55rem;
-        border-radius: 7px;
-        border: 1px solid #e2e8f0;
+    .pos-card-specs {
+        font-size: 0.78rem;
+        color: #64748b;
+        margin-top: 0.25rem;
         display: flex;
         align-items: center;
-        justify-content: space-between;
+        gap: 0.35rem;
+        flex-wrap: wrap;
+    }
+
+    .pos-spec-bullet {
+        color: #cbd5e1;
+        font-size: 0.75rem;
+        user-select: none;
+    }
+
+    /* Minimal IMEI Line */
+    .pos-imei-chip {
+        font-size: 0.72rem;
+        color: #64748b;
+        margin-top: 0.45rem;
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
         cursor: pointer;
-        transition: all 0.15s ease;
+        transition: color 0.15s ease;
+        width: fit-content;
+        background: transparent;
+        border: none;
+        padding: 0;
     }
 
     .pos-imei-chip:hover {
-        background: #eff6ff;
-        border-color: #60a5fa;
-        color: #1d4ed8;
+        color: #0284c7;
     }
 
-    /* Seamless Buyer Info (No Clunky Nested Box) */
+    .pos-imei-chip:hover svg {
+        stroke: #0284c7;
+    }
+
+    /* Seamless Buyer Info - No Clunky Nested Box */
     .phone-buyer-box {
-        margin-top: 0.55rem;
-        padding-top: 0.5rem;
+        margin-top: 0.65rem;
+        padding-top: 0.55rem;
         border-top: 1px dashed #e2e8f0;
         background: transparent;
-    }
-
-    .pos-buyer-row {
-        display: flex;
-        align-items: flex-start;
-        gap: 0.5rem;
-    }
-
-    .pos-buyer-avatar {
-        width: 24px;
-        height: 24px;
-        border-radius: 50%;
-        background: #e0e7ff;
-        color: #4338ca;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        flex-shrink: 0;
-        margin-top: 1px;
-    }
-
-    .pos-buyer-content {
-        flex: 1;
-        min-width: 0;
-    }
-
-    .pos-buyer-top {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 0.35rem;
-        line-height: 1.2;
-    }
-
-    .pos-buyer-label {
-        font-size: 0.62rem;
-        font-weight: 750;
-        text-transform: uppercase;
-        color: #64748b;
-        letter-spacing: 0.04em;
-    }
-
-    .pos-buyer-invoice {
-        font-family: 'JetBrains Mono', monospace;
-        font-size: 0.62rem;
-        color: #64748b;
-        background: #f1f5f9;
-        padding: 1px 5px;
-        border-radius: 4px;
-        font-weight: 600;
-        white-space: nowrap;
-    }
-
-    .pos-buyer-name {
-        font-weight: 800;
-        color: #0f172a;
-        font-size: 0.8125rem;
-        margin-top: 2px;
-        line-height: 1.25;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-
-    .pos-buyer-phone {
-        color: #2563eb;
-        font-size: 0.72rem;
-        font-weight: 600;
-        display: inline-flex;
-        align-items: center;
-        gap: 0.25rem;
-        margin-top: 2px;
     }
 
     /* Card Footer Price & Button */
@@ -486,8 +374,8 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        margin-top: 0.75rem;
-        padding-top: 0.65rem;
+        margin-top: 0.85rem;
+        padding-top: 0.7rem;
         border-top: 1px solid #f1f5f9;
         gap: 0.5rem;
     }
@@ -495,7 +383,7 @@
     .pos-item-price-val {
         font-weight: 850;
         color: #0f172a;
-        font-size: 1.05rem;
+        font-size: 1.125rem;
         letter-spacing: -0.02em;
     }
 
@@ -510,7 +398,7 @@
         background: linear-gradient(135deg, #10b981 0%, #059669 100%);
         color: #ffffff;
         font-weight: 750;
-        font-size: 0.78rem;
+        font-size: 0.8rem;
         border: none;
         box-shadow: 0 2px 8px rgba(16, 185, 129, 0.32);
         cursor: pointer;
@@ -525,19 +413,18 @@
     }
 
     .btn-out-of-stock {
-        height: 34px;
-        padding: 0 0.85rem;
-        border-radius: 9px;
-        background: #f1f5f9;
+        height: 32px;
+        padding: 0 0.5rem;
         color: #94a3b8;
         font-weight: 700;
         font-size: 0.74rem;
-        border: 1px solid #e2e8f0;
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        cursor: not-allowed;
+        cursor: default;
         white-space: nowrap;
+        background: transparent;
+        border: none;
     }
 
     /* Customer Purchases Panel (Right) */
@@ -1258,11 +1145,13 @@
                     @endif
 
                     <div>
-                        <!-- Brand & Status Pill -->
+                        <!-- Brand & Availability (No harsh pills) -->
                         <div style="display: flex; justify-content: space-between; align-items: center; gap: 0.4rem;">
                             <span class="pos-item-brand">{{ $phone->brand }}</span>
                             @if($isSold)
-                                <span class="badge-status-sold" id="phoneBadge{{ $phone->id }}">✓ Sold</span>
+                                <span class="badge-status-sold" id="phoneBadge{{ $phone->id }}">
+                                    <span class="status-dot-sold"></span> Sold
+                                </span>
                             @else
                                 <span class="badge-status-instock" id="phoneBadge{{ $phone->id }}">
                                     <span class="status-dot-green"></span> In Stock
@@ -1273,83 +1162,64 @@
                         <!-- Model Name -->
                         <div class="pos-card-model">{{ $phone->model }}</div>
 
-                        <!-- Color & Storage & Condition Chips -->
+                        <!-- Clean Unified Specs Row (No boxed pills, soothing typography) -->
                         <div class="pos-card-specs">
-                            @if($phone->color)
-                                <span class="pos-spec-chip chip-color">
-                                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="9"></circle><path d="M12 3v18"></path></svg>
-                                    <span>{{ $phone->color }}</span>
-                                </span>
-                            @endif
                             @if($phone->storage)
-                                <span class="pos-spec-chip chip-storage">
-                                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg>
-                                    <span>{{ $phone->storage }}</span>
-                                </span>
+                                <span style="font-weight: 650; color: #1e293b;">{{ $phone->storage }}</span>
+                            @endif
+                            @if($phone->color)
+                                @if($phone->storage)<span class="pos-spec-bullet">&bull;</span>@endif
+                                <span>{{ $phone->color }}</span>
                             @endif
                             @if($phone->condition)
                                 @php
                                     $cond = strtolower(trim($phone->condition));
-                                    $condClass = match($cond) {
-                                        'new' => 'chip-condition-new',
-                                        'refurbished' => 'chip-condition-refurbished',
-                                        default => 'chip-condition-used',
-                                    };
-                                    $condIcon = match($cond) {
-                                        'new' => '✨',
-                                        'refurbished' => '🛠',
-                                        default => '🔄',
+                                    $condColor = match($cond) {
+                                        'new' => '#059669',
+                                        'refurbished' => '#7c3aed',
+                                        default => '#b45309',
                                     };
                                 @endphp
-                                <span class="pos-spec-chip {{ $condClass }}">
-                                    <span>{{ $condIcon }}</span>
-                                    <span style="text-transform: capitalize;">{{ $phone->condition }}</span>
-                                </span>
+                                <span class="pos-spec-bullet">&bull;</span>
+                                <span style="color: {{ $condColor }}; font-weight: 600; text-transform: capitalize;">{{ $phone->condition }}</span>
                             @endif
                         </div>
 
-                        <!-- Monospace IMEI Chip with Quick Copy -->
+                        <!-- Minimal Monospace IMEI Row with Click-to-Copy -->
                         <div class="pos-imei-chip" title="Click to copy IMEI" onclick="navigator.clipboard && navigator.clipboard.writeText('{{ $phone->imei_1 }}'); showCopiedToast('IMEI {{ $phone->imei_1 }}')">
-                            <span style="font-weight: 700; color: #64748b; font-size: 0.65rem; letter-spacing: 0.04em;">IMEI:</span>
-                            <span style="font-weight: 800; color: #0284c7; letter-spacing: 0.02em;">{{ $phone->imei_1 }}</span>
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            <span style="font-weight: 650; color: #94a3b8; font-size: 0.65rem; letter-spacing: 0.03em;">IMEI</span>
+                            <span style="font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; font-weight: 600; color: #0284c7;">{{ $phone->imei_1 }}</span>
+                            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
                         </div>
 
-                        <!-- Buyer Customer Info Display (Shown on sold phones - Seamless & Clean) -->
+                        <!-- Buyer Customer Info (Shown on sold phones - Seamless divider layout) -->
                         <div id="phoneBuyerBox{{ $phone->id }}" class="phone-buyer-box" style="{{ $isSold && $phone->sale && $phone->sale->customer ? 'display: block;' : 'display: none;' }}">
-                            <div class="pos-buyer-row">
-                                <div class="pos-buyer-avatar">
-                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                            <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 0.4rem;">
+                                <div style="font-size: 0.8125rem; font-weight: 700; color: #1e293b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; align-items: center; gap: 0.25rem;">
+                                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                                    <span id="phoneBuyerName{{ $phone->id }}">{{ $phone->sale->customer->name ?? '' }}</span>
                                 </div>
-                                <div class="pos-buyer-content">
-                                    <div class="pos-buyer-top">
-                                        <span class="pos-buyer-label">Sold to</span>
-                                        @if($phone->sale)
-                                            <span class="pos-buyer-invoice">#{{ $phone->sale->invoice_number }}</span>
-                                        @endif
-                                    </div>
-                                    <div class="pos-buyer-name" id="phoneBuyerName{{ $phone->id }}">
-                                        {{ $phone->sale->customer->name ?? '' }}
-                                    </div>
-                                    <div class="pos-buyer-phone" id="phoneBuyerPhone{{ $phone->id }}">
-                                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
-                                        <span>{{ $phone->sale->customer->phone ?? '' }}</span>
-                                    </div>
-                                </div>
+                                @if($phone->sale)
+                                    <span style="font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; color: #94a3b8; font-weight: 500; flex-shrink: 0;">#{{ $phone->sale->invoice_number }}</span>
+                                @endif
+                            </div>
+                            <div style="font-size: 0.72rem; color: #2563eb; font-weight: 500; margin-top: 2px; display: flex; align-items: center; gap: 0.25rem;">
+                                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                                <span id="phoneBuyerPhone{{ $phone->id }}">{{ $phone->sale->customer->phone ?? '' }}</span>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Footer: Price & Sell Action -->
+                    <!-- Footer: Price & Action -->
                     <div class="pos-item-footer">
                         <div>
-                            <span style="font-size: 0.68rem; color: #64748b; font-weight: 700; display: block; text-transform: uppercase;">Price</span>
+                            <span style="font-size: 0.62rem; color: #94a3b8; font-weight: 700; display: block; text-transform: uppercase; letter-spacing: 0.04em;">Price</span>
                             <span class="pos-item-price-val">LKR {{ number_format($phone->selling_price, 2) }}</span>
                         </div>
                         @if($isSold)
-                            <button type="button" class="btn-out-of-stock" disabled>
-                                ✓ Out of Stock
-                            </button>
+                            <span class="btn-out-of-stock">
+                                Sold Out
+                            </span>
                         @else
                             <button type="button" 
                                     id="phoneSellBtn{{ $phone->id }}"
@@ -1391,9 +1261,13 @@
 
                     <div>
                         <div style="display: flex; justify-content: space-between; align-items: center; gap: 0.4rem;">
-                            <span class="pos-item-brand" style="color: #4f46e5; background: #eef2ff;">{{ $product->category->name ?? 'Accessory' }}</span>
-                            <span class="badge {{ $isOut ? 'badge-danger' : ($product->isLowStock() ? 'badge-warning' : 'badge-success') }}" id="prodStockBadge{{ $product->id }}" style="font-size: 0.68rem; padding: 2px 7px; border-radius: 9999px;">
-                                {{ $isOut ? 'Out of Stock' : 'Stock: '.$product->stock_quantity.' units' }}
+                            <span class="pos-item-brand">{{ $product->category->name ?? 'Accessory' }}</span>
+                            <span class="{{ $isOut ? 'badge-status-sold' : 'badge-status-instock' }}" id="prodStockBadge{{ $product->id }}">
+                                @if($isOut)
+                                    <span class="status-dot-sold"></span> Out of Stock
+                                @else
+                                    <span class="status-dot-green"></span> {{ $product->stock_quantity }} units
+                                @endif
                             </span>
                         </div>
 
@@ -1402,7 +1276,7 @@
                         <div class="pos-card-specs">
                             <span>SKU: {{ $product->sku ?? 'N/A' }}</span>
                             @if($product->barcode)
-                                <span>&bull;</span>
+                                <span class="pos-spec-bullet">&bull;</span>
                                 <span>Barcode: {{ $product->barcode }}</span>
                             @endif
                         </div>
@@ -1410,13 +1284,13 @@
 
                     <div class="pos-item-footer">
                         <div>
-                            <span style="font-size: 0.68rem; color: #64748b; font-weight: 700; display: block; text-transform: uppercase;">Price</span>
+                            <span style="font-size: 0.62rem; color: #94a3b8; font-weight: 700; display: block; text-transform: uppercase; letter-spacing: 0.04em;">Price</span>
                             <span class="pos-item-price-val">LKR {{ number_format($product->selling_price, 2) }}</span>
                         </div>
                         @if($isOut)
-                            <button type="button" class="btn-out-of-stock" disabled>
+                            <span class="btn-out-of-stock">
                                 Out of Stock
-                            </button>
+                            </span>
                         @else
                             <button type="button" 
                                     id="prodSellBtn{{ $product->id }}"
@@ -2648,10 +2522,10 @@
                 }
                 if (badge) {
                     badge.className = 'badge-status-sold';
-                    badge.innerHTML = '✓ Sold';
+                    badge.innerHTML = '<span class="status-dot-sold"></span> Sold';
                 }
                 if (sellBtn) {
-                    sellBtn.outerHTML = '<button type="button" class="btn-out-of-stock" disabled>✓ Out of Stock</button>';
+                    sellBtn.outerHTML = '<span class="btn-out-of-stock">Sold Out</span>';
                 }
                 if (buyerBox) {
                     buyerBox.style.display = 'block';
@@ -2666,14 +2540,15 @@
                 const remaining = currentQsMaxStock - qty;
                 if (stockBadge) {
                     if (remaining <= 0) {
-                        stockBadge.className = 'badge badge-danger';
-                        stockBadge.innerText = 'Out of Stock';
-                        if (sellBtn) sellBtn.outerHTML = '<button type="button" class="btn-out-of-stock" disabled>Out of Stock</button>';
+                        stockBadge.className = 'badge-status-sold';
+                        stockBadge.innerHTML = '<span class="status-dot-sold"></span> Out of Stock';
+                        if (sellBtn) sellBtn.outerHTML = '<span class="btn-out-of-stock">Out of Stock</span>';
                         if (card) {
                             card.classList.add('item-sold');
                         }
                     } else {
-                        stockBadge.innerText = 'Stock: ' + remaining + ' units';
+                        stockBadge.className = 'badge-status-instock';
+                        stockBadge.innerHTML = '<span class="status-dot-green"></span> ' + remaining + ' units';
                     }
                 }
             }
