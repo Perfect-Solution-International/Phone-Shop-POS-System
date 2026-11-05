@@ -1,9 +1,36 @@
 @extends('layouts.shop')
 
-@section('title', 'Sales & Invoices')
-@section('page-title', 'Sales & Invoices Directory')
+@section('title', 'Sales & Customer Purchases')
+@section('page-title', 'Sales & Customer Purchases Directory')
 
 @section('content')
+@include('shop.partials.pos-subnav')
+
+<!-- Sales Metric Summary Cards -->
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-bottom: 1.25rem;">
+    <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.1rem 1.25rem; box-shadow: 0 1px 3px rgba(0,0,0,0.03);">
+        <span style="font-size: 0.72rem; font-weight: 700; text-transform: uppercase; color: #64748b; letter-spacing: 0.04em; display: block;">Today's Sales Revenue</span>
+        <div style="font-size: 1.5rem; font-weight: 850; color: #047857; margin-top: 0.35rem;">
+            LKR {{ number_format($todayTotal, 2) }}
+        </div>
+        <div style="font-size: 0.75rem; color: #64748b; margin-top: 0.25rem;">{{ $todayCount }} transactions recorded today</div>
+    </div>
+    <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.1rem 1.25rem; box-shadow: 0 1px 3px rgba(0,0,0,0.03);">
+        <span style="font-size: 0.72rem; font-weight: 700; text-transform: uppercase; color: #64748b; letter-spacing: 0.04em; display: block;">Total Completed Sales</span>
+        <div style="font-size: 1.5rem; font-weight: 850; color: #4338ca; margin-top: 0.35rem;">
+            {{ number_format($totalSalesCount) }}
+        </div>
+        <div style="font-size: 0.75rem; color: #64748b; margin-top: 0.25rem;">Lifetime completed transactions</div>
+    </div>
+    <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.1rem 1.25rem; box-shadow: 0 1px 3px rgba(0,0,0,0.03);">
+        <span style="font-size: 0.72rem; font-weight: 700; text-transform: uppercase; color: #64748b; letter-spacing: 0.04em; display: block;">All-Time Sales Revenue</span>
+        <div style="font-size: 1.5rem; font-weight: 850; color: #0f172a; margin-top: 0.35rem;">
+            LKR {{ number_format($totalSalesAmount, 2) }}
+        </div>
+        <div style="font-size: 0.75rem; color: #64748b; margin-top: 0.25rem;">Gross sales ledger amount</div>
+    </div>
+</div>
+
 <style>
     @media (max-width: 768px) {
         .sales-desktop-table-wrap {
