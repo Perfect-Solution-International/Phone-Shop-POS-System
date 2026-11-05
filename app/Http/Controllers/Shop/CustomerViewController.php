@@ -8,6 +8,7 @@ use App\Models\CustomerDebtPayment;
 use App\Models\PhoneTradeIn;
 use App\Models\RepairJob;
 use App\Models\SalePayment;
+use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -41,7 +42,9 @@ class CustomerViewController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
-        abort_unless(auth()->user()?->isOwnerOrAdmin(), 403, 'Only shop owners and administrators can register customers.');
+        /** @var User|null $user */
+        $user = auth()->user();
+        abort_unless($user?->isOwnerOrAdmin(), 403, 'Only shop owners and administrators can register customers.');
 
         $validated = $request->validate([
             'name' => 'required|string|max:255',
@@ -59,7 +62,9 @@ class CustomerViewController extends Controller
 
     public function update(Request $request, Customer $customer): RedirectResponse
     {
-        abort_unless(auth()->user()?->isOwnerOrAdmin(), 403, 'Only shop owners and administrators can edit customers.');
+        /** @var User|null $user */
+        $user = auth()->user();
+        abort_unless($user?->isOwnerOrAdmin(), 403, 'Only shop owners and administrators can edit customers.');
 
         $validated = $request->validate([
             'name' => 'required|string|max:255',
@@ -83,7 +88,9 @@ class CustomerViewController extends Controller
 
     public function destroy(Customer $customer): RedirectResponse
     {
-        abort_unless(auth()->user()?->isOwnerOrAdmin(), 403, 'Only shop owners and administrators can delete customers.');
+        /** @var User|null $user */
+        $user = auth()->user();
+        abort_unless($user?->isOwnerOrAdmin(), 403, 'Only shop owners and administrators can delete customers.');
 
         if ((float) $customer->balance > 0) {
             return back()->with('error', "Cannot delete customer '{$customer->name}' because they have an outstanding debt balance of LKR " . number_format($customer->balance, 2) . ". Please clear their balance first.");
