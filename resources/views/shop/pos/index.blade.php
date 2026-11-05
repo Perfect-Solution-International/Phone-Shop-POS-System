@@ -558,50 +558,6 @@
         border-radius: 8px;
     }
 
-    /* Customer Purchases Panel (Right) */
-    .pos-purchases-panel {
-        background: #ffffff;
-        border: 1.5px solid #e2e8f0;
-        border-radius: 16px;
-        overflow: hidden;
-        display: flex;
-        flex-direction: column;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03), 0 6px 16px -4px rgba(0, 0, 0, 0.04);
-        position: sticky;
-        top: 80px;
-        max-height: calc(100vh - 165px);
-    }
-
-    .pos-purchases-header {
-        padding: 1.1rem 1.25rem;
-        border-bottom: 1.5px solid #e2e8f0;
-        background: #ffffff;
-    }
-
-    .purchase-feed-list {
-        padding: 0.85rem;
-        overflow-y: auto;
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        gap: 0.75rem;
-        background: #f8fafc;
-    }
-
-    .purchase-feed-card {
-        background: #ffffff;
-        border: 1.5px solid #e2e8f0;
-        border-radius: 12px;
-        padding: 0.95rem 1.1rem;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
-        transition: all 0.18s ease;
-    }
-
-    .purchase-feed-card:hover {
-        border-color: #cbd5e1;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
-    }
-
     /* ==========================================================================
        PREMIUM QUICK SELL MODAL & CONTROLS
        ========================================================================== */
@@ -2435,17 +2391,6 @@
         document.getElementById('quickSellModal').classList.remove('open');
     }
 
-
-
-    function filterCustomerPurchases(query) {
-        const q = (query || '').toLowerCase().trim();
-        const cards = document.querySelectorAll('.purchase-feed-card');
-        cards.forEach(card => {
-            const text = (card.getAttribute('data-search') || '').toLowerCase();
-            card.style.display = (!q || text.includes(q)) ? 'block' : 'none';
-        });
-    }
-
     async function submitQuickSell(e) {
         e.preventDefault();
 
@@ -2589,82 +2534,9 @@
             // Update Counts
             updateStockCounts();
 
-            // 2. Add to Customer Purchases feed if present
-            const feed = document.getElementById('customerPurchasesFeed');
+            // 2. Cache sale data
             const sale = data.sale;
             salesMap[sale.id] = sale;
-
-            if (feed) {
-                const emptyNotice = document.getElementById('noPurchasesNotice');
-                if (emptyNotice) emptyNotice.remove();
-
-                const newCard = document.createElement('div');
-                newCard.className = 'purchase-feed-card';
-                newCard.setAttribute('data-search', (custName + ' ' + custPhone + ' ' + custNic + ' ' + sale.invoice_number).toLowerCase());
-                newCard.style.cssText = 'background: #ffffff; border: 1.5px solid #86efac; border-radius: 12px; padding: 0.95rem 1.1rem; box-shadow: 0 4px 14px rgba(16, 185, 129, 0.12); animation: fadeIn 0.3s ease;';
-                newCard.innerHTML = `
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.55rem;">
-                        <span style="font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; font-weight: 850; color: #047857; background: #dcfce7; border: 1px solid #86efac; padding: 2px 8px; border-radius: 6px;">
-                            #${sale.invoice_number}
-                        </span>
-                        <span style="font-size: 0.7rem; color: #16a34a; font-weight: 700; display: inline-flex; align-items: center; gap: 0.25rem;">
-                            <span class="status-dot-green"></span> Just Now
-                        </span>
-                    </div>
-                    <div style="margin-bottom: 0.65rem; padding-bottom: 0.65rem; border-bottom: 1px dashed #e2e8f0;">
-                        <div style="font-size: 0.85rem; font-weight: 800; color: #0f172a; line-height: 1.3;">
-                            ${sale.items && sale.items[0] ? sale.items[0].item_name : 'Sold Item'} (x${qty})
-                        </div>
-                        <div style="margin-top: 0.45rem; display: flex; align-items: center; justify-content: space-between;">
-                            <span class="badge" style="background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; font-size: 0.68rem; font-weight: 750; padding: 2px 7px; border-radius: 6px;">
-                                ✓ Stock Deducted (-${qty})
-                            </span>
-                            <span style="font-size: 0.85rem; font-weight: 850; color: #047857;">
-                                LKR ${(currentQsUnitPrice * qty).toLocaleString('en-US', {minimumFractionDigits: 2})}
-                            </span>
-                        </div>
-                    </div>
-                    <div style="background: #f8fafc; border-radius: 10px; padding: 0.6rem 0.75rem; border: 1px solid #e2e8f0;">
-                        <div style="font-size: 0.68rem; font-weight: 800; text-transform: uppercase; color: #047857; margin-bottom: 3px; display: inline-flex; align-items: center; gap: 0.25rem;">
-                            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-                            <span>Buying Customer</span>
-                        </div>
-                        <div style="font-size: 0.875rem; font-weight: 850; color: #0f172a;">${custName}</div>
-                        <div style="font-size: 0.75rem; color: #475569; margin-top: 3px; display: flex; align-items: center; gap: 0.35rem; flex-wrap: wrap;">
-                            <span style="display: inline-flex; align-items: center; gap: 0.25rem;">
-                                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
-                                <strong>${custPhone}</strong>
-                            </span>
-                            ${custNic ? `
-                                <span style="color: #cbd5e1;">&bull;</span>
-                                <span style="display: inline-flex; align-items: center; gap: 0.25rem;">
-                                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="4" width="18" height="16" rx="2"></rect><line x1="7" y1="8" x2="17" y2="8"></line><line x1="7" y1="12" x2="13" y2="12"></line></svg>
-                                    <span>${custNic}</span>
-                                </span>
-                            ` : ''}
-                        </div>
-                    </div>
-                    <div style="margin-top: 0.65rem; display: flex; justify-content: flex-end; align-items: center; gap: 0.4rem;">
-                        ${sale.bank_slip_url ? `
-                            <a href="${sale.bank_slip_url}" target="_blank" class="btn btn-sm" style="font-size: 0.72rem; padding: 0.25rem 0.55rem; color: #2563eb; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 6px; font-weight: 700; text-decoration: none; display: inline-flex; align-items: center; gap: 0.25rem;">
-                                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path></svg>
-                                <span>Slip</span>
-                            </a>
-                        ` : ''}
-                        <button type="button" onclick="openSaleReceipt(${sale.id})" class="btn btn-sm btn-secondary" style="font-size: 0.75rem; padding: 0.25rem 0.75rem; border-radius: 6px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 0.35rem;">
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
-                            <span>View Receipt</span>
-                        </button>
-                    </div>
-                `;
-                feed.prepend(newCard);
-
-                const countBadge = document.getElementById('purchasesCountBadge');
-                if (countBadge) {
-                    const currentCount = parseInt(countBadge.innerText) || 0;
-                    countBadge.innerText = (currentCount + 1) + ' Recorded';
-                }
-            }
 
             // 3. Update top banner
             const banner = document.getElementById('latestSaleBanner');
