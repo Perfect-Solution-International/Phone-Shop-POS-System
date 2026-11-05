@@ -120,39 +120,41 @@
 
     /* Tabs */
     .pos-tabs {
-        display: flex;
-        border-bottom: 1px solid #e2e8f0;
-        background: #f8fafc;
-        padding: 0.5rem 0.85rem 0;
-        gap: 0.5rem;
+        display: inline-flex;
+        background: #f1f5f9;
+        padding: 0.35rem;
+        margin: 0.75rem 1rem 0.25rem;
+        border-radius: 12px;
+        gap: 0.35rem;
+        width: fit-content;
+        border: 1px solid #e2e8f0;
     }
 
     .pos-tab {
-        padding: 0.75rem 1.35rem;
-        font-size: 0.875rem;
+        padding: 0.55rem 1.15rem;
+        font-size: 0.8125rem;
         font-weight: 700;
         cursor: pointer;
-        border-radius: 12px 12px 0 0;
+        border-radius: 9px;
         color: #64748b;
-        display: flex;
+        display: inline-flex;
         align-items: center;
-        gap: 0.5rem;
-        transition: all 0.2s ease;
-        border: 1px solid transparent;
-        border-bottom: none;
+        gap: 0.45rem;
+        transition: all 0.18s ease;
+        border: none;
+        user-select: none;
     }
 
     .pos-tab:hover {
-        color: #4f46e5;
-        background: rgba(255, 255, 255, 0.7);
+        color: #1e293b;
+        background: rgba(255, 255, 255, 0.6);
     }
 
     .pos-tab.active {
         color: #4f46e5;
         background: #ffffff;
-        border-color: #e2e8f0;
-        border-bottom-color: #ffffff;
-        box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.02);
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+        font-weight: 800;
     }
 
     /* Quick Filter Sub-bar */
@@ -160,8 +162,8 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 0.65rem 1.25rem;
-        background: #f8fafc;
+        padding: 0.55rem 1.15rem 0.65rem;
+        background: #ffffff;
         border-bottom: 1px solid #f1f5f9;
         flex-wrap: wrap;
         gap: 0.5rem;
@@ -179,7 +181,7 @@
         font-size: 0.75rem;
         font-weight: 700;
         border-radius: 9999px;
-        border: 1px solid #e2e8f0;
+        border: 1.5px solid #e2e8f0;
         background: #ffffff;
         color: #64748b;
         cursor: pointer;
@@ -192,83 +194,83 @@
     .filter-pill:hover {
         border-color: #cbd5e1;
         color: #0f172a;
-        background: #f1f5f9;
+        background: #f8fafc;
     }
 
     .filter-pill.active {
         background: #4f46e5 !important;
         color: #ffffff !important;
         border-color: #4f46e5 !important;
-        box-shadow: 0 2px 6px rgba(79, 70, 229, 0.25) !important;
+        box-shadow: 0 2px 8px rgba(79, 70, 229, 0.28) !important;
     }
 
     .filter-pill.active-instock {
         background: #059669 !important;
         color: #ffffff !important;
         border-color: #059669 !important;
-        box-shadow: 0 2px 6px rgba(5, 150, 105, 0.25) !important;
+        box-shadow: 0 2px 8px rgba(5, 150, 105, 0.28) !important;
     }
 
     .filter-pill.active-sold {
         background: #e11d48 !important;
         color: #ffffff !important;
         border-color: #e11d48 !important;
-        box-shadow: 0 2px 6px rgba(225, 29, 72, 0.25) !important;
+        box-shadow: 0 2px 8px rgba(225, 29, 72, 0.28) !important;
     }
 
     /* Items Grid */
     .pos-items-grid {
-        padding: 1.25rem;
+        padding: 1.15rem;
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(215px, 1fr));
         gap: 1rem;
         overflow-y: auto;
         flex: 1;
-        background: #ffffff;
+        background: #f8fafc;
         max-height: calc(100vh - 280px);
     }
 
     /* POS Item Card */
     .pos-item-card {
         border: 1.5px solid #e2e8f0;
-        border-radius: 14px;
+        border-radius: 16px;
         padding: 1rem;
         background: #ffffff;
-        transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+        transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
         display: flex;
         flex-direction: column;
         justify-content: space-between;
         position: relative;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02), 0 3px 8px -2px rgba(0, 0, 0, 0.02);
     }
 
     .pos-item-card:hover {
-        border-color: #6366f1;
-        box-shadow: 0 10px 22px -4px rgba(99, 102, 241, 0.12);
+        border-color: #818cf8;
+        box-shadow: 0 12px 28px -4px rgba(79, 70, 229, 0.14);
         transform: translateY(-2px);
     }
 
     .pos-item-card.item-sold {
-        background: #fafbfc;
-        border-color: #e2e8f0;
-        opacity: 0.88;
+        background: #fbfcfe;
+        border-color: #edf2f7;
     }
 
     .pos-item-card.item-sold:hover {
         border-color: #cbd5e1;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
         transform: none;
     }
 
     /* Brand Chip */
     .pos-item-brand {
         display: inline-block;
-        font-size: 0.7rem;
+        font-size: 0.68rem;
         font-weight: 800;
         text-transform: uppercase;
         letter-spacing: 0.05em;
-        color: #0369a1;
-        background: #e0f2fe;
+        color: #0284c7;
+        background: #f0f9ff;
+        border: 1px solid #bae6fd;
         padding: 0.2rem 0.55rem;
         border-radius: 6px;
         line-height: 1.2;
@@ -303,7 +305,7 @@
         align-items: center;
         gap: 0.3rem;
         background: #fef2f2;
-        color: #b91c1c;
+        color: #dc2626;
         border: 1px solid #fecaca;
         font-size: 0.68rem;
         font-weight: 750;
@@ -315,20 +317,64 @@
     /* Model & Specs */
     .pos-card-model {
         font-weight: 800;
-        font-size: 0.95rem;
+        font-size: 1.05rem;
         color: #0f172a;
         line-height: 1.3;
-        margin-top: 0.4rem;
+        margin-top: 0.45rem;
+        margin-bottom: 0.35rem;
     }
 
     .pos-card-specs {
-        font-size: 0.75rem;
-        color: #64748b;
-        margin-top: 0.25rem;
         display: flex;
         align-items: center;
-        gap: 0.4rem;
+        gap: 0.35rem;
         flex-wrap: wrap;
+        margin-top: 0.25rem;
+    }
+
+    .pos-spec-chip {
+        font-size: 0.7rem;
+        font-weight: 650;
+        padding: 0.18rem 0.5rem;
+        border-radius: 6px;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        line-height: 1.2;
+    }
+
+    .pos-spec-chip.chip-storage {
+        background: #eff6ff;
+        color: #2563eb;
+        border: 1px solid #dbeafe;
+        font-weight: 750;
+    }
+
+    .pos-spec-chip.chip-color {
+        background: #f8fafc;
+        color: #475569;
+        border: 1px solid #e2e8f0;
+    }
+
+    .pos-spec-chip.chip-condition-new {
+        background: #ecfdf5;
+        color: #059669;
+        border: 1px solid #a7f3d0;
+        font-weight: 700;
+    }
+
+    .pos-spec-chip.chip-condition-used {
+        background: #fef3c7;
+        color: #b45309;
+        border: 1px solid #fde68a;
+        font-weight: 700;
+    }
+
+    .pos-spec-chip.chip-condition-refurbished {
+        background: #f3e8ff;
+        color: #7e22ce;
+        border: 1px solid #e9d5ff;
+        font-weight: 700;
     }
 
     /* IMEI Chip */
@@ -336,11 +382,11 @@
         font-family: 'JetBrains Mono', monospace;
         font-size: 0.7rem;
         color: #475569;
-        margin-top: 0.45rem;
+        margin-top: 0.5rem;
         background: #f8fafc;
-        padding: 0.3rem 0.6rem;
-        border-radius: 6px;
-        border: 1px solid #e2e8f0;
+        padding: 0.32rem 0.55rem;
+        border-radius: 8px;
+        border: 1px dashed #cbd5e1;
         display: flex;
         align-items: center;
         justify-content: space-between;
@@ -350,7 +396,7 @@
 
     .pos-imei-chip:hover {
         background: #eff6ff;
-        border-color: #93c5fd;
+        border-color: #60a5fa;
         color: #1d4ed8;
     }
 
@@ -358,10 +404,10 @@
     .phone-buyer-box {
         margin-top: 0.5rem;
         padding: 0.45rem 0.65rem;
-        background: #eff6ff;
+        background: #f0f7ff;
         border-radius: 8px;
         border: 1px solid #bfdbfe;
-        font-size: 0.75rem;
+        font-size: 0.74rem;
     }
 
     /* Card Footer Price & Button */
@@ -377,9 +423,9 @@
 
     .pos-item-price-val {
         font-weight: 850;
-        color: #047857;
-        font-size: 0.975rem;
-        letter-spacing: -0.01em;
+        color: #0f172a;
+        font-size: 1.05rem;
+        letter-spacing: -0.02em;
     }
 
     .btn-sell-action {
@@ -387,34 +433,34 @@
         align-items: center;
         justify-content: center;
         gap: 0.35rem;
-        height: 32px;
-        padding: 0 0.85rem;
-        border-radius: 8px;
-        background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+        height: 34px;
+        padding: 0 1rem;
+        border-radius: 9px;
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
         color: #ffffff;
         font-weight: 750;
-        font-size: 0.75rem;
+        font-size: 0.78rem;
         border: none;
-        box-shadow: 0 2px 6px rgba(16, 185, 129, 0.3);
+        box-shadow: 0 2px 8px rgba(16, 185, 129, 0.32);
         cursor: pointer;
         transition: all 0.18s ease;
         white-space: nowrap;
     }
 
     .btn-sell-action:hover {
-        background: linear-gradient(135deg, #047857 0%, #059669 100%);
-        box-shadow: 0 4px 10px rgba(16, 185, 129, 0.4);
+        background: linear-gradient(135deg, #059669 0%, #047857 100%);
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.42);
         transform: translateY(-1px);
     }
 
     .btn-out-of-stock {
-        height: 32px;
-        padding: 0 0.75rem;
-        border-radius: 8px;
+        height: 34px;
+        padding: 0 0.85rem;
+        border-radius: 9px;
         background: #f1f5f9;
         color: #94a3b8;
         font-weight: 700;
-        font-size: 0.72rem;
+        font-size: 0.74rem;
         border: 1px solid #e2e8f0;
         display: inline-flex;
         align-items: center;
@@ -1113,7 +1159,7 @@
                     <span>Sold Archive (<span id="soldPhonesCount">{{ $phones->where('status', 'sold')->count() }}</span>)</span>
                 </button>
             </div>
-            <div style="font-size: 0.72rem; color: #64748b; font-weight: 600; display: inline-flex; align-items: center; gap: 0.35rem;">
+            <div style="font-size: 0.72rem; color: #166534; font-weight: 600; display: inline-flex; align-items: center; gap: 0.35rem; background: #f0fdf4; border: 1px solid #bbf7d0; padding: 0.25rem 0.65rem; border-radius: 8px;">
                 <span>Click</span>
                 <strong style="color: #047857; display: inline-flex; align-items: center; gap: 0.2rem;">
                     <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
@@ -1156,51 +1202,66 @@
                         <!-- Model Name -->
                         <div class="pos-card-model">{{ $phone->model }}</div>
 
-                        <!-- Color & Storage with Original Clean Vector Icons -->
+                        <!-- Color & Storage & Condition Chips -->
                         <div class="pos-card-specs">
-                            <span style="display: inline-flex; align-items: center; gap: 0.3rem;">
-                                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="9"></circle><path d="M12 3v18"></path></svg>
-                                <span>{{ $phone->color ?? 'Standard' }}</span>
-                            </span>
-                            <span style="color: #cbd5e1;">&bull;</span>
-                            <span style="display: inline-flex; align-items: center; gap: 0.3rem;">
-                                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg>
-                                <span>{{ $phone->storage ?? 'N/A' }}</span>
-                            </span>
+                            @if($phone->color)
+                                <span class="pos-spec-chip chip-color">
+                                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="9"></circle><path d="M12 3v18"></path></svg>
+                                    <span>{{ $phone->color }}</span>
+                                </span>
+                            @endif
+                            @if($phone->storage)
+                                <span class="pos-spec-chip chip-storage">
+                                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg>
+                                    <span>{{ $phone->storage }}</span>
+                                </span>
+                            @endif
                             @if($phone->condition)
-                                <span style="color: #cbd5e1;">&bull;</span>
-                                <span style="display: inline-flex; align-items: center; gap: 0.3rem; text-transform: capitalize;">
-                                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>
-                                    <span>{{ $phone->condition }}</span>
+                                @php
+                                    $cond = strtolower(trim($phone->condition));
+                                    $condClass = match($cond) {
+                                        'new' => 'chip-condition-new',
+                                        'refurbished' => 'chip-condition-refurbished',
+                                        default => 'chip-condition-used',
+                                    };
+                                    $condIcon = match($cond) {
+                                        'new' => '✨',
+                                        'refurbished' => '🛠',
+                                        default => '🔄',
+                                    };
+                                @endphp
+                                <span class="pos-spec-chip {{ $condClass }}">
+                                    <span>{{ $condIcon }}</span>
+                                    <span style="text-transform: capitalize;">{{ $phone->condition }}</span>
                                 </span>
                             @endif
                         </div>
 
                         <!-- Monospace IMEI Chip with Quick Copy -->
                         <div class="pos-imei-chip" title="Click to copy IMEI" onclick="navigator.clipboard && navigator.clipboard.writeText('{{ $phone->imei_1 }}'); showCopiedToast('IMEI {{ $phone->imei_1 }}')">
-                            <span style="font-weight: 700; color: #64748b; font-size: 0.65rem;">IMEI:</span>
-                            <span style="font-weight: 800; color: #0284c7;">{{ $phone->imei_1 }}</span>
-                            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            <span style="font-weight: 700; color: #64748b; font-size: 0.65rem; letter-spacing: 0.04em;">IMEI:</span>
+                            <span style="font-weight: 800; color: #0284c7; letter-spacing: 0.02em;">{{ $phone->imei_1 }}</span>
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
                         </div>
 
                         <!-- Buyer Customer Info Display (Shown on sold phones) -->
                         <div id="phoneBuyerBox{{ $phone->id }}" class="phone-buyer-box" style="{{ $isSold && $phone->sale && $phone->sale->customer ? 'display: block;' : 'display: none;' }}">
-                            <div style="font-size: 0.68rem; font-weight: 800; text-transform: uppercase; color: #1e40af; letter-spacing: 0.03em; margin-bottom: 2px; display: flex; align-items: center; gap: 0.3rem;">
-                                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-                                <span>Sold to Customer</span>
+                            <div style="font-size: 0.65rem; font-weight: 800; text-transform: uppercase; color: #1e40af; letter-spacing: 0.04em; display: flex; align-items: center; justify-content: space-between;">
+                                <span style="display: inline-flex; align-items: center; gap: 0.25rem;">
+                                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                                    <span>Sold to</span>
+                                </span>
+                                @if($phone->sale)
+                                    <span style="font-family: monospace; color: #64748b; font-weight: 600; font-size: 0.62rem;">#{{ $phone->sale->invoice_number }}</span>
+                                @endif
                             </div>
-                            <div style="font-weight: 800; color: #0f172a; font-size: 0.8rem;" id="phoneBuyerName{{ $phone->id }}">
+                            <div style="font-weight: 800; color: #0f172a; font-size: 0.8rem; margin-top: 1px;" id="phoneBuyerName{{ $phone->id }}">
                                 {{ $phone->sale->customer->name ?? '' }}
                             </div>
                             <div style="color: #2563eb; font-size: 0.72rem; font-weight: 600; display: flex; align-items: center; gap: 0.25rem; margin-top: 1px;" id="phoneBuyerPhone{{ $phone->id }}">
-                                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
                                 <span>{{ $phone->sale->customer->phone ?? '' }}</span>
                             </div>
-                            @if($phone->sale)
-                                <div style="color: #64748b; font-size: 0.65rem; font-family: monospace; margin-top: 1px;">
-                                    Invoice: #{{ $phone->sale->invoice_number }}
-                                </div>
-                            @endif
                         </div>
                     </div>
 
