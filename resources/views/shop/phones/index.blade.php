@@ -131,9 +131,9 @@
             </select>
             <select name="condition" class="form-control" style="width: auto; min-width: 145px; border-radius: 9px; font-size: 0.85rem; height: 38px;" onchange="this.form.submit()">
                 <option value="">All Conditions</option>
-                <option value="new" {{ request('condition') === 'new' ? 'selected' : '' }}>✨ Brand New</option>
-                <option value="used" {{ request('condition') === 'used' ? 'selected' : '' }}>🔄 Pre-Owned</option>
-                <option value="refurbished" {{ request('condition') === 'refurbished' ? 'selected' : '' }}>🛠️ Refurbished</option>
+                <option value="new" {{ request('condition') === 'new' ? 'selected' : '' }}>Brand New</option>
+                <option value="used" {{ request('condition') === 'used' ? 'selected' : '' }}>Pre-Owned</option>
+                <option value="refurbished" {{ request('condition') === 'refurbished' ? 'selected' : '' }}>Refurbished</option>
             </select>
             <button type="submit" class="btn btn-secondary" style="height: 38px; padding: 0 1rem; border-radius: 9px; font-weight: 600; font-size: 0.825rem;">
                 Filter
@@ -146,10 +146,12 @@
             @endif
         </form>
 
+        @if(auth()->user()?->isOwnerOrAdmin())
         <button type="button" class="btn btn-primary" onclick="openModal('addPhoneModal')" style="height: 38px; padding: 0 1.15rem; border-radius: 9px; font-weight: 700; font-size: 0.875rem; box-shadow: 0 2px 8px rgba(79, 70, 229, 0.25); display: inline-flex; align-items: center; gap: 0.4rem;">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
             Register Phone
         </button>
+        @endif
     </div>
 
     <div class="table-responsive">
@@ -161,7 +163,9 @@
                     <th style="padding: 0.85rem 1rem; font-size: 0.72rem; font-weight: 750; color: #64748b; letter-spacing: 0.05em; text-transform: uppercase;">Specification</th>
                     <th style="padding: 0.85rem 1rem; font-size: 0.72rem; font-weight: 750; color: #64748b; letter-spacing: 0.05em; text-transform: uppercase;">In Stock</th>
                     <th style="padding: 0.85rem 1rem; font-size: 0.72rem; font-weight: 750; color: #64748b; letter-spacing: 0.05em; text-transform: uppercase;">Condition</th>
+                    @if(auth()->user()?->isOwnerOrAdmin())
                     <th style="padding: 0.85rem 1rem; font-size: 0.72rem; font-weight: 750; color: #64748b; letter-spacing: 0.05em; text-transform: uppercase;">Purchase Cost</th>
+                    @endif
                     <th style="padding: 0.85rem 1rem; font-size: 0.72rem; font-weight: 750; color: #64748b; letter-spacing: 0.05em; text-transform: uppercase;">Selling Price</th>
                     <th style="padding: 0.85rem 1rem; font-size: 0.72rem; font-weight: 750; color: #64748b; letter-spacing: 0.05em; text-transform: uppercase;">Status</th>
                     <th style="padding: 0.85rem 1rem; font-size: 0.72rem; font-weight: 750; color: #64748b; letter-spacing: 0.05em; text-transform: uppercase; text-align: right;">Actions</th>
@@ -262,20 +266,25 @@
                     </td>
                     <td>
                         @if($phone->condition === 'new')
-                            <span style="display: inline-flex; align-items: center; gap: 0.25rem; padding: 0.25rem 0.6rem; border-radius: 6px; font-size: 0.75rem; font-weight: 700; background: #ecfdf5; color: #059669; border: 1px solid #a7f3d0;">
-                                ✨ New
+                            <span style="display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.25rem 0.6rem; border-radius: 6px; font-size: 0.75rem; font-weight: 700; background: #ecfdf5; color: #059669; border: 1px solid #a7f3d0;">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.4 7.2L22 12l-7.6 2.8L12 22l-2.4-7.2L2 12l7.6-2.8z"></path></svg>
+                                <span>New</span>
                             </span>
                         @elseif($phone->condition === 'used')
-                            <span style="display: inline-flex; align-items: center; gap: 0.25rem; padding: 0.25rem 0.6rem; border-radius: 6px; font-size: 0.75rem; font-weight: 700; background: #f0f9ff; color: #0284c7; border: 1px solid #bae6fd;">
-                                🔄 Used
+                            <span style="display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.25rem 0.6rem; border-radius: 6px; font-size: 0.75rem; font-weight: 700; background: #f0f9ff; color: #0284c7; border: 1px solid #bae6fd;">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+                                <span>Used</span>
                             </span>
                         @else
-                            <span style="display: inline-flex; align-items: center; gap: 0.25rem; padding: 0.25rem 0.6rem; border-radius: 6px; font-size: 0.75rem; font-weight: 700; background: #f5f3ff; color: #7c3aed; border: 1px solid #ddd6fe;">
-                                🛠️ Refurbished
+                            <span style="display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.25rem 0.6rem; border-radius: 6px; font-size: 0.75rem; font-weight: 700; background: #f5f3ff; color: #7c3aed; border: 1px solid #ddd6fe;">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>
+                                <span>Refurbished</span>
                             </span>
                         @endif
                     </td>
+                    @if(auth()->user()?->isOwnerOrAdmin())
                     <td style="color: #64748b; font-size: 0.8125rem; font-weight: 600;">LKR {{ number_format($phone->purchase_cost, 2) }}</td>
+                    @endif
                     <td>
                         <span style="font-weight: 800; color: #047857; font-size: 0.9375rem; letter-spacing: -0.01em;">
                             LKR {{ number_format($phone->selling_price, 2) }}
@@ -342,6 +351,7 @@
                                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>
                                 Label
                             </a>
+                            @if(auth()->user()?->isOwnerOrAdmin())
                             <button type="button" 
                                     class="btn btn-secondary btn-sm" 
                                     data-phone="{{ json_encode($phone) }}"
@@ -368,21 +378,24 @@
                                 Sold
                             </span>
                             @endif
+                            @endif
                         </div>
                     </td>
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="9" style="text-align: center; color: var(--text-muted); padding: 3.5rem 1rem;">
+                    <td colspan="{{ auth()->user()?->isOwnerOrAdmin() ? '9' : '8' }}" style="text-align: center; color: var(--text-muted); padding: 3.5rem 1rem;">
                         <div style="width: 48px; height: 48px; border-radius: 50%; background: #f1f5f9; color: #94a3b8; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 0.75rem;">
                             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
                         </div>
                         <div style="font-weight: 750; color: #334155; font-size: 1rem;">No serialized phone devices found</div>
                         <div style="font-size: 0.8125rem; color: #94a3b8; margin: 0.35rem 0 1.25rem;">Register new or pre-owned phones with IMEI 1 &amp; IMEI 2 to start selling on POS.</div>
+                        @if(auth()->user()?->isOwnerOrAdmin())
                         <button type="button" class="btn btn-primary btn-sm" onclick="openModal('addPhoneModal')" style="display: inline-flex; align-items: center; gap: 0.4rem; font-weight: 700; border-radius: 8px; padding: 0.5rem 1rem;">
                             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
                             Register First Phone
                         </button>
+                        @endif
                     </td>
                 </tr>
                 @endforelse
@@ -397,6 +410,7 @@
     @endif
 </div>
 
+@if(auth()->user()?->isOwnerOrAdmin())
 <!-- Modal: Register Serialized Phone -->
 <div class="modal-backdrop" id="addPhoneModal">
     <div class="modal-box">
@@ -477,13 +491,20 @@
                         <input type="text" name="serial_number" class="form-control" placeholder="Device Serial Number">
                     </div>
                     <div class="form-group">
-                        <label>Supplier (Optional)</label>
-                        <select name="supplier_id" class="form-control">
-                            <option value="">No Supplier / Store Direct</option>
+                        <label for="phone_supplier_name">Supplier (Optional)</label>
+                        <input type="text" 
+                               name="supplier_name" 
+                               id="phone_supplier_name" 
+                               list="phone_supplier_list" 
+                               class="form-control" 
+                               placeholder="Type or select supplier (Optional)" 
+                               autocomplete="off">
+                        <datalist id="phone_supplier_list">
+                            <option value="No Supplier / Store Direct"></option>
                             @foreach($suppliers as $sup)
-                                <option value="{{ $sup->id }}">{{ $sup->name }}</option>
+                                <option value="{{ $sup->name }}">{{ $sup->company_name ?? '' }}</option>
                             @endforeach
-                        </select>
+                        </datalist>
                     </div>
                 </div>
 
@@ -614,13 +635,20 @@
                 </div>
 
                 <div class="form-group">
-                    <label>Supplier (Optional)</label>
-                    <select name="supplier_id" id="edit_phone_supplier_id" class="form-control">
-                        <option value="">No Supplier / Store Direct</option>
+                    <label for="edit_phone_supplier_name">Supplier (Optional)</label>
+                    <input type="text" 
+                           name="supplier_name" 
+                           id="edit_phone_supplier_name" 
+                           list="edit_phone_supplier_list" 
+                           class="form-control" 
+                           placeholder="Type or select supplier (Optional)" 
+                           autocomplete="off">
+                    <datalist id="edit_phone_supplier_list">
+                        <option value="No Supplier / Store Direct"></option>
                         @foreach($suppliers as $sup)
-                            <option value="{{ $sup->id }}">{{ $sup->name }}</option>
+                            <option value="{{ $sup->name }}">{{ $sup->company_name ?? '' }}</option>
                         @endforeach
-                    </select>
+                    </datalist>
                 </div>
 
                 <!-- Device Image Upload (Edit) -->
@@ -677,6 +705,7 @@
         </form>
     </div>
 </div>
+@endif
 
 <!-- Modal: Image Lightbox Preview -->
 <div class="modal-backdrop" id="phoneImageLightboxModal" style="z-index: 1070;" onclick="closeModal('phoneImageLightboxModal')">
@@ -773,6 +802,7 @@
         setVal('edit_phone_purchase_cost', phone.purchase_cost || '0.00');
         setVal('edit_phone_selling_price', phone.selling_price || '0.00');
         setVal('edit_phone_supplier_id', phone.supplier_id);
+        setVal('edit_phone_supplier_name', phone.supplier ? phone.supplier.name : '');
         setVal('edit_phone_notes', phone.notes);
         updateEditPhoneStockQty(phone.status || 'in_stock');
 

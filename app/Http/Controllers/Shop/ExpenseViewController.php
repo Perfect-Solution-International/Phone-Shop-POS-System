@@ -52,6 +52,8 @@ class ExpenseViewController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
+        abort_unless(auth()->user()?->isOwnerOrAdmin(), 403, 'Only shop owners and administrators can record expenses.');
+
         $data = $request->validate([
             'category' => ['required', 'string', 'max:100'],
             'title' => ['required', 'string', 'max:255'],
@@ -70,6 +72,8 @@ class ExpenseViewController extends Controller
 
     public function destroy(Expense $expense): RedirectResponse
     {
+        abort_unless(auth()->user()?->isOwnerOrAdmin(), 403, 'Only shop owners and administrators can delete expenses.');
+
         $title = $expense->title;
         $expense->delete();
 

@@ -55,10 +55,14 @@
     </div>
 
     <div style="display: flex; align-items: center; justify-content: flex-end;">
-        <button type="button" class="btn btn-primary" onclick="openAddEmployeeModal()" style="width: 100%; height: 100%; max-height: 52px;">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-            Register Staff Member
-        </button>
+        @if(auth()->user()?->isOwnerOrAdmin())
+            <button type="button" class="btn btn-primary" onclick="openAddEmployeeModal()" style="width: 100%; height: 100%; max-height: 52px;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                Register Staff Member
+            </button>
+        @else
+            <span class="badge" style="background: #f1f5f9; color: #64748b; font-size: 0.8125rem; padding: 0.6rem 1rem;">View Only</span>
+        @endif
     </div>
 </div>
 
@@ -148,6 +152,7 @@
                         @endif
                     </td>
                     <td style="text-align: right; white-space: nowrap;">
+                        @if(auth()->user()?->isOwnerOrAdmin())
                         <div style="display: inline-flex; align-items: center; gap: 0.45rem;">
                             <button type="button" 
                                     class="btn btn-sm" 
@@ -175,6 +180,9 @@
                                 <span>Delete</span>
                             </button>
                         </div>
+                        @else
+                            <span class="badge" style="background: #f1f5f9; color: #94a3b8; font-size: 0.75rem;">View Only</span>
+                        @endif
                     </td>
                 </tr>
                 @empty
@@ -276,10 +284,12 @@
 <div class="card">
     <div class="card-header" style="flex-wrap: wrap; gap: 1rem;">
         <strong style="color: #0f172a; font-size: 1rem;">Leave Requests &amp; Approvals</strong>
+        @if(auth()->user()?->isOwnerOrAdmin())
         <button type="button" class="btn btn-primary" onclick="openModal('leaveModal')">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
             Apply for Staff Leave
         </button>
+        @endif
     </div>
 
     <div class="table-responsive">
@@ -327,18 +337,22 @@
                     </td>
                     <td style="text-align: right; white-space: nowrap;">
                         @if($leave->status === 'pending')
-                            <form action="{{ route('shop.staff.leaves.status', $leave) }}" method="POST" style="display: inline-block;">
-                                @csrf
-                                @method('PATCH')
-                                <input type="hidden" name="status" value="approved">
-                                <button type="submit" class="btn btn-sm" style="background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; padding: 0.25rem 0.6rem;">Approve</button>
-                            </form>
-                            <form action="{{ route('shop.staff.leaves.status', $leave) }}" method="POST" style="display: inline-block;">
-                                @csrf
-                                @method('PATCH')
-                                <input type="hidden" name="status" value="rejected">
-                                <button type="submit" class="btn btn-sm" style="background: #fee2e2; color: #b91c1c; border: 1px solid #fecaca; padding: 0.25rem 0.6rem;">Reject</button>
-                            </form>
+                            @if(auth()->user()?->isOwnerOrAdmin())
+                                <form action="{{ route('shop.staff.leaves.status', $leave) }}" method="POST" style="display: inline-block;">
+                                    @csrf
+                                    @method('PATCH')
+                                    <input type="hidden" name="status" value="approved">
+                                    <button type="submit" class="btn btn-sm" style="background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; padding: 0.25rem 0.6rem;">Approve</button>
+                                </form>
+                                <form action="{{ route('shop.staff.leaves.status', $leave) }}" method="POST" style="display: inline-block;">
+                                    @csrf
+                                    @method('PATCH')
+                                    <input type="hidden" name="status" value="rejected">
+                                    <button type="submit" class="btn btn-sm" style="background: #fee2e2; color: #b91c1c; border: 1px solid #fecaca; padding: 0.25rem 0.6rem;">Reject</button>
+                                </form>
+                            @else
+                                <span class="badge badge-warning">Pending Review</span>
+                            @endif
                         @else
                             <span style="font-size: 0.75rem; color: #94a3b8;">Resolved</span>
                         @endif
@@ -422,6 +436,7 @@
             <button type="submit" class="btn btn-secondary btn-sm">Filter</button>
         </form>
 
+        @if(auth()->user()?->isOwnerOrAdmin())
         <div style="display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap;">
             <!-- Auto-Generate Button -->
             <button type="button" class="btn" onclick="openAutoPayrollModal()" style="background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%); color: #ffffff; border: none; font-weight: 700; box-shadow: 0 2px 4px rgba(79, 70, 229, 0.25); display: inline-flex; align-items: center; gap: 0.4rem;">
@@ -435,6 +450,7 @@
                 Manual Payslip
             </button>
         </div>
+        @endif
     </div>
 
     <div class="table-responsive payroll-desktop-table-wrap">
@@ -502,7 +518,7 @@
                     </td>
                     <td style="text-align: right; white-space: nowrap;">
                         <div style="display: inline-flex; gap: 0.35rem; align-items: center;">
-                            @if($pay->status !== 'paid')
+                            @if(auth()->user()?->isOwnerOrAdmin() && $pay->status !== 'paid')
                                 <button type="button" class="btn btn-sm btn-primary" onclick='openMarkPaidModal(@json($pay))' style="padding: 0.25rem 0.6rem; font-size: 0.75rem; display: inline-flex; align-items: center; gap: 0.2rem;">
                                     <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
                                     Pay
@@ -582,7 +598,7 @@
                         <strong style="color: #166534; font-size: 1.05rem;">LKR {{ number_format($pay->net_salary, 2) }}</strong>
                     </div>
                     <div style="display: flex; gap: 0.35rem; align-items: center;">
-                        @if($pay->status !== 'paid')
+                        @if(auth()->user()?->isOwnerOrAdmin() && $pay->status !== 'paid')
                             <button type="button" class="btn btn-sm btn-primary" onclick='openMarkPaidModal(@json($pay))' style="padding: 0.3rem 0.6rem; font-size: 0.75rem;">
                                 Pay
                             </button>

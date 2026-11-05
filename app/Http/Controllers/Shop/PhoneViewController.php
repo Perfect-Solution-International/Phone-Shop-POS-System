@@ -56,6 +56,22 @@ class PhoneViewController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
+        abort_unless(auth()->user()?->isOwnerOrAdmin(), 403, 'Only shop owners and administrators can register phone devices.');
+
+        $shopId = auth()->user()->shop_id;
+
+        if ($request->has('supplier_name')) {
+            $supName = trim((string) $request->input('supplier_name'));
+            if (! empty($supName) && strtolower($supName) !== 'no supplier / store direct' && strtolower($supName) !== 'none') {
+                $supplier = Supplier::withoutGlobalScopes()->firstOrCreate(
+                    ['shop_id' => $shopId, 'name' => $supName]
+                );
+                $request->merge(['supplier_id' => $supplier->id]);
+            } else {
+                $request->merge(['supplier_id' => null]);
+            }
+        }
+
         $validated = $request->validate([
             'brand' => 'required|string|max:100',
             'model' => 'required|string|max:100',
@@ -85,7 +101,21 @@ class PhoneViewController extends Controller
 
     public function update(Request $request, PhoneDevice $phone): RedirectResponse
     {
+        abort_unless(auth()->user()?->isOwnerOrAdmin(), 403, 'Only shop owners and administrators can update phone devices.');
+
         $shopId = auth()->user()->shop_id;
+
+        if ($request->has('supplier_name')) {
+            $supName = trim((string) $request->input('supplier_name'));
+            if (! empty($supName) && strtolower($supName) !== 'no supplier / store direct' && strtolower($supName) !== 'none') {
+                $supplier = Supplier::withoutGlobalScopes()->firstOrCreate(
+                    ['shop_id' => $shopId, 'name' => $supName]
+                );
+                $request->merge(['supplier_id' => $supplier->id]);
+            } else {
+                $request->merge(['supplier_id' => null]);
+            }
+        }
 
         $validated = $request->validate([
             'brand' => 'required|string|max:100',
@@ -134,6 +164,8 @@ class PhoneViewController extends Controller
 
     public function destroy(PhoneDevice $phone): RedirectResponse
     {
+        abort_unless(auth()->user()?->isOwnerOrAdmin(), 403, 'Only shop owners and administrators can delete phone devices.');
+
         if ($phone->isSold() || $phone->sale_id) {
             return back()->with('error', 'Cannot delete a phone device that has already been sold. Mark it as returned or defective instead.');
         }
@@ -154,6 +186,8 @@ class PhoneViewController extends Controller
 
     public function deleteImage(PhoneDevice $phone): JsonResponse|RedirectResponse
     {
+        abort_unless(auth()->user()?->isOwnerOrAdmin(), 403, 'Only shop owners and administrators can manage phone images.');
+
         if ($phone->image_path && Storage::disk('public')->exists($phone->image_path)) {
             Storage::disk('public')->delete($phone->image_path);
         }

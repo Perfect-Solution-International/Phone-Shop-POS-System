@@ -54,8 +54,46 @@ class RepairViewController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $shopId = (int) auth()->user()?->shop_id;
+
+        // If customer_name was typed instead of choosing an existing customer_id
+        if (empty($request->input('customer_id')) && ! empty($request->input('customer_name'))) {
+            $custPhone = trim($request->input('customer_phone') ?: '0000000000');
+            $customerName = trim($request->input('customer_name'));
+
+            $customer = Customer::where('shop_id', $shopId)
+                ->where(function ($q) use ($customerName, $custPhone): void {
+                    if ($custPhone !== '0000000000') {
+                        $q->where('phone', $custPhone);
+                    } else {
+                        $q->where('name', $customerName);
+                    }
+                })->first();
+
+            if (! $customer) {
+                $customer = Customer::create([
+                    'shop_id' => $shopId,
+                    'name' => $customerName,
+                    'phone' => $custPhone,
+                    'nic' => $request->input('customer_nic'),
+                ]);
+            } else {
+                $updateData = ['name' => $customerName];
+                if (! empty($request->input('customer_nic'))) {
+                    $updateData['nic'] = $request->input('customer_nic');
+                }
+                if ($custPhone !== '0000000000' && empty($customer->phone)) {
+                    $updateData['phone'] = $custPhone;
+                }
+                $customer->update($updateData);
+            }
+
+            $request->merge(['customer_id' => $customer->id]);
+        }
+
         $validated = $request->validate([
             'customer_id' => ['required', Rule::exists('customers', 'id')->where('shop_id', $shopId)],
+            'customer_name' => 'nullable|string|max:255',
+            'customer_phone' => 'nullable|string|max:50',
             'technician_id' => ['nullable', Rule::exists('users', 'id')->where('shop_id', $shopId)],
             'brand' => 'required|string|max:100',
             'model' => 'required|string|max:100',
@@ -69,7 +107,7 @@ class RepairViewController extends Controller
             'estimated_completion_date' => 'nullable|date',
         ]);
 
-        $customer = \App\Models\Customer::find($validated['customer_id']);
+        $customer = Customer::find($validated['customer_id']);
         if (empty($validated['customer_nic']) && $customer && $customer->nic) {
             $validated['customer_nic'] = $customer->nic;
         } elseif (! empty($validated['customer_nic']) && $customer) {
@@ -78,6 +116,8 @@ class RepairViewController extends Controller
 
         $validated['job_number'] = 'REP-'.date('Ymd').'-'.strtoupper(Str::random(4));
         $validated['status'] = 'received';
+
+        unset($validated['customer_name'], $validated['customer_phone']);
 
         $job = RepairJob::create($validated);
 

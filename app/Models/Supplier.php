@@ -11,6 +11,7 @@ class Supplier extends Model
     use BelongsToTenant, HasFactory;
 
     protected $fillable = [
+        'shop_id',
         'name',
         'company_name',
         'phone',

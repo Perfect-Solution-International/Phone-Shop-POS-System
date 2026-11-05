@@ -72,6 +72,8 @@ class GrnViewController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
+        abort_unless(auth()->user()?->isOwnerOrAdmin(), 403, 'Only shop owners and administrators can create Goods Received Notes (GRN).');
+
         $shopId = (int) auth()->user()?->shop_id;
         $validated = $request->validate([
             'supplier_id' => ['required', Rule::exists('suppliers', 'id')->where('shop_id', $shopId)],

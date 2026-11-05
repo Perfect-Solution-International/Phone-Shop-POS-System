@@ -64,6 +64,8 @@ class InventoryMovementViewController extends Controller
 
     public function adjust(Request $request): RedirectResponse
     {
+        abort_unless(auth()->user()?->isOwnerOrAdmin(), 403, 'Only shop owners and administrators can adjust inventory.');
+
         $data = $request->validate([
             'item_type' => ['required', 'in:product,spare_part'],
             'item_id' => ['required', 'integer'],

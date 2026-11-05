@@ -85,7 +85,7 @@ test('shop cashier can access pos counter and complete sale with split tender', 
 test('shop staff can register serialized phone with dual IMEI from web view', function (): void {
     $shop = Shop::factory()->create();
     $user = User::factory()->create(['shop_id' => $shop->id]);
-    $user->assignRole('Shop Manager');
+    $user->assignRole('Shop Owner');
 
     $this->actingAs($user)->get('/shop/phones')->assertOk()->assertViewIs('shop.phones.index');
 
@@ -115,7 +115,7 @@ test('shop staff can register serialized phone with dual IMEI from web view', fu
 test('shop staff can register phone device with supplier and view relationship on phones page', function (): void {
     $shop = Shop::factory()->create();
     $user = User::factory()->create(['shop_id' => $shop->id]);
-    $user->assignRole('Shop Manager');
+    $user->assignRole('Shop Owner');
 
     app()->instance('shop.id', $shop->id);
     $supplier = \App\Models\Supplier::create([
@@ -148,10 +148,44 @@ test('shop staff can register phone device with supplier and view relationship o
     $indexRes->assertSee('Galaxy S24');
 });
 
+test('shop staff can register phone device with typed supplier name', function (): void {
+    $shop = Shop::factory()->create();
+    $user = User::factory()->create(['shop_id' => $shop->id]);
+    $user->assignRole('Shop Owner');
+
+    $payload = [
+        'brand' => 'OnePlus',
+        'model' => '12R',
+        'storage' => '256GB',
+        'ram' => '16GB',
+        'color' => 'Cool Blue',
+        'condition' => 'new',
+        'imei_1' => '359123456789012',
+        'purchase_cost' => 160000.00,
+        'selling_price' => 185000.00,
+        'supplier_name' => 'Apex Mobile Wholesale',
+    ];
+
+    $response = $this->actingAs($user)->post('/shop/phones', $payload);
+    $response->assertRedirect('/shop/phones');
+
+    $supplier = \App\Models\Supplier::withoutGlobalScopes()
+        ->where('shop_id', $shop->id)
+        ->where('name', 'Apex Mobile Wholesale')
+        ->first();
+    expect($supplier)->not->toBeNull();
+
+    $this->assertDatabaseHas('phone_devices', [
+        'shop_id' => $shop->id,
+        'imei_1' => '359123456789012',
+        'supplier_id' => $supplier->id,
+    ]);
+});
+
 test('shop staff can update phone device details and pricing', function (): void {
     $shop = Shop::factory()->create();
     $user = User::factory()->create(['shop_id' => $shop->id]);
-    $user->assignRole('Shop Manager');
+    $user->assignRole('Shop Owner');
 
     app()->instance('shop.id', $shop->id);
     $device = \App\Models\PhoneDevice::create([
@@ -200,7 +234,7 @@ test('shop staff can update phone device details and pricing', function (): void
 test('shop staff can delete an unsold phone device', function (): void {
     $shop = Shop::factory()->create();
     $user = User::factory()->create(['shop_id' => $shop->id]);
-    $user->assignRole('Shop Manager');
+    $user->assignRole('Shop Owner');
 
     app()->instance('shop.id', $shop->id);
     $device = \App\Models\PhoneDevice::create([
@@ -225,7 +259,7 @@ test('shop staff can delete an unsold phone device', function (): void {
 test('shop staff cannot delete an already sold phone device', function (): void {
     $shop = Shop::factory()->create();
     $user = User::factory()->create(['shop_id' => $shop->id]);
-    $user->assignRole('Shop Manager');
+    $user->assignRole('Shop Owner');
 
     app()->instance('shop.id', $shop->id);
     $device = \App\Models\PhoneDevice::create([
@@ -297,6 +331,40 @@ test('shop staff can book a repair ticket and update stages to delivered', funct
     expect($freshRepair->delivered_at)->not->toBeNull();
 });
 
+test('shop staff can book a repair ticket by typing customer name and phone directly', function (): void {
+    $shop = Shop::factory()->create();
+    $tech = User::factory()->create(['shop_id' => $shop->id]);
+    $tech->assignRole('Technician');
+
+    $bookingPayload = [
+        'customer_name' => 'Typed Walk-in Customer',
+        'customer_phone' => '0779876543',
+        'customer_nic' => '987654321V',
+        'brand' => 'Samsung',
+        'model' => 'Galaxy S22',
+        'imei' => '359998887776665',
+        'fault_description' => 'Battery draining fast',
+        'estimated_cost' => 12000.00,
+        'advance_amount' => 2000.00,
+    ];
+
+    $response = $this->actingAs($tech)->post('/shop/repairs', $bookingPayload);
+    $response->assertRedirect('/shop/repairs');
+
+    $createdCustomer = Customer::withoutGlobalScopes()
+        ->where('shop_id', $shop->id)
+        ->where('phone', '0779876543')
+        ->first();
+    expect($createdCustomer)->not->toBeNull();
+    expect($createdCustomer->name)->toBe('Typed Walk-in Customer');
+    expect($createdCustomer->nic)->toBe('987654321V');
+
+    $repair = RepairJob::withoutGlobalScopes()->where('imei', '359998887776665')->first();
+    expect($repair)->not->toBeNull();
+    expect($repair->customer_id)->toBe($createdCustomer->id);
+    expect($repair->status)->toBe('received');
+});
+
 test('shop staff can issue warranty certificate and file claim', function (): void {
     $shop = Shop::factory()->create();
     $user = User::factory()->create(['shop_id' => $shop->id]);
@@ -345,7 +413,7 @@ test('shop staff can issue warranty certificate and file claim', function (): vo
 test('spare parts and customer directory endpoints function properly', function (): void {
     $shop = Shop::factory()->create();
     $user = User::factory()->create(['shop_id' => $shop->id]);
-    $user->assignRole('Shop Manager');
+    $user->assignRole('Shop Owner');
 
     // Spare parts
     $this->actingAs($user)->get('/shop/spare-parts')->assertOk()->assertViewIs('shop.spare-parts.index');
@@ -565,7 +633,7 @@ test('shop staff can register phone device with uploaded photo and manage image'
 
     $shop = Shop::factory()->create();
     $user = User::factory()->create(['shop_id' => $shop->id]);
-    $user->assignRole('Shop Manager');
+    $user->assignRole('Shop Owner');
 
     $image = \Illuminate\Http\UploadedFile::fake()->create('iphone-15.jpg', 200, 'image/jpeg');
 

@@ -13,6 +13,8 @@ class ShopSettingsController extends Controller
 {
     public function index(): View
     {
+        abort_unless(auth()->user()?->isOwnerOrAdmin(), 403, 'Unauthorized. Shop settings are only accessible by Shop Owner / Administrator.');
+
         $shopId = auth()->user()->shop_id ?? session('superadmin_active_shop_id');
         $shop = Shop::with('setting')->findOrFail($shopId);
         $setting = $shop->setting ?? Setting::firstOrCreate(['shop_id' => $shop->id], ['timezone' => 'Asia/Colombo', 'currency' => 'LKR']);
@@ -22,6 +24,8 @@ class ShopSettingsController extends Controller
 
     public function update(Request $request): RedirectResponse
     {
+        abort_unless(auth()->user()?->isOwnerOrAdmin(), 403, 'Only shop owners and administrators can modify shop settings.');
+
         $shopId = auth()->user()->shop_id ?? session('superadmin_active_shop_id');
         $shop = Shop::findOrFail($shopId);
 

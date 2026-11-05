@@ -17,6 +17,8 @@ class CatalogController extends Controller
      */
     public function storeCategory(Request $request): JsonResponse|RedirectResponse
     {
+        abort_unless(auth()->user()?->isOwnerOrAdmin(), 403, 'Only shop owners and administrators can manage catalog.');
+
         $validated = $request->validate([
             'name' => 'required|string|min:2|max:100',
         ]);
@@ -58,6 +60,8 @@ class CatalogController extends Controller
      */
     public function storeBrand(Request $request): JsonResponse|RedirectResponse
     {
+        abort_unless(auth()->user()?->isOwnerOrAdmin(), 403, 'Only shop owners and administrators can manage catalog.');
+
         $validated = $request->validate([
             'name' => 'required|string|min:2|max:100',
         ]);
@@ -113,6 +117,8 @@ class CatalogController extends Controller
      */
     public function seedDefaults(Request $request): JsonResponse|RedirectResponse
     {
+        abort_unless(auth()->user()?->isOwnerOrAdmin(), 403, 'Only shop owners and administrators can initialize default catalog.');
+
         $defaultCategories = [
             'Smartphones',
             'Feature Phones',
@@ -166,6 +172,8 @@ class CatalogController extends Controller
      */
     public function updateCategory(Request $request, Category $category): JsonResponse|RedirectResponse
     {
+        abort_unless(auth()->user()?->isOwnerOrAdmin(), 403, 'Only shop owners and administrators can manage catalog.');
+
         $validated = $request->validate([
             'name' => 'required|string|min:2|max:100',
         ]);
@@ -217,6 +225,8 @@ class CatalogController extends Controller
      */
     public function updateBrand(Request $request, Brand $brand): JsonResponse|RedirectResponse
     {
+        abort_unless(auth()->user()?->isOwnerOrAdmin(), 403, 'Only shop owners and administrators can manage catalog.');
+
         $validated = $request->validate([
             'name' => 'required|string|min:2|max:100',
         ]);
@@ -268,6 +278,8 @@ class CatalogController extends Controller
      */
     public function destroyCategory(Category $category): JsonResponse|RedirectResponse
     {
+        abort_unless(auth()->user()?->isOwnerOrAdmin(), 403, 'Only shop owners and administrators can manage catalog.');
+
         $productCount = $category->products()->count();
         if ($productCount > 0) {
             $category->products()->update(['category_id' => null]);
@@ -292,6 +304,8 @@ class CatalogController extends Controller
      */
     public function destroyBrand(Brand $brand): JsonResponse|RedirectResponse
     {
+        abort_unless(auth()->user()?->isOwnerOrAdmin(), 403, 'Only shop owners and administrators can manage catalog.');
+
         $productCount = $brand->products()->count();
         if ($productCount > 0) {
             $brand->products()->update(['brand_id' => null]);

@@ -140,8 +140,12 @@
             </div>
         </div>
 
-        <div style="padding: 1.25rem 1.5rem; background: #f8fafc; border-top: 1px solid var(--surface-border); display: flex; justify-content: flex-end; gap: 0.75rem;">
-            <button type="submit" class="btn btn-primary">Save Shop Settings</button>
+        <div style="padding: 1.25rem 1.5rem; background: #f8fafc; border-top: 1px solid var(--surface-border); display: flex; justify-content: flex-end; gap: 0.75rem; align-items: center;">
+            @if(auth()->user()?->isOwnerOrAdmin())
+                <button type="submit" class="btn btn-primary">Save Shop Settings</button>
+            @else
+                <span class="badge" style="background: #f1f5f9; color: #64748b; font-size: 0.8125rem; padding: 0.5rem 1rem;">View Only (Restricted to Shop Owner / Admin)</span>
+            @endif
         </div>
     </form>
 </div>

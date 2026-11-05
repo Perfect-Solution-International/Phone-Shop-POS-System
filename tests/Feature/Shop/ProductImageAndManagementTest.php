@@ -289,3 +289,30 @@ test('shop owner can register and update product with supplier and view supplier
     $viewResponse2->assertOk();
     $viewResponse2->assertSee('Global Tech Importers');
 });
+
+test('shop owner can type supplier name directly when creating product', function (): void {
+    $shop = Shop::factory()->create();
+    $owner = User::factory()->create(['shop_id' => $shop->id]);
+    $owner->assignRole('Shop Owner');
+
+    $response = $this->actingAs($owner, 'web')
+        ->post(route('shop.products.store'), [
+            'name' => 'Anker PowerBank 20000mAh',
+            'cost_price' => 12000,
+            'selling_price' => 16500,
+            'stock_quantity' => 10,
+            'supplier_name' => 'Direct Import Hub Colombo',
+        ]);
+
+    $response->assertRedirect(route('shop.products'));
+
+    $supplier = \App\Models\Supplier::withoutGlobalScopes()
+        ->where('shop_id', $shop->id)
+        ->where('name', 'Direct Import Hub Colombo')
+        ->first();
+    expect($supplier)->not->toBeNull();
+
+    $product = Product::withoutGlobalScopes()->where('name', 'Anker PowerBank 20000mAh')->first();
+    expect($product)->not->toBeNull();
+    expect($product->supplier_id)->toBe($supplier->id);
+});

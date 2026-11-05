@@ -45,7 +45,7 @@ class FullOperationsSuiteTest extends TestCase
             'shop_id' => $shop->id,
             'email' => 'owner@techcity.lk',
         ]);
-        $owner->assignRole('Shop Manager');
+        $owner->assignRole('Shop Owner');
 
         app()->instance('shop.id', $shop->id);
 

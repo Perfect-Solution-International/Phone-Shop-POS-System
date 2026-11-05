@@ -22,6 +22,7 @@
             @endif
         </form>
 
+        @if(auth()->user()?->isOwnerOrAdmin())
         <div style="display: flex; gap: 0.5rem; align-items: center;">
             <button type="button" class="btn btn-secondary" onclick="openModal('manageCatalogModal')">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h7"></path></svg>
@@ -32,6 +33,7 @@
                 Add New Item
             </button>
         </div>
+        @endif
     </div>
 
     <div class="table-responsive">
@@ -41,7 +43,9 @@
                     <th style="min-width: 240px;">Product Name & Category</th>
                     <th>Barcode / SKU</th>
                     <th>In Stock</th>
+                    @if(auth()->user()?->isOwnerOrAdmin())
                     <th>Cost Price</th>
+                    @endif
                     <th>Selling Price</th>
                     <th>Alert Level</th>
                     <th>Status</th>
@@ -106,7 +110,9 @@
                         </strong>
                         <span style="font-size: 0.75rem; color: var(--text-muted);">units</span>
                     </td>
+                    @if(auth()->user()?->isOwnerOrAdmin())
                     <td style="color: var(--text-muted); font-size: 0.8125rem;">LKR {{ number_format($product->cost_price, 2) }}</td>
+                    @endif
                     <td style="font-weight: 700; color: #166534;">LKR {{ number_format($product->selling_price, 2) }}</td>
                     <td>
                         @if($product->isLowStock())
@@ -127,6 +133,7 @@
                                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>
                                 Label
                             </a>
+                            @if(auth()->user()?->isOwnerOrAdmin())
                             <button type="button" 
                                     class="btn btn-secondary btn-sm" 
                                     data-product="{{ json_encode($product) }}" 
@@ -146,12 +153,13 @@
                                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
                                 </button>
                             </form>
+                            @endif
                         </div>
                     </td>
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="8" style="text-align: center; color: var(--text-muted); padding: 3rem;">
+                    <td colspan="{{ auth()->user()?->isOwnerOrAdmin() ? '8' : '7' }}" style="text-align: center; color: var(--text-muted); padding: 3rem;">
                         No products registered in inventory. Add an item above.
                     </td>
                 </tr>
@@ -167,6 +175,7 @@
     @endif
 </div>
 
+@if(auth()->user()?->isOwnerOrAdmin())
 <!-- Modal: Add Product -->
 <div class="modal-backdrop" id="addProductModal">
     <div class="modal-box">
@@ -217,13 +226,20 @@
 
                 <div class="form-row">
                     <div class="form-group">
-                        <label>Supplier (Optional)</label>
-                        <select name="supplier_id" id="product_supplier_id" class="form-control">
-                            <option value="">No Supplier / Store Direct</option>
+                        <label for="product_supplier_name">Supplier (Optional)</label>
+                        <input type="text" 
+                               name="supplier_name" 
+                               id="product_supplier_name" 
+                               list="product_supplier_list" 
+                               class="form-control" 
+                               placeholder="Type or select supplier (Optional)" 
+                               autocomplete="off">
+                        <datalist id="product_supplier_list">
+                            <option value="No Supplier / Store Direct"></option>
                             @foreach($suppliers as $sup)
-                                <option value="{{ $sup->id }}">{{ $sup->name }}</option>
+                                <option value="{{ $sup->name }}">{{ $sup->company_name ?? '' }}</option>
                             @endforeach
-                        </select>
+                        </datalist>
                     </div>
                     <div class="form-group">
                         <label>SKU Code (Auto-generated if blank)</label>
@@ -335,13 +351,20 @@
                         <input type="text" name="sku" id="edit_product_sku" class="form-control" style="font-family: monospace;" placeholder="SKU-XXXXXX">
                     </div>
                     <div class="form-group">
-                        <label>Supplier (Optional)</label>
-                        <select name="supplier_id" id="edit_product_supplier_id" class="form-control">
-                            <option value="">No Supplier / Store Direct</option>
+                        <label for="edit_product_supplier_name">Supplier (Optional)</label>
+                        <input type="text" 
+                               name="supplier_name" 
+                               id="edit_product_supplier_name" 
+                               list="edit_product_supplier_list" 
+                               class="form-control" 
+                               placeholder="Type or select supplier (Optional)" 
+                               autocomplete="off">
+                        <datalist id="edit_product_supplier_list">
+                            <option value="No Supplier / Store Direct"></option>
                             @foreach($suppliers as $sup)
-                                <option value="{{ $sup->id }}">{{ $sup->name }}</option>
+                                <option value="{{ $sup->name }}">{{ $sup->company_name ?? '' }}</option>
                             @endforeach
-                        </select>
+                        </datalist>
                     </div>
                 </div>
 
@@ -416,6 +439,7 @@
         </form>
     </div>
 </div>
+@endif
 
 <!-- Modal: Image Lightbox Preview -->
 <div class="modal-backdrop" id="imageLightboxModal" style="z-index: 1070;" onclick="closeModal('imageLightboxModal')">
@@ -429,6 +453,7 @@
         </div>
         <div style="padding: 0.75rem 0.75rem 0.5rem; border-top: 1px solid #334155; display: flex; justify-content: space-between; align-items: center;">
             <button type="button" class="btn btn-sm btn-secondary" onclick="closeModal('imageLightboxModal')" style="font-size: 0.78rem; background: #334155; border-color: #475569; color: #f8fafc;">Close</button>
+            @if(auth()->user()?->isOwnerOrAdmin())
             <form id="lightboxDeleteForm" method="POST" action="" onsubmit="return confirm('Are you sure you want to permanently delete this photo?');" style="margin: 0; display: none;">
                 @csrf
                 @method('DELETE')
@@ -437,9 +462,12 @@
                     Delete Photo
                 </button>
             </form>
+            @endif
         </div>
     </div>
 </div>
+
+@if(auth()->user()?->isOwnerOrAdmin())
 <!-- Modal: Manage Categories & Brands -->
 <div class="modal-backdrop" id="manageCatalogModal">
     <div class="modal-box" style="max-width: 650px;">
@@ -625,6 +653,7 @@
         </form>
     </div>
 </div>
+@endif
 
 <!-- Dynamic Notification Toast -->
 <div id="catalogToast" style="position: fixed; top: 1.5rem; right: 1.5rem; z-index: 9999; display: none; background: #0f172a; color: #ffffff; padding: 0.85rem 1.25rem; border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); font-size: 0.875rem; font-weight: 600; align-items: center; gap: 0.5rem; transition: all 0.3s ease;">
@@ -889,6 +918,7 @@
         setVal('edit_product_category_id', product.category_id || '');
         setVal('edit_product_brand_id', product.brand_id || '');
         setVal('edit_product_supplier_id', product.supplier_id || '');
+        setVal('edit_product_supplier_name', product.supplier ? product.supplier.name : '');
         setVal('edit_product_barcode', product.barcode || product.code || '');
         setVal('edit_product_sku', product.sku || product.code || '');
         setVal('edit_product_cost_price', product.cost_price || '0.00');

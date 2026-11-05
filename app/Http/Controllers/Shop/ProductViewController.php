@@ -42,6 +42,8 @@ class ProductViewController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
+        abort_unless(auth()->user()?->isOwnerOrAdmin(), 403, 'Only shop owners and administrators can add products.');
+
         $shopId = (int) auth()->user()?->shop_id;
 
         // Auto-handle category so shop user is never blocked
@@ -58,6 +60,18 @@ class ProductViewController extends Controller
                 ['slug' => 'general-accessories-'.$shopId]
             );
             $request->merge(['category_id' => $defaultCat->id]);
+        }
+
+        if ($request->has('supplier_name')) {
+            $supName = trim((string) $request->input('supplier_name'));
+            if (! empty($supName) && strtolower($supName) !== 'no supplier / store direct' && strtolower($supName) !== 'none') {
+                $supplier = Supplier::withoutGlobalScopes()->firstOrCreate(
+                    ['shop_id' => $shopId, 'name' => $supName]
+                );
+                $request->merge(['supplier_id' => $supplier->id]);
+            } else {
+                $request->merge(['supplier_id' => null]);
+            }
         }
 
         $validated = $request->validate([
@@ -97,6 +111,8 @@ class ProductViewController extends Controller
 
     public function update(Request $request, Product $product): RedirectResponse
     {
+        abort_unless(auth()->user()?->isOwnerOrAdmin(), 403, 'Only shop owners and administrators can edit products.');
+
         $shopId = (int) auth()->user()?->shop_id;
 
         // Auto-handle category so shop user is never blocked
@@ -113,6 +129,18 @@ class ProductViewController extends Controller
                 ['slug' => 'general-accessories-'.$shopId]
             );
             $request->merge(['category_id' => $defaultCat->id]);
+        }
+
+        if ($request->has('supplier_name')) {
+            $supName = trim((string) $request->input('supplier_name'));
+            if (! empty($supName) && strtolower($supName) !== 'no supplier / store direct' && strtolower($supName) !== 'none') {
+                $supplier = Supplier::withoutGlobalScopes()->firstOrCreate(
+                    ['shop_id' => $shopId, 'name' => $supName]
+                );
+                $request->merge(['supplier_id' => $supplier->id]);
+            } else {
+                $request->merge(['supplier_id' => null]);
+            }
         }
 
         $validated = $request->validate([
@@ -158,6 +186,8 @@ class ProductViewController extends Controller
 
     public function destroy(Product $product): RedirectResponse
     {
+        abort_unless(auth()->user()?->isOwnerOrAdmin(), 403, 'Only shop owners and administrators can delete products.');
+
         if ($product->image_path && Storage::disk('public')->exists($product->image_path)) {
             Storage::disk('public')->delete($product->image_path);
         }
@@ -170,6 +200,7 @@ class ProductViewController extends Controller
 
     public function deleteImage(Product $product): JsonResponse|RedirectResponse
     {
+        abort_unless(auth()->user()?->isOwnerOrAdmin(), 403, 'Only shop owners and administrators can manage product images.');
         if ($product->image_path && Storage::disk('public')->exists($product->image_path)) {
             Storage::disk('public')->delete($product->image_path);
         }

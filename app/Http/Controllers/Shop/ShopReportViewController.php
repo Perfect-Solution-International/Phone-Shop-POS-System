@@ -18,6 +18,8 @@ class ShopReportViewController extends Controller
 {
     public function index(Request $request): View
     {
+        abort_unless(auth()->user()?->isOwnerOrAdmin(), 403, 'Unauthorized. Financial reports and profit analytics are only accessible by Shop Owner / Administrator.');
+
         $startDate = $request->input('start_date', now()->startOfMonth()->toDateString());
         $endDate = $request->input('end_date', now()->toDateString());
 

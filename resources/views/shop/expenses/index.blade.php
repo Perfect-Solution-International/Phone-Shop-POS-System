@@ -31,10 +31,12 @@
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
         Daily Cashbook &amp; Drawer
     </a>
+    @if(auth()->user()?->isOwnerOrAdmin())
     <a href="{{ route('shop.reports') }}" class="btn btn-sm {{ request()->routeIs('shop.reports*') ? 'btn-primary' : 'btn-secondary' }}" style="border-radius: 8px; font-weight: 700; display: inline-flex; align-items: center; gap: 0.45rem; padding: 0.45rem 0.9rem; text-decoration: none; white-space: nowrap;">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
         Financial &amp; Performance Reports
     </a>
+    @endif
     <a href="{{ route('shop.expenses') }}" class="btn btn-sm {{ request()->routeIs('shop.expenses*') ? 'btn-primary' : 'btn-secondary' }}" style="border-radius: 8px; font-weight: 700; display: inline-flex; align-items: center; gap: 0.45rem; padding: 0.45rem 0.9rem; text-decoration: none; white-space: nowrap;">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="2" y="4" width="20" height="16" rx="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line></svg>
         Operating Expenses
@@ -61,12 +63,14 @@
                 LKR {{ number_format($allTimeTotal, 2) }}
             </div>
         </div>
+        @if(auth()->user()?->isOwnerOrAdmin())
         <div style="display: flex; align-items: center; justify-content: flex-end;">
             <button type="button" class="btn btn-primary" onclick="openModal('newExpenseModal')" style="width: 100%; height: 100%; max-height: 52px;">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
                 Record Expense
             </button>
         </div>
+        @endif
     </div>
 </div>
 
@@ -148,11 +152,15 @@
                         </strong>
                     </td>
                     <td style="text-align: right;">
+                        @if(auth()->user()?->isOwnerOrAdmin())
                         <form action="{{ route('shop.expenses.destroy', $exp) }}" method="POST" style="display: inline-block;" onsubmit="return confirm('Remove expense: {{ $exp->title }}?');">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="btn btn-sm" style="background: #fee2e2; color: #b91c1c; border: 1px solid #fecaca; padding: 0.25rem 0.5rem; font-size: 0.75rem;">Delete</button>
                         </form>
+                        @else
+                        <span class="badge" style="background: #f1f5f9; color: #64748b; font-size: 0.72rem;">View Only</span>
+                        @endif
                     </td>
                 </tr>
                 @empty
@@ -173,6 +181,7 @@
     @endif
 </div>
 
+@if(auth()->user()?->isOwnerOrAdmin())
 <!-- Modal: Record Expense -->
 <div class="modal-backdrop" id="newExpenseModal">
     <div class="modal-box" style="max-width: 520px;">
@@ -253,6 +262,7 @@
         </form>
     </div>
 </div>
+@endif
 @endsection
 
 @push('scripts')

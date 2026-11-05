@@ -31,52 +31,72 @@
         font-weight: 700;
     }
 </style>
-<!-- Metric Cards -->
-<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
-    <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.25rem 1.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
-        <span style="font-size: 0.72rem; font-weight: 700; text-transform: uppercase; color: #64748b; display: block;">Total Used Devices Bought</span>
-        <div style="font-size: 1.6rem; font-weight: 800; color: #0f172a; margin-top: 0.35rem;">
-            {{ number_format($totalDevices) }}
+<!-- Compact Metric Cards & Quick Action Bar -->
+<div style="display: flex; align-items: center; justify-content: space-between; gap: 0.85rem; margin-bottom: 0.85rem; flex-wrap: wrap;">
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.65rem; flex: 1;">
+        <!-- Card 1: Total Devices Bought -->
+        <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 0.65rem 0.95rem; box-shadow: 0 1px 2px rgba(0,0,0,0.03); display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;">
+            <div>
+                <span style="font-size: 0.68rem; font-weight: 700; text-transform: uppercase; color: #64748b; letter-spacing: 0.03em; display: block;">Total Devices Bought</span>
+                <div style="font-size: 1.3rem; font-weight: 800; color: #0f172a; line-height: 1.2; margin-top: 2px; display: flex; align-items: baseline; gap: 0.3rem;">
+                    <span>{{ number_format($totalDevices) }}</span>
+                    <span style="font-size: 0.72rem; font-weight: 600; color: #64748b;">{{ $totalDevices === 1 ? 'unit' : 'units' }}</span>
+                </div>
+            </div>
+            <div style="width: 36px; height: 36px; border-radius: 8px; background: #f1f5f9; color: #475569; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="5" y="2" width="14" height="20" rx="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
+            </div>
         </div>
-        <div style="font-size: 0.75rem; color: #64748b; margin-top: 0.25rem;">Customer acquisitions &amp; trade-ins</div>
+
+        <!-- Card 2: Total Valuation Paid -->
+        <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 0.65rem 0.95rem; box-shadow: 0 1px 2px rgba(0,0,0,0.03); display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;">
+            <div>
+                <span style="font-size: 0.68rem; font-weight: 700; text-transform: uppercase; color: #166534; letter-spacing: 0.03em; display: block;">Total Valuation Paid</span>
+                <div style="font-size: 1.3rem; font-weight: 800; color: #166534; line-height: 1.2; margin-top: 2px;">
+                    LKR {{ number_format($totalValuation, 2) }}
+                </div>
+            </div>
+            <div style="width: 36px; height: 36px; border-radius: 8px; background: #dcfce7; color: #16a34a; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="2" y="4" width="20" height="16" rx="2"></rect><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
+            </div>
+        </div>
+
+        <!-- Card 3: In Stock -->
+        <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 0.65rem 0.95rem; box-shadow: 0 1px 2px rgba(0,0,0,0.03); display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;">
+            <div>
+                <span style="font-size: 0.68rem; font-weight: 700; text-transform: uppercase; color: #4338ca; letter-spacing: 0.03em; display: block;">In Stock (Trade-Ins)</span>
+                <div style="font-size: 1.3rem; font-weight: 800; color: #4f46e5; line-height: 1.2; margin-top: 2px; display: flex; align-items: baseline; gap: 0.3rem;">
+                    <span>{{ number_format($inStockUsed) }}</span>
+                    <span style="font-size: 0.72rem; font-weight: 600; color: #818cf8;">ready</span>
+                </div>
+            </div>
+            <div style="width: 36px; height: 36px; border-radius: 8px; background: #ede9fe; color: #6366f1; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+            </div>
+        </div>
     </div>
 
-    <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.25rem 1.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
-        <span style="font-size: 0.72rem; font-weight: 700; text-transform: uppercase; color: #64748b; display: block;">Total Valuation Paid</span>
-        <div style="font-size: 1.6rem; font-weight: 800; color: #166534; margin-top: 0.35rem;">
-            LKR {{ number_format($totalValuation, 2) }}
-        </div>
-        <div style="font-size: 0.75rem; color: #64748b; margin-top: 0.25rem;">Cash payouts &amp; store credits</div>
-    </div>
-
-    <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.25rem 1.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
-        <span style="font-size: 0.72rem; font-weight: 700; text-transform: uppercase; color: #64748b; display: block;">Available Used Phones In Stock</span>
-        <div style="font-size: 1.6rem; font-weight: 800; color: #4f46e5; margin-top: 0.35rem;">
-            {{ number_format($inStockUsed) }}
-        </div>
-        <div style="font-size: 0.75rem; color: #64748b; margin-top: 0.25rem;">Ready for immediate resale</div>
-    </div>
-
-    <div style="display: flex; align-items: center; justify-content: flex-end;">
-        <button type="button" class="btn btn-primary" onclick="openModal('tradeInModal')" style="width: 100%; height: 100%; max-height: 52px; font-weight: 700;">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-            Buy Used Phone / Trade-In
-        </button>
-    </div>
+    <!-- Quick Action Button -->
+    @if(auth()->user()?->isOwnerOrAdmin())
+    <button type="button" class="btn btn-primary" onclick="openModal('tradeInModal')" style="height: 42px; padding: 0 1.25rem; font-weight: 700; font-size: 0.85rem; border-radius: 9px; box-shadow: 0 2px 8px rgba(79, 70, 229, 0.25); display: inline-flex; align-items: center; gap: 0.45rem; white-space: nowrap; flex-shrink: 0;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+        Buy Used Phone / Trade-In
+    </button>
+    @endif
 </div>
 
-<div class="card">
-    <div class="card-header" style="flex-wrap: wrap; gap: 1rem;">
-        <form method="GET" action="{{ route('shop.trade-ins.index') }}" style="display: flex; gap: 0.75rem; flex: 1; flex-wrap: wrap;">
-            <input type="text" name="search" class="form-control" style="max-width: 280px;" placeholder="Search Customer, NIC, IMEI, Model..." value="{{ request('search') }}">
-            <select name="status" class="form-control" style="max-width: 160px;" onchange="this.form.submit()">
+<div class="card" style="border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
+    <div class="card-header" style="flex-wrap: wrap; gap: 0.75rem; padding: 0.85rem 1.15rem;">
+        <form method="GET" action="{{ route('shop.trade-ins.index') }}" style="display: flex; gap: 0.65rem; flex: 1; flex-wrap: wrap; align-items: center;">
+            <input type="text" name="search" class="form-control" style="max-width: 280px; height: 38px; border-radius: 8px; font-size: 0.85rem;" placeholder="Search Customer, NIC, IMEI, Model..." value="{{ request('search') }}">
+            <select name="status" class="form-control" style="max-width: 160px; height: 38px; border-radius: 8px; font-size: 0.85rem;" onchange="this.form.submit()">
                 <option value="">All Statuses</option>
                 <option value="completed" {{ request('status') === 'completed' ? 'selected' : '' }}>Completed</option>
                 <option value="cancelled" {{ request('status') === 'cancelled' ? 'selected' : '' }}>Cancelled</option>
             </select>
-            <button type="submit" class="btn btn-secondary btn-sm">Filter</button>
+            <button type="submit" class="btn btn-secondary btn-sm" style="height: 38px; padding: 0 0.95rem; border-radius: 8px; font-weight: 600;">Filter</button>
             @if(request()->hasAny(['search', 'status']))
-                <a href="{{ route('shop.trade-ins.index') }}" class="btn btn-secondary btn-sm" style="color: #64748b;">Clear</a>
+                <a href="{{ route('shop.trade-ins.index') }}" class="btn btn-secondary btn-sm" style="height: 38px; padding: 0 0.85rem; border-radius: 8px; font-weight: 600; color: #64748b; display: inline-flex; align-items: center;">Clear</a>
             @endif
         </form>
     </div>
@@ -166,6 +186,7 @@
     @endif
 </div>
 
+@if(auth()->user()?->isOwnerOrAdmin())
 <!-- Modal: Evaluate & Buy Used Phone -->
 <div class="modal-backdrop" id="tradeInModal">
     <div class="modal-box" style="max-width: 640px;">
@@ -333,6 +354,7 @@
         </form>
     </div>
 </div>
+@endif
 
 <!-- Modal: Printable Receipt -->
 <div class="modal-backdrop" id="tradeInReceiptModal">

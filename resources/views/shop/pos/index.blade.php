@@ -904,6 +904,34 @@
         color: #047857;
     }
 
+    /* Card Brand Selector Buttons */
+    .qs-card-brand-btn {
+        background: #ffffff;
+        border: 1.5px solid #cbd5e1;
+        color: #334155;
+        font-size: 0.72rem;
+        font-weight: 750;
+        padding: 4px 10px;
+        border-radius: 7px;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+        transition: all 0.18s ease;
+    }
+
+    .qs-card-brand-btn:hover {
+        border-color: #94a3b8;
+        background: #f8fafc;
+    }
+
+    .qs-card-brand-btn.active {
+        background: #ecfdf5 !important;
+        border-color: #10b981 !important;
+        color: #065f46 !important;
+        box-shadow: 0 1px 3px rgba(16, 185, 129, 0.22) !important;
+    }
+
     /* Footer Buttons */
     .qs-modal-footer {
         display: flex;
@@ -1632,104 +1660,108 @@
                 </div>
 
                 <!-- Card Payment & POS Terminal Details (Shown for Card) -->
-                <div id="qsCardPaymentSection" style="display: none; background: #f8fafc; border: 1.5px dashed #cbd5e1; border-radius: 11px; padding: 0.65rem 0.8rem; margin-bottom: 0.65rem;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-                        <span style="font-size: 0.75rem; font-weight: 800; color: #1e293b; text-transform: uppercase; letter-spacing: 0.04em; display: inline-flex; align-items: center; gap: 0.35rem;">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2.3"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
-                            <span>Card POS Terminal Payment</span>
-                        </span>
-                        <span style="font-size: 0.68rem; font-weight: 600; color: #047857; background: #ecfdf5; padding: 1px 6px; border-radius: 9999px; border: 1px solid #a7f3d0;">
-                            Card Reader / EDC
+                <div id="qsCardPaymentSection" style="display: none; background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 12px; padding: 0.75rem 0.9rem; margin-top: 0.65rem; box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.6rem; padding-bottom: 0.45rem; border-bottom: 1px solid #f1f5f9;">
+                        <div style="display: flex; align-items: center; gap: 0.45rem;">
+                            <div style="width: 26px; height: 26px; border-radius: 7px; background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%); color: #059669; display: flex; align-items: center; justify-content: center; box-shadow: 0 1px 2px rgba(5, 150, 105, 0.15);">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
+                            </div>
+                            <div>
+                                <div style="font-size: 0.78rem; font-weight: 800; color: #0f172a; line-height: 1.2;">Card POS Terminal</div>
+                                <div style="font-size: 0.66rem; color: #64748b; font-weight: 500;">Swipe, Chip or Contactless Tap</div>
+                            </div>
+                        </div>
+                        <span style="font-size: 0.67rem; font-weight: 700; color: #047857; background: #ecfdf5; padding: 3px 8px; border-radius: 9999px; border: 1px solid #a7f3d0; display: inline-flex; align-items: center; gap: 0.3rem;">
+                            <span style="width: 6px; height: 6px; border-radius: 50%; background: #10b981; display: inline-block;"></span>
+                            Terminal Ready
                         </span>
                     </div>
 
                     <!-- Card Brand Quick Selector -->
-                    <div style="margin-bottom: 0.45rem;">
-                        <label style="font-size: 0.7rem; font-weight: 750; color: #475569; display: block; margin-bottom: 0.25rem;">
-                            Card Network
+                    <div style="margin-bottom: 0.55rem;">
+                        <label style="font-size: 0.7rem; font-weight: 750; color: #475569; display: flex; justify-content: space-between; margin-bottom: 0.25rem;">
+                            <span>Card Network</span>
+                            <span style="font-size: 0.63rem; color: #94a3b8; font-weight: 500;">Select network</span>
                         </label>
                         <div style="display: flex; gap: 0.35rem; flex-wrap: wrap;">
-                            <button type="button" class="qs-quick-pill qs-card-brand-btn active" data-brand="Visa" onclick="selectQsCardBrand('Visa')" style="background: #ecfdf5; border-color: #86efac; color: #047857;">Visa</button>
-                            <button type="button" class="qs-quick-pill qs-card-brand-btn" data-brand="Mastercard" onclick="selectQsCardBrand('Mastercard')">Mastercard</button>
-                            <button type="button" class="qs-quick-pill qs-card-brand-btn" data-brand="LankaPay" onclick="selectQsCardBrand('LankaPay')">LankaPay</button>
-                            <button type="button" class="qs-quick-pill qs-card-brand-btn" data-brand="Amex" onclick="selectQsCardBrand('Amex')">Amex</button>
+                            <button type="button" class="qs-card-brand-btn active" data-brand="Visa" onclick="selectQsCardBrand('Visa')">
+                                <span style="font-weight: 900; color: #1e40af; letter-spacing: -0.02em;">VISA</span>
+                            </button>
+                            <button type="button" class="qs-card-brand-btn" data-brand="Mastercard" onclick="selectQsCardBrand('Mastercard')">
+                                <span style="display: inline-flex; align-items: center; margin-right: 2px;"><span style="width: 8px; height: 8px; border-radius: 50%; background: #eb001b; display: inline-block;"></span><span style="width: 8px; height: 8px; border-radius: 50%; background: #f79e1b; display: inline-block; margin-left: -3px;"></span></span> Mastercard
+                            </button>
+                            <button type="button" class="qs-card-brand-btn" data-brand="LankaPay" onclick="selectQsCardBrand('LankaPay')">
+                                <span style="font-weight: 800; color: #0d9488;">LankaPay</span>
+                            </button>
+                            <button type="button" class="qs-card-brand-btn" data-brand="Amex" onclick="selectQsCardBrand('Amex')">
+                                <span style="font-weight: 800; color: #0284c7;">AMEX</span>
+                            </button>
                         </div>
                         <input type="hidden" id="qsCardBrand" value="Visa">
                     </div>
 
                     <!-- Row with Approval Code & Card Last 4 Digits -->
-                    <div style="display: grid; grid-template-columns: 1.3fr 1fr; gap: 0.5rem; margin-bottom: 0.5rem;">
-                        <div>
-                            <label for="qsCardApprRef" style="font-size: 0.7rem; font-weight: 750; color: #475569; display: block; margin-bottom: 0.2rem;">
-                                Auth / Slip Trace Code
+                    <div style="display: grid; grid-template-columns: 1.25fr 1fr; gap: 0.55rem; margin-bottom: 0.55rem;">
+                        <div class="qs-input-field">
+                            <label class="qs-input-label" for="qsCardApprRef" style="color: #475569; font-size: 0.7rem; font-weight: 750; margin-bottom: 0.2rem; display: flex; justify-content: space-between;">
+                                <span>Auth / Approval Code</span>
+                                <span style="font-size: 0.63rem; color: #94a3b8; font-weight: 500;">Slip trace</span>
                             </label>
-                            <input type="text" id="qsCardApprRef" class="form-control" placeholder="e.g. 648291, Slip 102" style="height: 34px; border-radius: 7px; font-size: 0.8125rem; font-family: 'JetBrains Mono', monospace;">
+                            <div class="qs-input-wrapper">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                                <input type="text" id="qsCardApprRef" placeholder="e.g. 648291 / Trace 102" style="font-family: 'JetBrains Mono', monospace; font-size: 0.8125rem;">
+                            </div>
                         </div>
-                        <div>
-                            <label for="qsCardLast4" style="font-size: 0.7rem; font-weight: 750; color: #475569; display: block; margin-bottom: 0.2rem;">
-                                Last 4 Digits
+                        <div class="qs-input-field">
+                            <label class="qs-input-label" for="qsCardLast4" style="color: #475569; font-size: 0.7rem; font-weight: 750; margin-bottom: 0.2rem; display: flex; justify-content: space-between;">
+                                <span>Last 4 Digits</span>
+                                <span style="font-size: 0.63rem; color: #94a3b8; font-weight: 500;">Card no.</span>
                             </label>
-                            <input type="text" id="qsCardLast4" class="form-control" maxlength="4" placeholder="•••• 4321" style="height: 34px; border-radius: 7px; font-size: 0.8125rem; font-family: 'JetBrains Mono', monospace;">
+                            <div class="qs-input-wrapper">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
+                                <input type="text" id="qsCardLast4" maxlength="4" placeholder="•••• 4321" style="font-family: 'JetBrains Mono', monospace; font-size: 0.8125rem; letter-spacing: 0.05em;" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 4)">
+                            </div>
                         </div>
                     </div>
 
-                    <!-- Optional Card Terminal Slip Upload -->
-                    <div>
-                        <label style="font-size: 0.7rem; font-weight: 750; color: #475569; display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.2rem;">
-                            <span>Upload POS Terminal Slip Photo</span>
-                            <span style="font-size: 0.65rem; color: #94a3b8; font-weight: 500;">JPG, PNG, PDF up to 5MB</span>
-                        </label>
-
-                        <!-- Upload Drop Box -->
-                        <div id="qsCardSlipDropzone" style="background: #ffffff; border: 1.5px dashed #94a3b8; border-radius: 8px; padding: 0.55rem; text-align: center; cursor: pointer; transition: all 0.2s ease; position: relative;" onclick="document.getElementById('qsCardSlipInput').click()">
-                            <input type="file" id="qsCardSlipInput" accept="image/png,image/jpeg,image/webp,application/pdf" style="display: none;" onchange="handleQsCardSlipSelected(this)">
-                            
-                            <div id="qsCardSlipPlaceholder" style="display: flex; flex-direction: column; align-items: center; gap: 0.2rem;">
-                                <div style="width: 28px; height: 28px; border-radius: 50%; background: #ecfdf5; color: #059669; display: flex; align-items: center; justify-content: center;">
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
-                                </div>
-                                <div style="font-size: 0.76rem; font-weight: 700; color: #1e293b;">Click to upload card terminal receipt slip</div>
-                                <div style="font-size: 0.66rem; color: #64748b;">Or drag &amp; drop terminal slip photo / customer copy</div>
-                            </div>
-
-                            <!-- Preview (shown once selected) -->
-                            <div id="qsCardSlipPreview" style="display: none; align-items: center; justify-content: space-between; gap: 0.65rem; text-align: left;">
-                                <div style="display: flex; align-items: center; gap: 0.55rem; min-width: 0;">
-                                    <img id="qsCardSlipImg" src="" alt="Card Slip Preview" style="width: 40px; height: 40px; object-fit: cover; border-radius: 6px; border: 1px solid #cbd5e1; display: none;">
-                                    <div id="qsCardSlipPdfIcon" style="width: 40px; height: 40px; border-radius: 6px; background: #fee2e2; color: #dc2626; display: none; align-items: center; justify-content: center; font-weight: 800; font-size: 0.7rem; flex-shrink: 0;">
-                                        PDF
-                                    </div>
-                                    <div style="min-width: 0;">
-                                        <div id="qsCardSlipFileName" style="font-size: 0.76rem; font-weight: 700; color: #0f172a; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"></div>
-                                        <div id="qsCardSlipFileSize" style="font-size: 0.66rem; color: #10b981; font-weight: 600;">✓ Card slip attached</div>
-                                    </div>
-                                </div>
-                                <button type="button" onclick="event.stopPropagation(); clearQsCardSlip();" class="btn btn-sm" style="background: #fee2e2; color: #dc2626; border: 1px solid #fecaca; border-radius: 5px; padding: 0.2rem 0.5rem; font-size: 0.7rem; font-weight: 700; cursor: pointer;">
-                                    Remove
-                                </button>
-                            </div>
+                    <!-- Direct Terminal Sale Reassurance Banner (Replacing slip upload) -->
+                    <div style="display: flex; align-items: center; gap: 0.5rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.45rem 0.65rem;">
+                        <div style="width: 20px; height: 20px; border-radius: 50%; background: #ecfdf5; color: #059669; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                        </div>
+                        <div style="font-size: 0.71rem; color: #475569; line-height: 1.35;">
+                            <span style="font-weight: 750; color: #0f172a;">Counter Payment:</span> Swipe or tap card on the terminal to process payment. Slip upload is not required.
                         </div>
                     </div>
                 </div>
 
                 <!-- Bank Transfer Details & Deposit Slip Upload (Shown for Bank) -->
-                <div id="qsBankTransferSection" style="display: none; background: #f8fafc; border: 1.5px dashed #cbd5e1; border-radius: 11px; padding: 0.65rem 0.8rem; margin-bottom: 0.65rem;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-                        <span style="font-size: 0.75rem; font-weight: 800; color: #1e293b; text-transform: uppercase; letter-spacing: 0.04em; display: inline-flex; align-items: center; gap: 0.35rem;">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.3"><line x1="3" y1="21" x2="21" y2="21"></line><line x1="3" y1="10" x2="21" y2="10"></line><polyline points="5 6 12 3 19 6"></polyline><line x1="4" y1="10" x2="4" y2="21"></line><line x1="20" y1="10" x2="20" y2="21"></line></svg>
-                            <span>Bank Transfer &amp; Deposit Slip</span>
-                        </span>
-                        <span style="font-size: 0.68rem; font-weight: 600; color: #2563eb; background: #eff6ff; padding: 1px 6px; border-radius: 9999px; border: 1px solid #bfdbfe;">
+                <div id="qsBankTransferSection" style="display: none; background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 12px; padding: 0.75rem 0.9rem; margin-top: 0.65rem; box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.6rem; padding-bottom: 0.45rem; border-bottom: 1px solid #f1f5f9;">
+                        <div style="display: flex; align-items: center; gap: 0.45rem;">
+                            <div style="width: 26px; height: 26px; border-radius: 7px; background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); color: #2563eb; display: flex; align-items: center; justify-content: center; box-shadow: 0 1px 2px rgba(37, 99, 235, 0.15);">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><line x1="3" y1="21" x2="21" y2="21"></line><line x1="3" y1="10" x2="21" y2="10"></line><polyline points="5 6 12 3 19 6"></polyline><line x1="4" y1="10" x2="4" y2="21"></line><line x1="20" y1="10" x2="20" y2="21"></line></svg>
+                            </div>
+                            <div>
+                                <div style="font-size: 0.78rem; font-weight: 800; color: #0f172a; line-height: 1.2;">Bank Transfer &amp; Deposit</div>
+                                <div style="font-size: 0.66rem; color: #64748b; font-weight: 500;">Direct Deposit / Online Transfer</div>
+                            </div>
+                        </div>
+                        <span style="font-size: 0.67rem; font-weight: 700; color: #2563eb; background: #eff6ff; padding: 3px 8px; border-radius: 9999px; border: 1px solid #bfdbfe;">
                             Direct Bank Deposit
                         </span>
                     </div>
 
                     <!-- Reference Number -->
-                    <div style="margin-bottom: 0.55rem;">
-                        <label for="qsBankRef" style="font-size: 0.7rem; font-weight: 750; color: #475569; display: block; margin-bottom: 0.2rem;">
-                            Bank Reference / Transaction ID
+                    <div class="qs-input-field" style="margin-bottom: 0.55rem;">
+                        <label class="qs-input-label" for="qsBankRef" style="color: #475569; font-size: 0.7rem; font-weight: 750; margin-bottom: 0.2rem; display: flex; justify-content: space-between;">
+                            <span>Bank Reference / Transaction ID</span>
+                            <span style="font-size: 0.63rem; color: #94a3b8; font-weight: 500;">Payer ref / Slip ID</span>
                         </label>
-                        <input type="text" id="qsBankRef" class="form-control" placeholder="e.g. TXN-984726, Slip No, Payer Name" style="height: 34px; border-radius: 7px; font-size: 0.8125rem; font-family: 'JetBrains Mono', monospace;">
+                        <div class="qs-input-wrapper">
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                            <input type="text" id="qsBankRef" placeholder="e.g. TXN-984726, Slip No, Payer Name" style="font-family: 'JetBrains Mono', monospace; font-size: 0.8125rem;">
+                        </div>
                     </div>
 
                     <!-- Slip File Upload -->
@@ -1779,7 +1811,7 @@
                     </button>
                     <button type="submit" id="btnConfirmQuickSell" class="qs-btn-confirm" style="flex: 1; height: 38px; font-size: 0.875rem;">
                         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                        <span>Complete Sale &amp; Deduct Stock</span>
+                        <span>Complete</span>
                     </button>
                 </div>
             </div>
@@ -2163,74 +2195,15 @@
         document.querySelectorAll('.qs-card-brand-btn').forEach(btn => {
             if (btn.getAttribute('data-brand') === brand) {
                 btn.classList.add('active');
-                btn.style.background = '#ecfdf5';
-                btn.style.borderColor = '#86efac';
-                btn.style.color = '#047857';
             } else {
                 btn.classList.remove('active');
-                btn.style.background = '#ffffff';
-                btn.style.borderColor = '#cbd5e1';
-                btn.style.color = '#334155';
             }
         });
-    }
-
-    function handleQsCardSlipSelected(input) {
-        if (!input.files || !input.files[0]) return;
-        const file = input.files[0];
-
-        if (file.size > 5 * 1024 * 1024) {
-            alert('File size exceeds 5MB limit. Please choose a smaller image or PDF.');
-            input.value = '';
-            return;
-        }
-
-        const placeholder = document.getElementById('qsCardSlipPlaceholder');
-        const preview = document.getElementById('qsCardSlipPreview');
-        const img = document.getElementById('qsCardSlipImg');
-        const pdfIcon = document.getElementById('qsCardSlipPdfIcon');
-        const fileName = document.getElementById('qsCardSlipFileName');
-        const dropzone = document.getElementById('qsCardSlipDropzone');
-
-        if (fileName) fileName.textContent = file.name;
-        if (dropzone) dropzone.style.borderColor = '#059669';
-
-        if (file.type === 'application/pdf') {
-            if (img) img.style.display = 'none';
-            if (pdfIcon) pdfIcon.style.display = 'flex';
-        } else {
-            if (pdfIcon) pdfIcon.style.display = 'none';
-            if (img) {
-                const reader = new FileReader();
-                reader.onload = e => {
-                    img.src = e.target.result;
-                    img.style.display = 'block';
-                };
-                reader.readAsDataURL(file);
-            }
-        }
-
-        if (placeholder) placeholder.style.display = 'none';
-        if (preview) preview.style.display = 'flex';
     }
 
     function clearQsCardSlip() {
         const input = document.getElementById('qsCardSlipInput');
         if (input) input.value = '';
-        const placeholder = document.getElementById('qsCardSlipPlaceholder');
-        const preview = document.getElementById('qsCardSlipPreview');
-        const img = document.getElementById('qsCardSlipImg');
-        const pdfIcon = document.getElementById('qsCardSlipPdfIcon');
-        const dropzone = document.getElementById('qsCardSlipDropzone');
-
-        if (placeholder) placeholder.style.display = 'flex';
-        if (preview) preview.style.display = 'none';
-        if (img) {
-            img.src = '';
-            img.style.display = 'none';
-        }
-        if (pdfIcon) pdfIcon.style.display = 'none';
-        if (dropzone) dropzone.style.borderColor = '#94a3b8';
     }
 
     function calculateQsChange() {
@@ -2336,6 +2309,12 @@
         selectQsPayment('cash');
         updateQsTotal();
         setQsStep(1);
+
+        const confirmBtn = document.getElementById('btnConfirmQuickSell');
+        if (confirmBtn) {
+            confirmBtn.disabled = false;
+            confirmBtn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg> <span>Complete</span>';
+        }
 
         document.getElementById('quickSellModal').classList.add('open');
         setTimeout(() => document.getElementById('qsCustName')?.focus(), 150);
@@ -2453,7 +2432,7 @@
 
         const btn = document.getElementById('btnConfirmQuickSell');
         btn.disabled = true;
-        btn.innerText = 'Recording Sale & Deducting Stock...';
+        btn.innerText = 'Completing...';
 
         const formData = new FormData();
         if (customerId) formData.append('customer_id', customerId);
@@ -2659,7 +2638,7 @@
             alert(err.message || 'Transaction could not be processed.');
         } finally {
             btn.disabled = false;
-            btn.innerText = '✓ Mark as Sold & Deduct Stock';
+            btn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg> <span>Complete</span>';
         }
     }
 
@@ -2718,36 +2697,6 @@
                 }
             }, false);
         }
-
-        // Drag & drop card terminal slip upload support
-        const cardDropzone = document.getElementById('qsCardSlipDropzone');
-        if (cardDropzone) {
-            ['dragenter', 'dragover'].forEach(eventName => {
-                cardDropzone.addEventListener(eventName, e => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    cardDropzone.style.borderColor = '#059669';
-                    cardDropzone.style.background = '#f0fdf4';
-                }, false);
-            });
-            ['dragleave', 'drop'].forEach(eventName => {
-                cardDropzone.addEventListener(eventName, e => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    cardDropzone.style.borderColor = '#94a3b8';
-                    cardDropzone.style.background = '#ffffff';
-                }, false);
-            });
-            cardDropzone.addEventListener('drop', e => {
-                const dt = e.dataTransfer;
-                const files = dt.files;
-                if (files && files.length > 0) {
-                    const input = document.getElementById('qsCardSlipInput');
-                    input.files = files;
-                    handleQsCardSlipSelected(input);
-                }
-            }, false);
-        }
     });
 
     function showReceipt(sale, cashTendered = 0, changeAmount = 0) {
@@ -2778,7 +2727,7 @@
                 <div style="margin: 0.25rem 0 0.45rem; text-align: left;">
                     <a href="${p.slip_url || sale.bank_slip_url}" target="_blank" style="font-size: 0.7rem; color: #2563eb; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 6px; padding: 2px 7px; text-decoration: none; font-weight: 700; display: inline-flex; align-items: center; gap: 0.25rem;">
                         <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path></svg>
-                        <span>📎 View Attached ${p.payment_method === 'card' ? 'Card Slip' : 'Bank Slip'}</span>
+                        <span>View Attached ${p.payment_method === 'card' ? 'Card Slip' : 'Bank Slip'}</span>
                     </a>
                 </div>
             ` : ''}

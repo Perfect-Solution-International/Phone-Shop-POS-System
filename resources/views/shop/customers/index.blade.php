@@ -42,10 +42,12 @@
             @endif
         </form>
 
+        @if(auth()->user()?->isOwnerOrAdmin())
         <button type="button" class="btn btn-primary" onclick="openModal('addCustomerModal')">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
             Add Customer
         </button>
+        @endif
     </div>
 
     <div class="table-responsive">
@@ -98,6 +100,7 @@
                                 Settle Debt
                             </button>
                         @endif
+                        @if(auth()->user()?->isOwnerOrAdmin())
                         <button type="button" class="btn btn-sm btn-secondary" onclick='openEditCustomerModal(@json($c))' title="Edit customer details" style="padding: 0.3rem 0.6rem; font-size: 0.75rem; display: inline-flex; align-items: center; gap: 0.25rem;">
                             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
                             Edit
@@ -110,6 +113,7 @@
                                 Delete
                             </button>
                         </form>
+                        @endif
                     </td>
                 </tr>
                 @empty
@@ -130,6 +134,7 @@
     @endif
 </div>
 
+@if(auth()->user()?->isOwnerOrAdmin())
 <!-- Modal: Add Customer -->
 <div class="modal-backdrop" id="addCustomerModal">
     <div class="modal-box" style="max-width: 520px;">
@@ -230,6 +235,7 @@
         </form>
     </div>
 </div>
+@endif
 
 <!-- Modal: Settle Customer Debt -->
 <div class="modal-backdrop" id="settleDebtModal">
