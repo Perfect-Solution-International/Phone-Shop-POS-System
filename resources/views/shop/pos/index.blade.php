@@ -1129,20 +1129,27 @@
             </div>
             <select id="categoryFilter" class="pos-category-select" onchange="filterItems()">
                 <option value="">All Categories</option>
+                <option value="Phones">Phones</option>
                 @foreach($categories as $category)
-                    <option value="{{ $category->name }}">{{ $category->name }}</option>
+                    @if(strtolower($category->name) !== 'phones')
+                        <option value="{{ $category->name }}">{{ $category->name }}</option>
+                    @endif
                 @endforeach
             </select>
         </div>
 
         <!-- Main Product Tabs -->
         <div class="pos-tabs">
-            <div class="pos-tab active" onclick="switchTab('phones', this)">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="5" y="2" width="14" height="20" rx="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
+            <div class="pos-tab active" onclick="switchTab('all', this)">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="7" height="7" rx="1.5"></rect><rect x="14" y="3" width="7" height="7" rx="1.5"></rect><rect x="14" y="14" width="7" height="7" rx="1.5"></rect><rect x="3" y="14" width="7" height="7" rx="1.5"></rect></svg>
+                <span>All</span>
+            </div>
+            <div class="pos-tab" onclick="switchTab('phones', this)">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="5" y="2" width="14" height="20" rx="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
                 <span>Mobile Phones (IMEI)</span>
             </div>
             <div class="pos-tab" onclick="switchTab('products', this)">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>
                 <span>Accessories &amp; Items</span>
             </div>
         </div>
@@ -1151,16 +1158,16 @@
         <div class="pos-filter-subbar">
             <div class="filter-pills" id="phonesFilterPills">
                 <button type="button" class="filter-pill active" onclick="filterByStockStatus('all', this)">
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="5" y="2" width="14" height="20" rx="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
-                    <span>All Phones (<span id="allPhonesCount">{{ $phones->count() }}</span>)</span>
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="7" height="7" rx="1"></rect><rect x="14" y="3" width="7" height="7" rx="1"></rect><rect x="14" y="14" width="7" height="7" rx="1"></rect><rect x="3" y="14" width="7" height="7" rx="1"></rect></svg>
+                    <span>All (<span id="allPhonesCount">{{ $phones->count() + $products->count() }}</span>)</span>
                 </button>
                 <button type="button" class="filter-pill" onclick="filterByStockStatus('instock', this)">
                     <span class="status-dot-green"></span>
-                    <span>In Stock (<span id="inStockPhonesCount">{{ $phones->where('status', '!=', 'sold')->count() }}</span>)</span>
+                    <span>In Stock (<span id="inStockPhonesCount">{{ $phones->where('status', '!=', 'sold')->count() + $products->where('stock_quantity', '>', 0)->count() }}</span>)</span>
                 </button>
                 <button type="button" class="filter-pill" onclick="filterByStockStatus('sold', this)">
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                    <span>Sold Archive (<span id="soldPhonesCount">{{ $phones->where('status', 'sold')->count() }}</span>)</span>
+                    <span id="pillSoldText">Sold / Out (<span id="soldPhonesCount">{{ $phones->where('status', 'sold')->count() + $products->where('stock_quantity', '<=', 0)->count() }}</span>)</span>
                 </button>
             </div>
             <div style="font-size: 0.72rem; color: #166534; font-weight: 600; display: inline-flex; align-items: center; gap: 0.35rem; background: #f0fdf4; border: 1px solid #bbf7d0; padding: 0.25rem 0.65rem; border-radius: 8px;">
@@ -1173,9 +1180,9 @@
             </div>
         </div>
 
-        <!-- Phone Items Grid -->
-        <div id="tabPhones" class="pos-items-grid">
-            @forelse($phones as $phone)
+        <!-- Unified Items Grid (Phones & Accessories) -->
+        <div id="posItemsGrid" class="pos-items-grid">
+            @foreach($phones as $phone)
                 @php $isSold = in_array(strtolower($phone->status), ['sold']); @endphp
                 <div class="pos-item-card item-card {{ $isSold ? 'item-sold' : '' }}" 
                      id="phoneCard{{ $phone->id }}"
@@ -1264,20 +1271,9 @@
                         @endif
                     </div>
                 </div>
-            @empty
-                <div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 3.5rem 1rem;">
-                    <div style="width: 52px; height: 52px; border-radius: 50%; background: #f1f5f9; color: #94a3b8; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 0.75rem;">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
-                    </div>
-                    <div style="font-weight: 700; color: #1e293b; font-size: 0.95rem;">No serialized phones registered yet.</div>
-                    <div style="font-size: 0.8rem; margin-top: 0.35rem; color: #64748b;">Add phones under <strong>Phone Inventory</strong> to start making sales.</div>
-                </div>
-            @endforelse
-        </div>
+            @endforeach
 
-        <!-- Products / Accessories Tab -->
-        <div id="tabProducts" class="pos-items-grid" style="display: none;">
-            @forelse($products as $product)
+            @foreach($products as $product)
                 @php $isOut = $product->stock_quantity <= 0; @endphp
                 <div class="pos-item-card item-card {{ $isOut ? 'item-sold' : '' }}" 
                      id="prodCard{{ $product->id }}"
@@ -1335,14 +1331,16 @@
                         @endif
                     </div>
                 </div>
-            @empty
-                <div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 3.5rem 1rem;">
-                    <div style="width: 52px; height: 52px; border-radius: 50%; background: #f1f5f9; color: #94a3b8; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 0.75rem;">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>
-                    </div>
-                    <div style="font-weight: 700; color: #1e293b; font-size: 0.95rem;">No accessories or items registered yet.</div>
+            @endforeach
+
+            <!-- Empty State Placeholder -->
+            <div id="noItemsPlaceholder" style="{{ ($phones->isEmpty() && $products->isEmpty()) ? 'display: block;' : 'display: none;' }} grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 3.5rem 1rem;">
+                <div style="width: 52px; height: 52px; border-radius: 50%; background: #f1f5f9; color: #94a3b8; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 0.75rem;">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
                 </div>
-            @endforelse
+                <div style="font-weight: 700; color: #1e293b; font-size: 0.95rem;">No items found.</div>
+                <div style="font-size: 0.8rem; margin-top: 0.35rem; color: #64748b;">Try adjusting your search, tab, or category filter.</div>
+            </div>
         </div>
     </div>
 </div>
@@ -1898,18 +1896,27 @@
         }
     }
 
+    let currentTab = 'all'; // 'all' | 'phones' | 'products'
     let currentStockFilter = 'all'; // 'all' | 'instock' | 'sold'
 
     function switchTab(tab, el) {
-        document.querySelectorAll('.pos-tab').forEach(t => t.classList.remove('active'));
-        el.classList.add('active');
-        if (tab === 'phones') {
-            document.getElementById('tabPhones').style.display = 'grid';
-            document.getElementById('tabProducts').style.display = 'none';
-        } else {
-            document.getElementById('tabPhones').style.display = 'none';
-            document.getElementById('tabProducts').style.display = 'grid';
+        currentTab = tab;
+        document.querySelectorAll('.pos-tabs .pos-tab').forEach(t => t.classList.remove('active'));
+        if (el) el.classList.add('active');
+
+        const pillSoldText = document.getElementById('pillSoldText');
+        if (pillSoldText) {
+            if (tab === 'phones') {
+                pillSoldText.innerHTML = 'Sold Archive (<span id="soldPhonesCount">0</span>)';
+            } else if (tab === 'products') {
+                pillSoldText.innerHTML = 'Out of Stock (<span id="soldPhonesCount">0</span>)';
+            } else {
+                pillSoldText.innerHTML = 'Sold / Out (<span id="soldPhonesCount">0</span>)';
+            }
         }
+
+        updateStockCounts();
+        filterItems();
     }
 
     function filterByStockStatus(status, btn) {
@@ -1931,12 +1938,19 @@
         const query = (document.getElementById('searchInput').value || '').toLowerCase().trim();
         const cat = (document.getElementById('categoryFilter').value || '').toLowerCase().trim();
 
+        let visibleCount = 0;
+
         document.querySelectorAll('.item-card').forEach(card => {
+            const type = card.dataset.type || '';
             const name = (card.dataset.name || '').toLowerCase();
             const imei = (card.dataset.imei || '').toLowerCase();
             const barcode = (card.dataset.barcode || '').toLowerCase();
             const category = (card.dataset.category || '').toLowerCase();
             const isSold = card.classList.contains('item-sold');
+
+            const matchesTab = (currentTab === 'all') || 
+                               (currentTab === 'phones' && type === 'phone') || 
+                               (currentTab === 'products' && type === 'product');
 
             const matchesQuery = !query || name.includes(query) || imei.includes(query) || barcode.includes(query);
             const matchesCat = !cat || category.includes(cat);
@@ -1948,15 +1962,31 @@
                 matchesStatus = isSold;
             }
 
-            card.style.display = (matchesQuery && matchesCat && matchesStatus) ? 'flex' : 'none';
+            const isVisible = matchesTab && matchesQuery && matchesCat && matchesStatus;
+            card.style.display = isVisible ? 'flex' : 'none';
+
+            if (isVisible) visibleCount++;
         });
+
+        const noItems = document.getElementById('noItemsPlaceholder');
+        if (noItems) {
+            noItems.style.display = (visibleCount === 0) ? 'block' : 'none';
+        }
     }
 
     function updateStockCounts() {
-        const phoneCards = document.querySelectorAll('#tabPhones .pos-item-card');
-        let total = phoneCards.length;
+        let targetCards;
+        if (currentTab === 'phones') {
+            targetCards = document.querySelectorAll('.item-card[data-type="phone"]');
+        } else if (currentTab === 'products') {
+            targetCards = document.querySelectorAll('.item-card[data-type="product"]');
+        } else {
+            targetCards = document.querySelectorAll('.item-card');
+        }
+
+        let total = targetCards.length;
         let sold = 0;
-        phoneCards.forEach(c => {
+        targetCards.forEach(c => {
             if (c.classList.contains('item-sold')) sold++;
         });
         let inStock = total - sold;
