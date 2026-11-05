@@ -327,20 +327,21 @@
     .pos-card-specs {
         display: flex;
         align-items: center;
-        gap: 0.35rem;
+        gap: 0.25rem;
         flex-wrap: wrap;
         margin-top: 0.25rem;
     }
 
     .pos-spec-chip {
-        font-size: 0.7rem;
+        font-size: 0.68rem;
         font-weight: 650;
-        padding: 0.18rem 0.5rem;
+        padding: 0.14rem 0.45rem;
         border-radius: 6px;
         display: inline-flex;
         align-items: center;
         gap: 0.25rem;
         line-height: 1.2;
+        white-space: nowrap;
     }
 
     .pos-spec-chip.chip-storage {
@@ -380,13 +381,13 @@
     /* IMEI Chip */
     .pos-imei-chip {
         font-family: 'JetBrains Mono', monospace;
-        font-size: 0.7rem;
+        font-size: 0.68rem;
         color: #475569;
-        margin-top: 0.5rem;
+        margin-top: 0.45rem;
         background: #f8fafc;
-        padding: 0.32rem 0.55rem;
-        border-radius: 8px;
-        border: 1px dashed #cbd5e1;
+        padding: 0.28rem 0.55rem;
+        border-radius: 7px;
+        border: 1px solid #e2e8f0;
         display: flex;
         align-items: center;
         justify-content: space-between;
@@ -400,14 +401,84 @@
         color: #1d4ed8;
     }
 
-    /* Buyer Box on Sold Phone Card */
+    /* Seamless Buyer Info (No Clunky Nested Box) */
     .phone-buyer-box {
-        margin-top: 0.5rem;
-        padding: 0.45rem 0.65rem;
-        background: #f0f7ff;
-        border-radius: 8px;
-        border: 1px solid #bfdbfe;
-        font-size: 0.74rem;
+        margin-top: 0.55rem;
+        padding-top: 0.5rem;
+        border-top: 1px dashed #e2e8f0;
+        background: transparent;
+    }
+
+    .pos-buyer-row {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+
+    .pos-buyer-avatar {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background: #e0e7ff;
+        color: #4338ca;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        margin-top: 1px;
+    }
+
+    .pos-buyer-content {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .pos-buyer-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.35rem;
+        line-height: 1.2;
+    }
+
+    .pos-buyer-label {
+        font-size: 0.62rem;
+        font-weight: 750;
+        text-transform: uppercase;
+        color: #64748b;
+        letter-spacing: 0.04em;
+    }
+
+    .pos-buyer-invoice {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.62rem;
+        color: #64748b;
+        background: #f1f5f9;
+        padding: 1px 5px;
+        border-radius: 4px;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+    .pos-buyer-name {
+        font-weight: 800;
+        color: #0f172a;
+        font-size: 0.8125rem;
+        margin-top: 2px;
+        line-height: 1.25;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .pos-buyer-phone {
+        color: #2563eb;
+        font-size: 0.72rem;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        margin-top: 2px;
     }
 
     /* Card Footer Price & Button */
@@ -1244,23 +1315,27 @@
                             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
                         </div>
 
-                        <!-- Buyer Customer Info Display (Shown on sold phones) -->
+                        <!-- Buyer Customer Info Display (Shown on sold phones - Seamless & Clean) -->
                         <div id="phoneBuyerBox{{ $phone->id }}" class="phone-buyer-box" style="{{ $isSold && $phone->sale && $phone->sale->customer ? 'display: block;' : 'display: none;' }}">
-                            <div style="font-size: 0.65rem; font-weight: 800; text-transform: uppercase; color: #1e40af; letter-spacing: 0.04em; display: flex; align-items: center; justify-content: space-between;">
-                                <span style="display: inline-flex; align-items: center; gap: 0.25rem;">
-                                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-                                    <span>Sold to</span>
-                                </span>
-                                @if($phone->sale)
-                                    <span style="font-family: monospace; color: #64748b; font-weight: 600; font-size: 0.62rem;">#{{ $phone->sale->invoice_number }}</span>
-                                @endif
-                            </div>
-                            <div style="font-weight: 800; color: #0f172a; font-size: 0.8rem; margin-top: 1px;" id="phoneBuyerName{{ $phone->id }}">
-                                {{ $phone->sale->customer->name ?? '' }}
-                            </div>
-                            <div style="color: #2563eb; font-size: 0.72rem; font-weight: 600; display: flex; align-items: center; gap: 0.25rem; margin-top: 1px;" id="phoneBuyerPhone{{ $phone->id }}">
-                                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
-                                <span>{{ $phone->sale->customer->phone ?? '' }}</span>
+                            <div class="pos-buyer-row">
+                                <div class="pos-buyer-avatar">
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                                </div>
+                                <div class="pos-buyer-content">
+                                    <div class="pos-buyer-top">
+                                        <span class="pos-buyer-label">Sold to</span>
+                                        @if($phone->sale)
+                                            <span class="pos-buyer-invoice">#{{ $phone->sale->invoice_number }}</span>
+                                        @endif
+                                    </div>
+                                    <div class="pos-buyer-name" id="phoneBuyerName{{ $phone->id }}">
+                                        {{ $phone->sale->customer->name ?? '' }}
+                                    </div>
+                                    <div class="pos-buyer-phone" id="phoneBuyerPhone{{ $phone->id }}">
+                                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                                        <span>{{ $phone->sale->customer->phone ?? '' }}</span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
