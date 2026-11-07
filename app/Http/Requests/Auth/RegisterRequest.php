@@ -14,7 +14,10 @@ class RegisterRequest extends FormRequest
 
     public function rules(): array
     {
-        return [
+        $paymentMethod = $this->input('payment_method', 'card');
+        $isCard = $paymentMethod !== 'bank_transfer';
+
+        $rules = [
             'shop_name' => ['required', 'string', 'min:2', 'max:100'],
             'name' => ['required', 'string', 'min:2', 'max:100'],
             'phone' => ['required', 'string', 'regex:/^[0-9+\s\-()]{7,25}$/'],
@@ -25,14 +28,23 @@ class RegisterRequest extends FormRequest
             'business_reg_number' => ['nullable', 'string', 'max:100'],
             'plan_id' => ['required', 'exists:subscription_plans,id'],
             'billing_cycle' => ['nullable', 'in:monthly,annual'],
-            'cardholder_name' => ['required', 'string', 'min:2', 'max:100'],
-            'card_number' => ['required', 'string', 'min:12', 'max:25'],
-            'card_expiry' => ['required', 'string', 'max:7', 'regex:/^(0[1-9]|1[0-2])\/?([0-9]{2})$/'],
-            'card_cvv' => ['required', 'string', 'min:3', 'max:4'],
+            'payment_method' => ['nullable', 'in:card,bank_transfer'],
             'password' => ['required', 'string', 'confirmed', Password::min(8)->mixedCase()->numbers()],
             'password_confirmation' => ['required', 'string'],
             'terms' => ['accepted'],
         ];
+
+        if ($isCard) {
+            $rules['cardholder_name'] = ['required', 'string', 'min:2', 'max:100'];
+            $rules['card_number'] = ['required', 'string', 'min:12', 'max:25'];
+            $rules['card_expiry'] = ['required', 'string', 'max:7', 'regex:/^(0[1-9]|1[0-2])\/?([0-9]{2})$/'];
+            $rules['card_cvv'] = ['required', 'string', 'min:3', 'max:4'];
+        } else {
+            $rules['reference_number'] = ['required', 'string', 'max:100'];
+            $rules['receipt'] = ['nullable', 'file', 'mimes:jpeg,png,jpg,pdf', 'max:5120'];
+        }
+
+        return $rules;
     }
 
     public function messages(): array
@@ -56,6 +68,9 @@ class RegisterRequest extends FormRequest
             'card_expiry.required' => 'Please enter your card expiry date (MM/YY).',
             'card_expiry.regex' => 'Card expiry must be in MM/YY format (e.g. 12/28).',
             'card_cvv.required' => 'Please enter the CVV / CVC code on the back of your card.',
+            'reference_number.required' => 'Please enter your bank transfer / deposit slip reference number.',
+            'receipt.mimes' => 'The payment receipt must be a JPG, PNG, or PDF file.',
+            'receipt.max' => 'The payment receipt file size cannot exceed 5MB.',
             'terms.accepted' => 'You must accept the Terms of Service and Privacy Policy.',
         ];
     }

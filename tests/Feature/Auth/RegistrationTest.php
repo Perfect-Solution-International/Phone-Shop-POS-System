@@ -501,3 +501,64 @@ test('shop owner can select Growth plan and subscription initializes with 3 bran
     expect($payment->status)->toBe('approved');
 });
 
+test('shop owner can register with bank slip and receives 7-day free trial with pending verification', function (): void {
+    \Illuminate\Support\Facades\Storage::fake('public');
+    Event::fake([Registered::class]);
+
+    $starterPlan = SubscriptionPlan::where('slug', 'starter')->first();
+    $file = \Illuminate\Http\UploadedFile::fake()->create('deposit_slip.pdf', 100, 'application/pdf');
+
+    $expectedDestination = config('auth.verification.enabled', false) ? route('verification.notice') : route('shop.dashboard');
+    $response = $this->post('/register', [
+        'shop_name' => 'Bank Slip Mobile Care',
+        'name' => 'Nimal Jayawardena',
+        'phone' => '+94 77 987 6543',
+        'email' => 'nimal@bankslip.lk',
+        'plan_id' => $starterPlan->id,
+        'billing_cycle' => 'monthly',
+        'payment_method' => 'bank_transfer',
+        'reference_number' => 'BOC-DEP-88419',
+        'receipt' => $file,
+        'password' => 'SecurePass123!',
+        'password_confirmation' => 'SecurePass123!',
+        'terms' => '1',
+    ]);
+
+    $response->assertRedirect($expectedDestination);
+
+    $shop = Shop::where('name', 'Bank Slip Mobile Care')->firstOrFail();
+    $sub = Subscription::where('shop_id', $shop->id)->firstOrFail();
+
+    expect($sub->status)->toBe('trial');
+    expect($sub->payment_method)->toBe('bank_transfer');
+    expect($sub->trial_ends_at)->not->toBeNull();
+    expect($sub->trial_ends_at->isFuture())->toBeTrue();
+
+    // Verify pending bank payment with slip uploaded
+    $payment = SubscriptionPayment::where('shop_id', $shop->id)->first();
+    expect($payment)->not->toBeNull();
+    expect($payment->payment_method)->toBe('bank_transfer');
+    expect($payment->status)->toBe('pending');
+    expect($payment->reference_number)->toBe('BOC-DEP-88419');
+    expect($payment->receipt_url)->not->toBeNull();
+});
+
+test('bank transfer registration requires reference number', function (): void {
+    $plan = SubscriptionPlan::first();
+
+    $response = $this->post('/register', [
+        'shop_name' => 'Ref Test Store',
+        'name' => 'Ref Tester',
+        'phone' => '+94 77 123 4567',
+        'email' => 'reftest@example.test',
+        'plan_id' => $plan->id,
+        'payment_method' => 'bank_transfer',
+        'password' => 'SecurePass123!',
+        'password_confirmation' => 'SecurePass123!',
+        'terms' => '1',
+        // reference_number omitted
+    ]);
+
+    $response->assertSessionHasErrors(['reference_number']);
+});
+

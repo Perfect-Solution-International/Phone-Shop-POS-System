@@ -467,6 +467,16 @@
             margin-top: 0.35rem;
         }
 
+        .field-error svg {
+            width: 14px;
+            height: 14px;
+            min-width: 14px;
+            min-height: 14px;
+            max-width: 14px;
+            max-height: 14px;
+            flex-shrink: 0;
+        }
+
         /* Live Password Strength Feedback */
         .password-strength-box {
             background: #f8fafc;
@@ -756,6 +766,67 @@
             border: 1px solid #cbd5e1;
             background: #ffffff;
             color: #475569;
+        }
+
+        /* Payment Method Radio Selector */
+        .payment-method-selector {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .payment-method-card {
+            border: 2px solid #cbd5e1;
+            background: #ffffff;
+            border-radius: var(--radius-md);
+            padding: 0.85rem 1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.65rem;
+            transition: all 0.2s ease;
+        }
+
+        .payment-method-card:hover {
+            border-color: #94a3b8;
+            background: #f8fafc;
+        }
+
+        .payment-method-card.selected {
+            border-color: #4f46e5;
+            background: #eef2ff;
+            box-shadow: 0 0 0 1px #4f46e5;
+        }
+
+        .payment-method-card input[type="radio"] {
+            margin-top: 0.2rem;
+            cursor: pointer;
+            accent-color: #4f46e5;
+        }
+
+        .payment-method-info strong {
+            display: block;
+            font-size: 0.86rem;
+            font-weight: 750;
+            color: #0f172a;
+            line-height: 1.25;
+            margin-bottom: 0.15rem;
+        }
+
+        .payment-method-card.selected .payment-method-info strong {
+            color: #3730a3;
+        }
+
+        .payment-method-info span {
+            display: block;
+            font-size: 0.74rem;
+            color: #64748b;
+            line-height: 1.35;
+        }
+
+        .payment-method-card.selected .payment-method-info span {
+            color: #6366f1;
         }
 
         /* Terms Row */
@@ -1048,7 +1119,7 @@
                         </div>
                     @endif
 
-                    <form id="registrationForm" method="POST" action="{{ route('register.store') }}" novalidate>
+                    <form id="registrationForm" method="POST" action="{{ route('register.store') }}" enctype="multipart/form-data" novalidate>
                         @csrf
 
                         <!-- Section: Store Details -->
@@ -1086,7 +1157,7 @@
                             <p id="shop_name_help" class="field-help">Your isolated tenant workspace name. Visible on receipts and employee screens.</p>
                             @error('shop_name')
                                 <p id="shop_name_error" class="field-error" role="alert">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
                                     <span>{{ $message }}</span>
                                 </p>
                             @enderror
@@ -1122,7 +1193,7 @@
                                 </div>
                                 @error('name')
                                     <p id="name_error" class="field-error" role="alert">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
                                         <span>{{ $message }}</span>
                                     </p>
                                 @enderror
@@ -1156,7 +1227,7 @@
                                 <p id="phone_help" class="field-help">For security alerts &amp; SMS receipts.</p>
                                 @error('phone')
                                     <p id="phone_error" class="field-error" role="alert">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
                                         <span>{{ $message }}</span>
                                     </p>
                                 @enderror
@@ -1197,7 +1268,7 @@
                             @endif
                             @error('email')
                                 <p id="email_error" class="field-error" role="alert">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
                                     <span>{{ $message }}</span>
                                 </p>
                             @enderror
@@ -1234,7 +1305,7 @@
                             </div>
                             @error('business_address')
                                 <p id="business_address_error" class="field-error" role="alert">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
                                     <span>{{ $message }}</span>
                                 </p>
                             @enderror
@@ -1276,7 +1347,7 @@
                                 </div>
                                 @error('country')
                                     <p id="country_error" class="field-error" role="alert">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
                                         <span>{{ $message }}</span>
                                     </p>
                                 @enderror
@@ -1313,7 +1384,7 @@
                                 </div>
                                 @error('timezone')
                                     <p id="timezone_error" class="field-error" role="alert">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
                                         <span>{{ $message }}</span>
                                     </p>
                                 @enderror
@@ -1349,7 +1420,7 @@
                             <p id="business_reg_help" class="field-help">Optional: Business registration number or tax ID for official receipts and invoices.</p>
                             @error('business_reg_number')
                                 <p id="business_reg_error" class="field-error" role="alert">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
                                     <span>{{ $message }}</span>
                                 </p>
                             @enderror
@@ -1387,7 +1458,7 @@
                                 </div>
                                 @error('password')
                                     <p id="password_error" class="field-error" role="alert">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
                                         <span>{{ $message }}</span>
                                     </p>
                                 @enderror
@@ -1524,7 +1595,7 @@
 
                         @error('plan_id')
                             <p class="field-error" style="margin-top: -0.5rem; margin-bottom: 1rem;" role="alert">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
                                 <span>{{ $message }}</span>
                             </p>
                         @enderror
@@ -1534,11 +1605,31 @@
                             <span>4. Payment Card — 7-Day Free Trial</span>
                         </div>
 
-                        <div class="card-details-box">
+                        <!-- Payment Method Selector -->
+                        <div class="payment-method-selector">
+                            <label class="payment-method-card {{ old('payment_method', 'card') === 'card' ? 'selected' : '' }}" id="method_card_label" onclick="switchRegisterPaymentMethod('card')">
+                                <input type="radio" name="payment_method" value="card" id="method_card_radio" {{ old('payment_method', 'card') === 'card' ? 'checked' : '' }}>
+                                <div class="payment-method-info">
+                                    <strong>Credit / Debit Card</strong>
+                                    <span>Instant verification &amp; 7-day free trial</span>
+                                </div>
+                            </label>
+
+                            <label class="payment-method-card {{ old('payment_method') === 'bank_transfer' ? 'selected' : '' }}" id="method_bank_label" onclick="switchRegisterPaymentMethod('bank_transfer')">
+                                <input type="radio" name="payment_method" value="bank_transfer" id="method_bank_radio" {{ old('payment_method') === 'bank_transfer' ? 'checked' : '' }}>
+                                <div class="payment-method-info">
+                                    <strong>Bank Transfer Slip</strong>
+                                    <span>Upload slip &amp; start 7-day free trial</span>
+                                </div>
+                            </label>
+                        </div>
+
+                        <!-- Container 1: Card Details -->
+                        <div id="cardPaymentContainer" class="card-details-box" style="{{ old('payment_method', 'card') === 'bank_transfer' ? 'display: none;' : '' }}">
                             <div class="trial-due-banner">
                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink: 0; margin-top: 0.1rem;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
                                 <div>
-                                    <strong>7-Day Free Trial Activated:</strong>
+                                    <strong>Payment Card — 7-Day Free Trial:</strong>
                                     You will <strong>NOT be charged today (LKR 0.00 due now)</strong>. Your card is saved securely to verify your retail workspace and will only be billed when your 7-day free trial ends, unless cancelled anytime.
                                 </div>
                             </div>
@@ -1559,13 +1650,12 @@
                                         class="form-input @error('cardholder_name') is-invalid @enderror"
                                         value="{{ old('cardholder_name') }}"
                                         placeholder="Name as printed on card"
-                                        required
                                         autocomplete="cc-name"
                                     >
                                 </div>
                                 @error('cardholder_name')
                                     <p class="field-error" role="alert">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
                                         <span>{{ $message }}</span>
                                     </p>
                                 @enderror
@@ -1592,7 +1682,6 @@
                                         class="form-input @error('card_number') is-invalid @enderror"
                                         value="{{ old('card_number') }}"
                                         placeholder="4242 •••• •••• 4242"
-                                        required
                                         maxlength="23"
                                         autocomplete="cc-number"
                                         oninput="formatCardNumber(this)"
@@ -1600,7 +1689,7 @@
                                 </div>
                                 @error('card_number')
                                     <p class="field-error" role="alert">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
                                         <span>{{ $message }}</span>
                                     </p>
                                 @enderror
@@ -1623,7 +1712,6 @@
                                             class="form-input @error('card_expiry') is-invalid @enderror"
                                             value="{{ old('card_expiry') }}"
                                             placeholder="MM/YY"
-                                            required
                                             maxlength="5"
                                             autocomplete="cc-exp"
                                             oninput="formatCardExpiry(this)"
@@ -1631,7 +1719,7 @@
                                     </div>
                                     @error('card_expiry')
                                         <p class="field-error" role="alert">
-                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
                                             <span>{{ $message }}</span>
                                         </p>
                                     @enderror
@@ -1652,18 +1740,92 @@
                                             class="form-input @error('card_cvv') is-invalid @enderror"
                                             value="{{ old('card_cvv') }}"
                                             placeholder="123"
-                                            required
                                             maxlength="4"
                                             autocomplete="cc-csc"
                                         >
                                     </div>
                                     @error('card_cvv')
                                         <p class="field-error" role="alert">
-                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
                                             <span>{{ $message }}</span>
                                         </p>
                                     @enderror
                                 </div>
+                            </div>
+                        </div>
+
+                        <!-- Container 2: Bank Slip Upload Details -->
+                        <div id="bankPaymentContainer" class="card-details-box" style="{{ old('payment_method') === 'bank_transfer' ? '' : 'display: none;' }}">
+                            <div class="trial-due-banner" style="background: #f0fdf4; border-color: #86efac; color: #166534;">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" style="flex-shrink: 0; margin-top: 0.1rem;"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                                <div>
+                                    <strong>7-Day Free Trial Activated (Bank Transfer):</strong>
+                                    Your shop workspace is activated immediately with a <strong>7-Day Free Trial (LKR 0.00 due today)</strong>. You can start setting up your inventory and sales right away. Please upload your deposit slip below so our team can approve your recurring subscription under Bank Approvals.
+                                </div>
+                            </div>
+
+                            <!-- Platform Bank Account Information Box -->
+                            <div style="background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 8px; padding: 0.9rem 1rem; margin-bottom: 1rem;">
+                                <div style="font-weight: 750; font-size: 0.82rem; color: #1e293b; margin-bottom: 0.45rem; display: flex; align-items: center; gap: 0.4rem;">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4f46e5" stroke-width="2.2"><path d="M3 21h18"></path><path d="M5 21V10l7-5 7 5v11"></path><line x1="9" y1="14" x2="9" y2="17"></line><line x1="15" y1="14" x2="15" y2="17"></line></svg>
+                                    <span>Official Bank Deposit Account Details:</span>
+                                </div>
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.4rem 1rem; font-size: 0.78rem; color: #334155; line-height: 1.45;">
+                                    <div><strong>Bank:</strong> Bank of Ceylon (BOC)</div>
+                                    <div><strong>Account No:</strong> 0089271638</div>
+                                    <div><strong>Branch:</strong> Corporate Branch Colombo</div>
+                                    <div><strong>Account Name:</strong> SaaS POS Lanka (Pvt) Ltd</div>
+                                </div>
+                            </div>
+
+                            <!-- Reference Number -->
+                            <div class="form-group">
+                                <label for="reference_number" class="form-label">
+                                    <span>Bank Deposit / Transfer Reference No. <span class="required-mark">*</span></span>
+                                </label>
+                                <div class="input-wrapper">
+                                    <span class="input-icon-prefix" aria-hidden="true">
+                                        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                                    </span>
+                                    <input
+                                        id="reference_number"
+                                        name="reference_number"
+                                        type="text"
+                                        class="form-input @error('reference_number') is-invalid @enderror"
+                                        value="{{ old('reference_number') }}"
+                                        placeholder="e.g. BOC-TXN-98421"
+                                    >
+                                </div>
+                                @error('reference_number')
+                                    <p class="field-error" role="alert">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                                        <span>{{ $message }}</span>
+                                    </p>
+                                @enderror
+                            </div>
+
+                            <!-- Receipt File Upload -->
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label for="receipt" class="form-label">
+                                    <span>Upload Bank Deposit Slip / Receipt</span>
+                                </label>
+                                <div class="input-wrapper" style="padding: 0.35rem 0.5rem; background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 8px;">
+                                    <input
+                                        id="receipt"
+                                        name="receipt"
+                                        type="file"
+                                        accept="image/*,.pdf"
+                                        class="form-control-file @error('receipt') is-invalid @enderror"
+                                        style="width: 100%; font-size: 0.8125rem; color: #334155;"
+                                    >
+                                </div>
+                                <span class="field-help">Upload receipt in JPG, PNG, or PDF (Max 5MB). Verified under Bank Approvals.</span>
+                                @error('receipt')
+                                    <p class="field-error" role="alert">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                                        <span>{{ $message }}</span>
+                                    </p>
+                                @enderror
                             </div>
                         </div>
 
@@ -1686,7 +1848,7 @@
                         </label>
                         @error('terms')
                             <p id="terms_error" class="field-error" style="margin-top: -0.75rem; margin-bottom: 1.15rem;" role="alert">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
                                 <span>{{ $message }}</span>
                             </p>
                         @enderror
@@ -1903,6 +2065,52 @@
                 cardholderInput.dataset.touched = 'true';
             });
         }
+
+        // Payment Method Switcher (Card vs Bank Transfer)
+        function switchRegisterPaymentMethod(method) {
+            const cardBox = document.getElementById('cardPaymentContainer');
+            const bankBox = document.getElementById('bankPaymentContainer');
+            const cardLabel = document.getElementById('method_card_label');
+            const bankLabel = document.getElementById('method_bank_label');
+            const cardRadio = document.getElementById('method_card_radio');
+            const bankRadio = document.getElementById('method_bank_radio');
+            const cardName = document.getElementById('cardholder_name');
+            const cardNum = document.getElementById('card_number');
+            const cardExp = document.getElementById('card_expiry');
+            const cardCvv = document.getElementById('card_cvv');
+            const bankRef = document.getElementById('reference_number');
+
+            if (method === 'bank_transfer') {
+                if (cardBox) cardBox.style.display = 'none';
+                if (bankBox) bankBox.style.display = 'block';
+                if (cardLabel) cardLabel.classList.remove('selected');
+                if (bankLabel) bankLabel.classList.add('selected');
+                if (bankRadio) bankRadio.checked = true;
+
+                if (cardName) cardName.removeAttribute('required');
+                if (cardNum) cardNum.removeAttribute('required');
+                if (cardExp) cardExp.removeAttribute('required');
+                if (cardCvv) cardCvv.removeAttribute('required');
+                if (bankRef) bankRef.setAttribute('required', 'required');
+            } else {
+                if (cardBox) cardBox.style.display = 'block';
+                if (bankBox) bankBox.style.display = 'none';
+                if (cardLabel) cardLabel.classList.add('selected');
+                if (bankLabel) bankLabel.classList.remove('selected');
+                if (cardRadio) cardRadio.checked = true;
+
+                if (cardName) cardName.setAttribute('required', 'required');
+                if (cardNum) cardNum.setAttribute('required', 'required');
+                if (cardExp) cardExp.setAttribute('required', 'required');
+                if (cardCvv) cardCvv.setAttribute('required', 'required');
+                if (bankRef) bankRef.removeAttribute('required');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentMethod = document.querySelector('input[name="payment_method"]:checked')?.value || 'card';
+            switchRegisterPaymentMethod(currentMethod);
+        });
 
         // Form Submit Loading Indicator
         const form = document.getElementById('registrationForm');
