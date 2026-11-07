@@ -501,3 +501,124 @@ test('shop owner can select Growth plan and subscription initializes with 3 bran
     expect($payment->status)->toBe('approved');
 });
 
+test('shop owner can register with bank slip and receives 7-day free trial with pending verification', function (): void {
+    \Illuminate\Support\Facades\Storage::fake('public');
+    Event::fake([Registered::class]);
+
+    $starterPlan = SubscriptionPlan::where('slug', 'starter')->first();
+    $file = \Illuminate\Http\UploadedFile::fake()->create('deposit_slip.pdf', 100, 'application/pdf');
+
+    $expectedDestination = config('auth.verification.enabled', false) ? route('verification.notice') : route('shop.dashboard');
+    $response = $this->post('/register', [
+        'shop_name' => 'Bank Slip Mobile Care',
+        'name' => 'Nimal Jayawardena',
+        'phone' => '+94 77 987 6543',
+        'email' => 'nimal@bankslip.lk',
+        'plan_id' => $starterPlan->id,
+        'billing_cycle' => 'monthly',
+        'payment_method' => 'bank_transfer',
+        'reference_number' => 'BOC-DEP-88419',
+        'receipt' => $file,
+        'password' => 'SecurePass123!',
+        'password_confirmation' => 'SecurePass123!',
+        'terms' => '1',
+    ]);
+
+    $response->assertRedirect($expectedDestination);
+
+    $shop = Shop::where('name', 'Bank Slip Mobile Care')->firstOrFail();
+    $sub = Subscription::where('shop_id', $shop->id)->firstOrFail();
+
+    expect($sub->status)->toBe('trial');
+    expect($sub->payment_method)->toBe('bank_transfer');
+    expect($sub->trial_ends_at)->not->toBeNull();
+    expect($sub->trial_ends_at->isFuture())->toBeTrue();
+
+    // Verify pending bank payment with slip uploaded
+    $payment = SubscriptionPayment::where('shop_id', $shop->id)->first();
+    expect($payment)->not->toBeNull();
+    expect($payment->payment_method)->toBe('bank_transfer');
+    expect($payment->status)->toBe('pending');
+    expect($payment->reference_number)->toBe('BOC-DEP-88419');
+    expect($payment->receipt_url)->not->toBeNull();
+});
+
+test('bank transfer registration requires reference number', function (): void {
+    $plan = SubscriptionPlan::first();
+
+    $response = $this->post('/register', [
+        'shop_name' => 'Ref Test Store',
+        'name' => 'Ref Tester',
+        'phone' => '+94 77 123 4567',
+        'email' => 'reftest@example.test',
+        'plan_id' => $plan->id,
+        'payment_method' => 'bank_transfer',
+        'password' => 'SecurePass123!',
+        'password_confirmation' => 'SecurePass123!',
+        'terms' => '1',
+        // reference_number omitted
+    ]);
+
+    $response->assertSessionHasErrors(['reference_number']);
+});
+
+test('shop owner can register for 7-day free trial without card or payment', function (): void {
+    Event::fake([Registered::class]);
+
+    $starterPlan = SubscriptionPlan::where('slug', 'starter')->first();
+
+    $expectedDestination = config('auth.verification.enabled', false) ? route('verification.notice') : route('shop.dashboard');
+    $response = $this->post('/register', [
+        'shop_name' => 'Free Trial Mobile',
+        'name' => 'Sunil Perera',
+        'phone' => '+94 77 111 2233',
+        'email' => 'sunil@freetrial.test',
+        'plan_id' => $starterPlan->id,
+        'billing_cycle' => 'monthly',
+        'payment_method' => 'trial',
+        'password' => 'SecurePass123!',
+        'password_confirmation' => 'SecurePass123!',
+        'terms' => '1',
+    ]);
+
+    $response->assertRedirect($expectedDestination);
+
+    $shop = Shop::where('name', 'Free Trial Mobile')->firstOrFail();
+    $sub = Subscription::where('shop_id', $shop->id)->firstOrFail();
+
+    expect($sub->status)->toBe('trial');
+    expect($sub->trial_ends_at)->not->toBeNull();
+    expect($sub->trial_ends_at->isFuture())->toBeTrue();
+    expect($sub->isTrial())->toBeTrue();
+    expect($sub->isTrialExpired())->toBeFalse();
+});
+
+test('shop owner with expired 7-day trial is blocked and redirected to subscription page to purchase a plan', function (): void {
+    $plan = SubscriptionPlan::first();
+    $shop = Shop::create(['name' => 'Expired Trial Store']);
+
+    $user = User::factory()->create([
+        'shop_id' => $shop->id,
+        'email_verified_at' => now(),
+    ]);
+    $user->assignRole('Shop Owner');
+
+    // Create an expired trial subscription (trial ended yesterday)
+    Subscription::create([
+        'shop_id' => $shop->id,
+        'plan_id' => $plan->id,
+        'status' => 'trial',
+        'billing_cycle' => 'monthly',
+        'recurring_amount' => 4500.00,
+        'trial_ends_at' => now()->subDay(),
+        'current_period_starts_at' => now()->subDays(8),
+        'current_period_ends_at' => now()->subDay(),
+        'payment_method' => 'trial',
+    ]);
+
+    $this->actingAs($user, 'web')
+        ->get(route('shop.dashboard'))
+        ->assertRedirect(route('shop.subscription.index'))
+        ->assertSessionHas('error', 'Your 7-day free trial has expired. Please choose a subscription plan to continue using your shop workspace.');
+});
+

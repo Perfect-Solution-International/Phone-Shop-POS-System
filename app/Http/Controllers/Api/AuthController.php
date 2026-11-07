@@ -175,6 +175,11 @@ class AuthController extends Controller
         }
 
         if ($user->shop_id !== null) {
+            $sub = $user->shop?->subscription;
+            if ($sub && ($sub->isSuspended() || $sub->isExpired() || $sub->isTrialExpired())) {
+                return route('shop.subscription.index');
+            }
+
             if ($user->hasRole('Cashier')) {
                 return route('shop.pos');
             }

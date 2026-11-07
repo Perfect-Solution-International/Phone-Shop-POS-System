@@ -4,6 +4,7 @@
 @section('page-title', 'Quotations & Price Estimates')
 
 @section('content')
+@include('shop.partials.pos-subnav')
 <!-- Metric Cards -->
 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
     <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.25rem 1.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">

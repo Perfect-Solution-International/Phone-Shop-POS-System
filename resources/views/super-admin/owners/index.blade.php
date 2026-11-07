@@ -282,8 +282,11 @@
                 <button type="button" class="owner-modal-close" onclick="closeOwnerModal('addOwnerModal')">&times;</button>
             </div>
 
+            <!-- Inline Alert / Error Notice -->
+            <div id="addOwnerAlert" style="display: none; margin: 1rem 1.5rem 0; padding: 0.75rem 1rem; border-radius: 8px; font-size: 0.84rem; font-weight: 600;"></div>
+
             <!-- 2-Step Wizard Stepper Bar -->
-            <div style="display: flex; border-bottom: 1px solid #e2e8f0; background: #f8fafc; padding: 0.65rem 1.5rem; gap: 1rem; align-items: center;">
+            <div style="display: flex; border-bottom: 1px solid #e2e8f0; background: #f8fafc; padding: 0.65rem 1.5rem; gap: 1rem; align-items: center; margin-top: 0.5rem;">
                 <div id="stepPill1" style="display: flex; align-items: center; gap: 0.45rem; font-size: 0.8125rem; font-weight: 700; color: #4338ca; cursor: pointer;" onclick="goToOwnerStep(1)">
                     <span id="stepBadge1" style="display: inline-flex; width: 22px; height: 22px; border-radius: 50%; background: #4f46e5; color: #fff; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 700;">1</span>
                     <span>1. Owner &amp; Store Details</span>
@@ -295,7 +298,7 @@
                 </div>
             </div>
 
-            <form method="POST" action="{{ route('superadmin.owners.store') }}" enctype="multipart/form-data">
+            <form id="addOwnerForm" method="POST" action="{{ route('superadmin.owners.store') }}" enctype="multipart/form-data" novalidate>
                 @csrf
                 <div class="owner-modal-body" id="ownerModalBody" style="max-height: 70vh; overflow-y: auto;">
                     <!-- STEP 1: Details Container -->
@@ -310,17 +313,17 @@
                             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 0.75rem;">
                                 <div class="owner-form-group">
                                     <label>Owner Full Name *</label>
-                                    <input type="text" name="name" id="add_owner_name" class="owner-form-control" placeholder="e.g. Kasun Jayawardena" required>
+                                    <input type="text" name="name" id="add_owner_name" class="owner-form-control" placeholder="e.g. Kasun Jayawardena" value="{{ old('name') }}" required>
                                 </div>
                                 <div class="owner-form-group">
                                     <label>Email Address (Login) *</label>
-                                    <input type="email" name="email" id="add_owner_email" class="owner-form-control" placeholder="e.g. kasun@apexcare.com" required>
+                                    <input type="email" name="email" id="add_owner_email" class="owner-form-control" placeholder="e.g. kasun@apexcare.com" value="{{ old('email') }}" required>
                                 </div>
                             </div>
 
                             <div class="owner-form-group" style="margin-bottom: 0.75rem;">
                                 <label>Contact Phone</label>
-                                <input type="text" name="phone" id="add_owner_phone" class="owner-form-control" placeholder="e.g. 077 123 4567">
+                                <input type="text" name="phone" id="add_owner_phone" class="owner-form-control" placeholder="e.g. 077 123 4567" value="{{ old('phone') }}">
                             </div>
 
                             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 0.75rem;">
@@ -335,7 +338,7 @@
                             </div>
 
                             <div style="display: flex; align-items: center; gap: 0.5rem; margin-top: 0.5rem;">
-                                <input type="checkbox" name="is_verified" id="add_is_verified" value="1" checked style="width: 16px; height: 16px; cursor: pointer;">
+                                <input type="checkbox" name="is_verified" id="add_is_verified" value="1" {{ old('is_verified', '1') ? 'checked' : '' }} style="width: 16px; height: 16px; cursor: pointer;">
                                 <label for="add_is_verified" style="margin: 0; font-size: 0.8125rem; font-weight: 600; cursor: pointer; color: #334155;">
                                     Pre-verify owner email (Allows immediate live login without email verification)
                                 </label>
@@ -356,23 +359,23 @@
 
                             <!-- New Shop Inputs (Default) -->
                             <div id="newShopContainer" style="display: flex; flex-direction: column; gap: 0.75rem;">
-                                <input type="hidden" name="shop_assignment_type" id="shop_assignment_type" value="new">
+                                <input type="hidden" name="shop_assignment_type" id="shop_assignment_type" value="{{ old('shop_assignment_type', 'new') }}">
 
                                 <div class="owner-form-group">
                                     <label>Shop / Business Name *</label>
-                                    <input type="text" name="shop_name" id="add_new_shop_name" class="owner-form-control" placeholder="e.g. Apex Cellular Care" required>
+                                    <input type="text" name="shop_name" id="add_new_shop_name" class="owner-form-control" placeholder="e.g. Apex Cellular Care" value="{{ old('shop_name') }}" required>
                                 </div>
 
                                 <div class="owner-form-group">
                                     <label>Business Address</label>
-                                    <input type="text" name="business_address" id="add_business_address" class="owner-form-control" placeholder="e.g. 150 Main Street, Colombo 03">
+                                    <input type="text" name="business_address" id="add_business_address" class="owner-form-control" placeholder="e.g. 150 Main Street, Colombo 03" value="{{ old('business_address') }}">
                                 </div>
 
                                 <div class="owner-form-group">
                                     <label>Choose Subscription Plan *</label>
                                     <select name="plan_id" id="add_plan_id" class="owner-form-control" style="font-weight: 600;">
                                         @foreach($plans as $plan)
-                                            <option value="{{ $plan->id }}">
+                                            <option value="{{ $plan->id }}" {{ old('plan_id') == $plan->id ? 'selected' : '' }}>
                                                 {{ $plan->name }} — LKR {{ number_format($plan->monthly_price, 0) }}/mo ({{ $plan->max_branches }} branch(es), {{ $plan->max_users }} staff)
                                             </option>
                                         @endforeach
@@ -386,7 +389,7 @@
                                 <select name="shop_id" id="add_shop_id" class="owner-form-control">
                                     <option value="">-- Choose Existing Shop --</option>
                                     @foreach($shops as $sh)
-                                        <option value="{{ $sh->id }}">{{ $sh->name }} (ID #{{ $sh->id }})</option>
+                                        <option value="{{ $sh->id }}" {{ old('shop_id') == $sh->id ? 'selected' : '' }}>{{ $sh->name }} (ID #{{ $sh->id }})</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -412,38 +415,59 @@
                         <div style="background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 10px; padding: 1rem; margin-bottom: 0.5rem;">
                             <div style="font-weight: 750; font-size: 0.875rem; color: #1e293b; display: flex; align-items: center; gap: 0.4rem; margin-bottom: 0.75rem;">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4f46e5" stroke-width="2.2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
-                                <span>Subscription Payment &amp; Verification</span>
+                                <span>Subscription Payment &amp; Activation Mode</span>
                             </div>
 
                             <!-- Payment Method Toggle Options -->
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 1rem;">
-                                <!-- Option 1: Card Payment -->
-                                <label id="optMethodCard" style="border: 2px solid #4f46e5; background: #eef2ff; border-radius: 8px; padding: 0.75rem; cursor: pointer; display: flex; align-items: flex-start; gap: 0.5rem; transition: all 0.15s ease;">
-                                    <input type="radio" name="payment_method" value="card" checked onchange="switchOwnerPaymentMethod('card')" style="margin-top: 0.2rem; cursor: pointer;">
+                            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.65rem; margin-bottom: 1rem;">
+                                <!-- Option 1: Free Trial / Admin Active (Default) -->
+                                <label id="optMethodTrial" style="border: 2px solid #4f46e5; background: #eef2ff; border-radius: 8px; padding: 0.75rem 0.65rem; cursor: pointer; display: flex; align-items: flex-start; gap: 0.45rem; transition: all 0.15s ease;">
+                                    <input type="radio" name="payment_method" value="trial" checked onchange="switchOwnerPaymentMethod('trial')" style="margin-top: 0.2rem; cursor: pointer;">
                                     <div>
-                                        <div style="font-weight: 750; font-size: 0.85rem; color: #3730a3; display: inline-flex; align-items: center; gap: 0.35rem;">
-                                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
-                                            <span>Credit / Debit Card</span>
+                                        <div style="font-weight: 750; font-size: 0.82rem; color: #3730a3; display: inline-flex; align-items: center; gap: 0.3rem;">
+                                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                                            <span>Free Trial</span>
                                         </div>
-                                        <div style="font-size: 0.73rem; color: #6366f1;">Instant verification &amp; active store</div>
+                                        <div style="font-size: 0.71rem; color: #6366f1; margin-top: 0.15rem;">Instant activation (No card required)</div>
                                     </div>
                                 </label>
 
-                                <!-- Option 2: Bank Slip Upload -->
-                                <label id="optMethodBank" style="border: 1.5px solid #cbd5e1; background: #ffffff; border-radius: 8px; padding: 0.75rem; cursor: pointer; display: flex; align-items: flex-start; gap: 0.5rem; transition: all 0.15s ease;">
+                                <!-- Option 2: Card Payment -->
+                                <label id="optMethodCard" style="border: 1.5px solid #cbd5e1; background: #ffffff; border-radius: 8px; padding: 0.75rem 0.65rem; cursor: pointer; display: flex; align-items: flex-start; gap: 0.45rem; transition: all 0.15s ease;">
+                                    <input type="radio" name="payment_method" value="card" onchange="switchOwnerPaymentMethod('card')" style="margin-top: 0.2rem; cursor: pointer;">
+                                    <div>
+                                        <div style="font-weight: 750; font-size: 0.82rem; color: #1e293b; display: inline-flex; align-items: center; gap: 0.3rem;">
+                                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
+                                            <span>Debit / Card</span>
+                                        </div>
+                                        <div style="font-size: 0.71rem; color: #64748b; margin-top: 0.15rem;">Direct paid active status</div>
+                                    </div>
+                                </label>
+
+                                <!-- Option 3: Bank Slip Upload -->
+                                <label id="optMethodBank" style="border: 1.5px solid #cbd5e1; background: #ffffff; border-radius: 8px; padding: 0.75rem 0.65rem; cursor: pointer; display: flex; align-items: flex-start; gap: 0.45rem; transition: all 0.15s ease;">
                                     <input type="radio" name="payment_method" value="bank_transfer" onchange="switchOwnerPaymentMethod('bank_transfer')" style="margin-top: 0.2rem; cursor: pointer;">
                                     <div>
-                                        <div style="font-weight: 750; font-size: 0.85rem; color: #1e293b; display: inline-flex; align-items: center; gap: 0.35rem;">
+                                        <div style="font-weight: 750; font-size: 0.82rem; color: #1e293b; display: inline-flex; align-items: center; gap: 0.3rem;">
                                             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 21h18"></path><path d="M5 21V10l7-5 7 5v11"></path><line x1="9" y1="14" x2="9" y2="17"></line><line x1="15" y1="14" x2="15" y2="17"></line></svg>
-                                            <span>Bank Transfer Slip</span>
+                                            <span>Bank Slip</span>
                                         </div>
-                                        <div style="font-size: 0.73rem; color: #64748b;">Upload deposit slip for Bank Approvals</div>
+                                        <div style="font-size: 0.71rem; color: #64748b; margin-top: 0.15rem;">Bank Approvals review</div>
                                     </div>
                                 </label>
                             </div>
 
+                            <!-- Trial Info Box -->
+                            <div id="ownerTrialFields" style="background: #ffffff; border: 1px solid #bae6fd; border-radius: 8px; padding: 0.85rem 1rem; font-size: 0.8125rem; color: #0369a1; line-height: 1.45;">
+                                <div style="display: flex; align-items: center; gap: 0.4rem; font-weight: 700; color: #0284c7; margin-bottom: 0.25rem;">
+                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                                    <span>Immediate Free Trial Activation</span>
+                                </div>
+                                Store workspace will be activated immediately with full features on trial. No credit card number or bank slip is required.
+                            </div>
+
                             <!-- Card Payment Fields Container -->
-                            <div id="ownerCardFields" style="display: flex; flex-direction: column; gap: 0.75rem;">
+                            <div id="ownerCardFields" style="display: none; flex-direction: column; gap: 0.75rem;">
                                 <div class="owner-form-group" style="margin-bottom: 0;">
                                     <label style="font-size: 0.8125rem;">Cardholder Name</label>
                                     <input type="text" name="cardholder_name" class="owner-form-control" placeholder="Name as printed on card">
@@ -490,11 +514,17 @@
 
                 <!-- Wizard Modal Footer Buttons -->
                 <div class="owner-modal-footer">
-                    <div id="footerStep1" style="display: flex; justify-content: flex-end; width: 100%; gap: 0.75rem;">
+                    <div id="footerStep1" style="display: flex; justify-content: space-between; width: 100%; gap: 0.75rem; align-items: center;">
                         <button type="button" class="btn-action btn-outline" onclick="closeOwnerModal('addOwnerModal')">Cancel</button>
-                        <button type="button" class="btn-action btn-primary" onclick="goToOwnerStep(2)" style="padding: 0.5rem 1.35rem; font-weight: 700; background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);">
-                            Next: Payment &amp; Activation &rarr;
-                        </button>
+                        <div style="display: flex; gap: 0.65rem;">
+                            <button type="button" class="btn-action" onclick="quickRegisterOwner()" id="btnQuickRegister" style="padding: 0.5rem 1rem; font-weight: 700; background: #059669; color: #fff; border: 1px solid #059669; border-radius: 7px; display: inline-flex; align-items: center; gap: 0.35rem; cursor: pointer;">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                                <span>Register Now (Free Trial)</span>
+                            </button>
+                            <button type="button" class="btn-action btn-primary" onclick="goToOwnerStep(2)" style="padding: 0.5rem 1.15rem; font-weight: 700; background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);">
+                                Next: Payment Setup &rarr;
+                            </button>
+                        </div>
                     </div>
                     <div id="footerStep2" style="display: none; justify-content: space-between; width: 100%; gap: 0.75rem;">
                         <button type="button" class="btn-action btn-outline" onclick="goToOwnerStep(1)">&larr; Back to Details</button>
@@ -749,34 +779,135 @@
             transform: translateY(-1px);
             box-shadow: 0 2px 6px rgba(239, 68, 68, 0.3);
         }
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
     </style>
 
     <script>
+        function showAddOwnerAlert(message, type = 'error') {
+            const alertEl = document.getElementById('addOwnerAlert');
+            if (!alertEl) return;
+            alertEl.style.display = 'block';
+            if (type === 'error') {
+                alertEl.style.background = '#fef2f2';
+                alertEl.style.border = '1px solid #fecaca';
+                alertEl.style.color = '#991b1b';
+            } else {
+                alertEl.style.background = '#ecfdf5';
+                alertEl.style.border = '1px solid #a7f3d0';
+                alertEl.style.color = '#065f46';
+            }
+            alertEl.innerHTML = message;
+            const modalBox = document.getElementById('addOwnerModal')?.querySelector('.owner-modal-box');
+            if (modalBox) modalBox.scrollTop = 0;
+            const body = document.getElementById('ownerModalBody');
+            if (body) body.scrollTop = 0;
+        }
+
+        function clearAddOwnerAlert() {
+            const alertEl = document.getElementById('addOwnerAlert');
+            if (alertEl) {
+                alertEl.style.display = 'none';
+                alertEl.innerHTML = '';
+            }
+        }
+
         function openOwnerModal(id) {
             const el = document.getElementById(id);
             if (el) {
                 if (id === 'addOwnerModal') {
+                    clearAddOwnerAlert();
                     goToOwnerStep(1);
                 }
                 el.classList.add('open');
             }
         }
+
         function closeOwnerModal(id) {
             const el = document.getElementById(id);
             if (el) {
                 if (id === 'addOwnerModal') {
+                    clearAddOwnerAlert();
                     goToOwnerStep(1);
                 }
                 el.classList.remove('open');
             }
         }
+
         window.addEventListener('click', function(e) {
             if (e.target.classList.contains('owner-modal-backdrop')) {
                 e.target.classList.remove('open');
             }
         });
 
+        function validateOwnerStep1() {
+            clearAddOwnerAlert();
+            const nameInput = document.getElementById('add_owner_name');
+            const emailInput = document.getElementById('add_owner_email');
+            const passInput = document.getElementById('add_owner_password');
+            const passConfirm = document.getElementById('add_owner_password_confirmation');
+            const shopNameInput = document.getElementById('add_new_shop_name');
+            const existingShopSelect = document.getElementById('add_shop_id');
+            const assignmentType = document.getElementById('shop_assignment_type')?.value || 'new';
+
+            if (!nameInput || !nameInput.value.trim()) {
+                showAddOwnerAlert('Please enter the owner full name.');
+                if (nameInput) nameInput.focus();
+                return false;
+            }
+
+            if (!emailInput || !emailInput.value.trim()) {
+                showAddOwnerAlert('Please enter the owner login email address.');
+                if (emailInput) emailInput.focus();
+                return false;
+            }
+
+            const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailPattern.test(emailInput.value.trim())) {
+                showAddOwnerAlert('Please enter a valid email address (e.g. owner@example.com).');
+                emailInput.focus();
+                return false;
+            }
+
+            if (!passInput || !passInput.value) {
+                showAddOwnerAlert('Please provide an account password.');
+                if (passInput) passInput.focus();
+                return false;
+            }
+
+            if (passInput.value.length < 8) {
+                showAddOwnerAlert('Password must be at least 8 characters long.');
+                passInput.focus();
+                return false;
+            }
+
+            if (passConfirm && passConfirm.value !== passInput.value) {
+                showAddOwnerAlert('Password confirmation does not match the password.');
+                passConfirm.focus();
+                return false;
+            }
+
+            if (assignmentType === 'new') {
+                if (!shopNameInput || !shopNameInput.value.trim()) {
+                    showAddOwnerAlert('Please enter a shop / business name for the new store workspace.');
+                    if (shopNameInput) shopNameInput.focus();
+                    return false;
+                }
+            } else {
+                if (!existingShopSelect || !existingShopSelect.value) {
+                    showAddOwnerAlert('Please choose an existing store workspace to assign.');
+                    if (existingShopSelect) existingShopSelect.focus();
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
         function goToOwnerStep(step) {
+            clearAddOwnerAlert();
             const step1 = document.getElementById('ownerStep1');
             const step2 = document.getElementById('ownerStep2');
             const footer1 = document.getElementById('footerStep1');
@@ -789,48 +920,13 @@
             const modalBody = document.getElementById('ownerModalBody');
 
             if (step === 2) {
-                // Validate Step 1 inputs
+                if (!validateOwnerStep1()) return;
+
                 const nameInput = document.getElementById('add_owner_name');
                 const emailInput = document.getElementById('add_owner_email');
-                const passInput = document.getElementById('add_owner_password');
-                const passConfirm = document.getElementById('add_owner_password_confirmation');
                 const shopNameInput = document.getElementById('add_new_shop_name');
                 const existingShopSelect = document.getElementById('add_shop_id');
-                const assignmentType = document.getElementById('shop_assignment_type').value;
-
-                if (nameInput && !nameInput.value.trim()) {
-                    nameInput.reportValidity();
-                    return;
-                }
-                if (emailInput && !emailInput.reportValidity()) {
-                    return;
-                }
-                if (passInput && !passInput.value) {
-                    passInput.reportValidity();
-                    return;
-                }
-                if (passInput && passInput.value.length < 8) {
-                    alert('Password must be at least 8 characters long.');
-                    passInput.focus();
-                    return;
-                }
-                if (passConfirm && passInput && passConfirm.value !== passInput.value) {
-                    alert('Password confirmation does not match password.');
-                    passConfirm.focus();
-                    return;
-                }
-
-                if (assignmentType === 'new') {
-                    if (shopNameInput && !shopNameInput.value.trim()) {
-                        shopNameInput.reportValidity();
-                        return;
-                    }
-                } else {
-                    if (existingShopSelect && !existingShopSelect.value) {
-                        existingShopSelect.reportValidity();
-                        return;
-                    }
-                }
+                const assignmentType = document.getElementById('shop_assignment_type')?.value || 'new';
 
                 // Populate Step 2 Summary Banner
                 const storeName = assignmentType === 'new'
@@ -913,17 +1009,17 @@
             const existingSelect = document.getElementById('add_shop_id');
 
             if (isExistingMode) {
-                newWrap.style.display = 'none';
-                existingWrap.style.display = 'block';
-                toggleText.textContent = '← Register brand new shop instead';
-                typeInput.value = 'existing';
+                if (newWrap) newWrap.style.display = 'none';
+                if (existingWrap) existingWrap.style.display = 'block';
+                if (toggleText) toggleText.textContent = '← Register brand new shop instead';
+                if (typeInput) typeInput.value = 'existing';
                 if (newShopInput) newShopInput.removeAttribute('required');
                 if (existingSelect) existingSelect.setAttribute('required', 'required');
             } else {
-                newWrap.style.display = 'flex';
-                existingWrap.style.display = 'none';
-                toggleText.textContent = 'Assign to existing shop instead?';
-                typeInput.value = 'new';
+                if (newWrap) newWrap.style.display = 'flex';
+                if (existingWrap) existingWrap.style.display = 'none';
+                if (toggleText) toggleText.textContent = 'Assign to existing shop instead?';
+                if (typeInput) typeInput.value = 'new';
                 if (newShopInput) newShopInput.setAttribute('required', 'required');
                 if (existingSelect) existingSelect.removeAttribute('required');
             }
@@ -951,6 +1047,120 @@
             }
         }
 
+        function switchOwnerPaymentMethod(method) {
+            const trialFields = document.getElementById('ownerTrialFields');
+            const cardFields = document.getElementById('ownerCardFields');
+            const bankFields = document.getElementById('ownerBankFields');
+            const optTrial = document.getElementById('optMethodTrial');
+            const optCard = document.getElementById('optMethodCard');
+            const optBank = document.getElementById('optMethodBank');
+            const bankRef = document.getElementById('owner_bank_reference');
+            const submitBtn = document.getElementById('btnSubmitOwnerRegistration');
+
+            [optTrial, optCard, optBank].forEach(el => {
+                if (el) {
+                    el.style.border = '1.5px solid #cbd5e1';
+                    el.style.background = '#ffffff';
+                }
+            });
+
+            if (method === 'bank_transfer') {
+                if (trialFields) trialFields.style.display = 'none';
+                if (cardFields) cardFields.style.display = 'none';
+                if (bankFields) bankFields.style.display = 'flex';
+                if (optBank) {
+                    optBank.style.border = '2px solid #4f46e5';
+                    optBank.style.background = '#eef2ff';
+                }
+                if (bankRef) bankRef.setAttribute('required', 'required');
+                if (submitBtn) submitBtn.textContent = 'Register Store & Submit Slip for Approval';
+            } else if (method === 'card') {
+                if (trialFields) trialFields.style.display = 'none';
+                if (cardFields) cardFields.style.display = 'flex';
+                if (bankFields) bankFields.style.display = 'none';
+                if (optCard) {
+                    optCard.style.border = '2px solid #4f46e5';
+                    optCard.style.background = '#eef2ff';
+                }
+                if (bankRef) bankRef.removeAttribute('required');
+                if (submitBtn) submitBtn.textContent = 'Complete Registration & Activate Card';
+            } else {
+                // trial (default)
+                if (trialFields) trialFields.style.display = 'block';
+                if (cardFields) cardFields.style.display = 'none';
+                if (bankFields) bankFields.style.display = 'none';
+                if (optTrial) {
+                    optTrial.style.border = '2px solid #4f46e5';
+                    optTrial.style.background = '#eef2ff';
+                }
+                if (bankRef) bankRef.removeAttribute('required');
+                if (submitBtn) submitBtn.textContent = 'Complete Registration & Activate Store';
+            }
+        }
+
+        async function submitOwnerFormViaAjax(form, triggeringBtnId) {
+            clearAddOwnerAlert();
+            const btn = document.getElementById(triggeringBtnId) || document.getElementById('btnSubmitOwnerRegistration');
+            const originalText = btn ? btn.innerHTML : '';
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = `<span style="display:inline-flex; align-items:center; gap:0.4rem;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="animation: spin 1s linear infinite;"><line x1="12" y1="2" x2="12" y2="6"></line><line x1="12" y1="18" x2="12" y2="22"></line><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line><line x1="2" y1="12" x2="6" y2="12"></line><line x1="18" y1="12" x2="22" y2="12"></line><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line></svg> Registering...</span>`;
+            }
+
+            try {
+                const formData = new FormData(form);
+                const res = await fetch(form.action, {
+                    method: 'POST',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json'
+                    },
+                    body: formData
+                });
+
+                const data = await res.json().catch(() => ({}));
+
+                if (res.ok && (res.status === 200 || res.status === 201 || data.success)) {
+                    showAddOwnerAlert(data.message || 'Store and owner registered successfully! Refreshing...', 'success');
+                    setTimeout(() => {
+                        window.location.href = data.redirect || window.location.pathname;
+                    }, 500);
+                    return;
+                }
+
+                // Handle 422 validation errors
+                if (res.status === 422 && data.errors) {
+                    const errorList = Object.values(data.errors).flat().map(msg => `<li>${msg}</li>`).join('');
+                    showAddOwnerAlert(`<strong>Please correct the following errors:</strong><ul style="margin: 0.35rem 0 0; padding-left: 1.2rem;">${errorList}</ul>`, 'error');
+
+                    const step1Fields = ['name', 'email', 'phone', 'password', 'password_confirmation', 'shop_name', 'shop_id'];
+                    const hasStep1Error = Object.keys(data.errors).some(k => step1Fields.includes(k));
+                    if (hasStep1Error) {
+                        goToOwnerStep(1);
+                    }
+                } else {
+                    showAddOwnerAlert(data.message || 'An error occurred during registration. Please check your inputs and try again.', 'error');
+                }
+            } catch (err) {
+                showAddOwnerAlert('Network error occurred. Please try again: ' + err.message, 'error');
+            } finally {
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = originalText;
+                }
+            }
+        }
+
+        function quickRegisterOwner() {
+            if (!validateOwnerStep1()) return;
+            const form = document.getElementById('addOwnerForm');
+            if (!form) return;
+            const trialRadio = form.querySelector('input[name="payment_method"][value="trial"]');
+            if (trialRadio) trialRadio.checked = true;
+            switchOwnerPaymentMethod('trial');
+            submitOwnerFormViaAjax(form, 'btnQuickRegister');
+        }
+
         function openEditOwnerModal(owner, shop) {
             const form = document.getElementById('editOwnerForm');
             if (form) form.action = `/super-admin/owners/${owner.id}`;
@@ -974,42 +1184,23 @@
             openOwnerModal('editOwnerModal');
         }
 
-        function switchOwnerPaymentMethod(method) {
-            const cardFields = document.getElementById('ownerCardFields');
-            const bankFields = document.getElementById('ownerBankFields');
-            const optCard = document.getElementById('optMethodCard');
-            const optBank = document.getElementById('optMethodBank');
-            const bankRef = document.getElementById('owner_bank_reference');
-            const submitBtn = document.getElementById('btnSubmitOwnerRegistration');
-
-            if (method === 'bank_transfer') {
-                if (cardFields) cardFields.style.display = 'none';
-                if (bankFields) bankFields.style.display = 'flex';
-                if (optBank) {
-                    optBank.style.border = '2px solid #4f46e5';
-                    optBank.style.background = '#eef2ff';
-                }
-                if (optCard) {
-                    optCard.style.border = '1.5px solid #cbd5e1';
-                    optCard.style.background = '#ffffff';
-                }
-                if (bankRef) bankRef.setAttribute('required', 'required');
-                if (submitBtn) submitBtn.textContent = 'Register Store & Submit Slip for Approval';
-            } else {
-                if (cardFields) cardFields.style.display = 'flex';
-                if (bankFields) bankFields.style.display = 'none';
-                if (optCard) {
-                    optCard.style.border = '2px solid #4f46e5';
-                    optCard.style.background = '#eef2ff';
-                }
-                if (optBank) {
-                    optBank.style.border = '1.5px solid #cbd5e1';
-                    optBank.style.background = '#ffffff';
-                }
-                if (bankRef) bankRef.removeAttribute('required');
-                if (submitBtn) submitBtn.textContent = 'Complete Registration & Activate Store';
+        document.addEventListener('DOMContentLoaded', function() {
+            const addForm = document.getElementById('addOwnerForm');
+            if (addForm) {
+                addForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    if (!validateOwnerStep1()) {
+                        goToOwnerStep(1);
+                        return;
+                    }
+                    submitOwnerFormViaAjax(addForm, 'btnSubmitOwnerRegistration');
+                });
             }
-        }
+
+            @if(isset($errors) && $errors->any())
+                openOwnerModal('addOwnerModal');
+            @endif
+        });
 
         window.openOwnerModal = openOwnerModal;
         window.closeOwnerModal = closeOwnerModal;
@@ -1018,5 +1209,6 @@
         window.toggleShopAssignment = toggleShopAssignment;
         window.switchOwnerPaymentMethod = switchOwnerPaymentMethod;
         window.openEditOwnerModal = openEditOwnerModal;
+        window.quickRegisterOwner = quickRegisterOwner;
     </script>
 @endsection

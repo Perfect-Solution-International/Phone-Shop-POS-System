@@ -62,9 +62,39 @@ class Subscription extends Model
         return $this->status === 'trial' && $this->trial_ends_at && $this->trial_ends_at->isFuture();
     }
 
+    public function isTrialExpired(): bool
+    {
+        return $this->status === 'trial' && $this->trial_ends_at && $this->trial_ends_at->isPast();
+    }
+
+    public function isExpired(): bool
+    {
+        if ($this->status === 'expired') {
+            return true;
+        }
+
+        if ($this->isTrialExpired()) {
+            return true;
+        }
+
+        if ($this->status === 'active' && $this->current_period_ends_at && $this->current_period_ends_at->isPast()) {
+            return true;
+        }
+
+        return false;
+    }
+
     public function isActive(): bool
     {
-        return in_array($this->status, ['active', 'trial']) && $this->current_period_ends_at->isFuture();
+        if ($this->isExpired() || $this->isSuspended()) {
+            return false;
+        }
+
+        if ($this->status === 'trial') {
+            return $this->isTrial();
+        }
+
+        return $this->status === 'active' && $this->current_period_ends_at && $this->current_period_ends_at->isFuture();
     }
 
     public function isGracePeriod(): bool
@@ -74,7 +104,7 @@ class Subscription extends Model
 
     public function isSuspended(): bool
     {
-        return $this->status === 'suspended' || $this->status === 'expired';
+        return $this->status === 'suspended' || $this->isExpired();
     }
 }
 
