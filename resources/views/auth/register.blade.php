@@ -771,7 +771,7 @@
         /* Payment Method Radio Selector */
         .payment-method-selector {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 0.75rem;
             margin-bottom: 1rem;
         }
@@ -1607,14 +1607,28 @@
 
                         <!-- Payment Method Selector -->
                         <div class="payment-method-selector">
-                            <label class="payment-method-card {{ old('payment_method', 'card') === 'card' ? 'selected' : '' }}" id="method_card_label" onclick="switchRegisterPaymentMethod('card')">
-                                <input type="radio" name="payment_method" value="card" id="method_card_radio" {{ old('payment_method', 'card') === 'card' ? 'checked' : '' }}>
+                            <!-- Option 1: Instant Free Trial (Default) -->
+                            <label class="payment-method-card {{ old('payment_method', 'trial') === 'trial' ? 'selected' : '' }}" id="method_trial_label" onclick="switchRegisterPaymentMethod('trial')">
+                                <input type="radio" name="payment_method" value="trial" id="method_trial_radio" {{ old('payment_method', 'trial') === 'trial' ? 'checked' : '' }}>
+                                <div class="payment-method-info">
+                                    <strong style="display: flex; align-items: center; gap: 0.35rem;">
+                                        <span>Instant 7-Day Free Trial</span>
+                                        <span style="background: #10b981; color: white; font-size: 0.62rem; font-weight: 800; padding: 0.1rem 0.35rem; border-radius: 999px; text-transform: uppercase;">Free</span>
+                                    </strong>
+                                    <span>No card or payment needed today (LKR 0.00)</span>
+                                </div>
+                            </label>
+
+                            <!-- Option 2: Credit / Debit Card -->
+                            <label class="payment-method-card {{ old('payment_method') === 'card' ? 'selected' : '' }}" id="method_card_label" onclick="switchRegisterPaymentMethod('card')">
+                                <input type="radio" name="payment_method" value="card" id="method_card_radio" {{ old('payment_method') === 'card' ? 'checked' : '' }}>
                                 <div class="payment-method-info">
                                     <strong>Credit / Debit Card</strong>
                                     <span>Instant verification &amp; 7-day free trial</span>
                                 </div>
                             </label>
 
+                            <!-- Option 3: Bank Transfer Slip -->
                             <label class="payment-method-card {{ old('payment_method') === 'bank_transfer' ? 'selected' : '' }}" id="method_bank_label" onclick="switchRegisterPaymentMethod('bank_transfer')">
                                 <input type="radio" name="payment_method" value="bank_transfer" id="method_bank_radio" {{ old('payment_method') === 'bank_transfer' ? 'checked' : '' }}>
                                 <div class="payment-method-info">
@@ -1624,8 +1638,29 @@
                             </label>
                         </div>
 
-                        <!-- Container 1: Card Details -->
-                        <div id="cardPaymentContainer" class="card-details-box" style="{{ old('payment_method', 'card') === 'bank_transfer' ? 'display: none;' : '' }}">
+                        <!-- Container 1: Instant 7-Day Free Trial (No Card/Payment Needed) -->
+                        <div id="trialPaymentContainer" class="card-details-box" style="{{ old('payment_method', 'trial') === 'trial' ? '' : 'display: none;' }}">
+                            <div class="trial-due-banner" style="background: #eff6ff; border: 1.5px solid #93c5fd; color: #1e3a8a; padding: 1.1rem 1.25rem; border-radius: 10px; margin-bottom: 0;">
+                                <div style="display: flex; gap: 0.75rem; align-items: flex-start;">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.5" style="flex-shrink: 0; margin-top: 0.15rem;"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                                    <div>
+                                        <div style="font-weight: 800; font-size: 0.95rem; color: #1e3a8a; margin-bottom: 0.25rem;">
+                                            7-Day Full Access Free Trial (LKR 0.00 Due Today)
+                                        </div>
+                                        <p style="margin: 0 0 0.5rem 0; font-size: 0.82rem; color: #1e40af; line-height: 1.5;">
+                                            No credit card and no bank deposit slip required to register. You get <strong>7 days of unrestricted access</strong> to all POS, inventory, repairs, staff, and multi-branch features.
+                                        </p>
+                                        <div style="display: inline-flex; align-items: center; gap: 0.4rem; background: #ffffff; border: 1px solid #bfdbfe; color: #4338ca; padding: 0.35rem 0.65rem; border-radius: 6px; font-size: 0.78rem; font-weight: 600;">
+                                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                                            <span>After your 7-day free trial ends, you must select and purchase a subscription plan to continue using your shop workspace.</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Container 2: Card Details -->
+                        <div id="cardPaymentContainer" class="card-details-box" style="{{ old('payment_method') === 'card' ? '' : 'display: none;' }}">
                             <div class="trial-due-banner">
                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink: 0; margin-top: 0.1rem;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
                                 <div>
@@ -2066,24 +2101,49 @@
             });
         }
 
-        // Payment Method Switcher (Card vs Bank Transfer)
+        // Payment Method Switcher (Trial vs Card vs Bank Transfer)
         function switchRegisterPaymentMethod(method) {
+            const trialBox = document.getElementById('trialPaymentContainer');
             const cardBox = document.getElementById('cardPaymentContainer');
             const bankBox = document.getElementById('bankPaymentContainer');
+
+            const trialLabel = document.getElementById('method_trial_label');
             const cardLabel = document.getElementById('method_card_label');
             const bankLabel = document.getElementById('method_bank_label');
+
+            const trialRadio = document.getElementById('method_trial_radio');
             const cardRadio = document.getElementById('method_card_radio');
             const bankRadio = document.getElementById('method_bank_radio');
+
             const cardName = document.getElementById('cardholder_name');
             const cardNum = document.getElementById('card_number');
             const cardExp = document.getElementById('card_expiry');
             const cardCvv = document.getElementById('card_cvv');
             const bankRef = document.getElementById('reference_number');
 
-            if (method === 'bank_transfer') {
+            const submitBtnText = document.getElementById('submitBtnText');
+
+            // Reset labels selected state
+            [trialLabel, cardLabel, bankLabel].forEach(l => l && l.classList.remove('selected'));
+
+            if (method === 'card') {
+                if (trialBox) trialBox.style.display = 'none';
+                if (cardBox) cardBox.style.display = 'block';
+                if (bankBox) bankBox.style.display = 'none';
+                if (cardLabel) cardLabel.classList.add('selected');
+                if (cardRadio) cardRadio.checked = true;
+
+                if (cardName) cardName.setAttribute('required', 'required');
+                if (cardNum) cardNum.setAttribute('required', 'required');
+                if (cardExp) cardExp.setAttribute('required', 'required');
+                if (cardCvv) cardCvv.setAttribute('required', 'required');
+                if (bankRef) bankRef.removeAttribute('required');
+
+                if (submitBtnText) submitBtnText.textContent = 'Save Card & Start Free Trial';
+            } else if (method === 'bank_transfer') {
+                if (trialBox) trialBox.style.display = 'none';
                 if (cardBox) cardBox.style.display = 'none';
                 if (bankBox) bankBox.style.display = 'block';
-                if (cardLabel) cardLabel.classList.remove('selected');
                 if (bankLabel) bankLabel.classList.add('selected');
                 if (bankRadio) bankRadio.checked = true;
 
@@ -2092,23 +2152,28 @@
                 if (cardExp) cardExp.removeAttribute('required');
                 if (cardCvv) cardCvv.removeAttribute('required');
                 if (bankRef) bankRef.setAttribute('required', 'required');
-            } else {
-                if (cardBox) cardBox.style.display = 'block';
-                if (bankBox) bankBox.style.display = 'none';
-                if (cardLabel) cardLabel.classList.add('selected');
-                if (bankLabel) bankLabel.classList.remove('selected');
-                if (cardRadio) cardRadio.checked = true;
 
-                if (cardName) cardName.setAttribute('required', 'required');
-                if (cardNum) cardNum.setAttribute('required', 'required');
-                if (cardExp) cardExp.setAttribute('required', 'required');
-                if (cardCvv) cardCvv.setAttribute('required', 'required');
+                if (submitBtnText) submitBtnText.textContent = 'Submit Slip & Start Free Trial';
+            } else {
+                // 'trial' (Default - No Payment Required)
+                if (trialBox) trialBox.style.display = 'block';
+                if (cardBox) cardBox.style.display = 'none';
+                if (bankBox) bankBox.style.display = 'none';
+                if (trialLabel) trialLabel.classList.add('selected');
+                if (trialRadio) trialRadio.checked = true;
+
+                if (cardName) cardName.removeAttribute('required');
+                if (cardNum) cardNum.removeAttribute('required');
+                if (cardExp) cardExp.removeAttribute('required');
+                if (cardCvv) cardCvv.removeAttribute('required');
                 if (bankRef) bankRef.removeAttribute('required');
+
+                if (submitBtnText) submitBtnText.textContent = 'Start 7-Day Free Trial (LKR 0.00)';
             }
         }
 
         document.addEventListener('DOMContentLoaded', function() {
-            const currentMethod = document.querySelector('input[name="payment_method"]:checked')?.value || 'card';
+            const currentMethod = document.querySelector('input[name="payment_method"]:checked')?.value || 'trial';
             switchRegisterPaymentMethod(currentMethod);
         });
 

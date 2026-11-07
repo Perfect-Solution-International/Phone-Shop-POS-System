@@ -15,7 +15,8 @@ class RegisterRequest extends FormRequest
     public function rules(): array
     {
         $paymentMethod = $this->input('payment_method', 'card');
-        $isCard = $paymentMethod !== 'bank_transfer';
+        $isCard = $paymentMethod === 'card';
+        $isBank = $paymentMethod === 'bank_transfer';
 
         $rules = [
             'shop_name' => ['required', 'string', 'min:2', 'max:100'],
@@ -28,7 +29,7 @@ class RegisterRequest extends FormRequest
             'business_reg_number' => ['nullable', 'string', 'max:100'],
             'plan_id' => ['required', 'exists:subscription_plans,id'],
             'billing_cycle' => ['nullable', 'in:monthly,annual'],
-            'payment_method' => ['nullable', 'in:card,bank_transfer'],
+            'payment_method' => ['nullable', 'in:trial,card,bank_transfer'],
             'password' => ['required', 'string', 'confirmed', Password::min(8)->mixedCase()->numbers()],
             'password_confirmation' => ['required', 'string'],
             'terms' => ['accepted'],
@@ -39,7 +40,7 @@ class RegisterRequest extends FormRequest
             $rules['card_number'] = ['required', 'string', 'min:12', 'max:25'];
             $rules['card_expiry'] = ['required', 'string', 'max:7', 'regex:/^(0[1-9]|1[0-2])\/?([0-9]{2})$/'];
             $rules['card_cvv'] = ['required', 'string', 'min:3', 'max:4'];
-        } else {
+        } elseif ($isBank) {
             $rules['reference_number'] = ['required', 'string', 'max:100'];
             $rules['receipt'] = ['nullable', 'file', 'mimes:jpeg,png,jpg,pdf', 'max:5120'];
         }
