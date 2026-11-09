@@ -23,11 +23,8 @@
     }
 
     .pos-layout {
-        display: grid;
-        grid-template-columns: 1.65fr 1fr;
-        gap: 1.25rem;
+        display: block;
         min-height: calc(100vh - 165px);
-        align-items: start;
     }
 
     /* Latest Sale Announcement Banner */
@@ -120,39 +117,41 @@
 
     /* Tabs */
     .pos-tabs {
-        display: flex;
-        border-bottom: 1px solid #e2e8f0;
-        background: #f8fafc;
-        padding: 0.5rem 0.85rem 0;
-        gap: 0.5rem;
+        display: inline-flex;
+        background: #f1f5f9;
+        padding: 0.35rem;
+        margin: 0.75rem 1rem 0.25rem;
+        border-radius: 12px;
+        gap: 0.35rem;
+        width: fit-content;
+        border: 1px solid #e2e8f0;
     }
 
     .pos-tab {
-        padding: 0.75rem 1.35rem;
-        font-size: 0.875rem;
+        padding: 0.55rem 1.15rem;
+        font-size: 0.8125rem;
         font-weight: 700;
         cursor: pointer;
-        border-radius: 12px 12px 0 0;
+        border-radius: 9px;
         color: #64748b;
-        display: flex;
+        display: inline-flex;
         align-items: center;
-        gap: 0.5rem;
-        transition: all 0.2s ease;
-        border: 1px solid transparent;
-        border-bottom: none;
+        gap: 0.45rem;
+        transition: all 0.18s ease;
+        border: none;
+        user-select: none;
     }
 
     .pos-tab:hover {
-        color: #4f46e5;
-        background: rgba(255, 255, 255, 0.7);
+        color: #1e293b;
+        background: rgba(255, 255, 255, 0.6);
     }
 
     .pos-tab.active {
         color: #4f46e5;
         background: #ffffff;
-        border-color: #e2e8f0;
-        border-bottom-color: #ffffff;
-        box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.02);
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+        font-weight: 800;
     }
 
     /* Quick Filter Sub-bar */
@@ -160,8 +159,8 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 0.65rem 1.25rem;
-        background: #f8fafc;
+        padding: 0.55rem 1.15rem 0.65rem;
+        background: #ffffff;
         border-bottom: 1px solid #f1f5f9;
         flex-wrap: wrap;
         gap: 0.5rem;
@@ -179,7 +178,7 @@
         font-size: 0.75rem;
         font-weight: 700;
         border-radius: 9999px;
-        border: 1px solid #e2e8f0;
+        border: 1.5px solid #e2e8f0;
         background: #ffffff;
         color: #64748b;
         cursor: pointer;
@@ -192,66 +191,65 @@
     .filter-pill:hover {
         border-color: #cbd5e1;
         color: #0f172a;
-        background: #f1f5f9;
+        background: #f8fafc;
     }
 
     .filter-pill.active {
         background: #4f46e5 !important;
         color: #ffffff !important;
         border-color: #4f46e5 !important;
-        box-shadow: 0 2px 6px rgba(79, 70, 229, 0.25) !important;
+        box-shadow: 0 2px 8px rgba(79, 70, 229, 0.28) !important;
     }
 
     .filter-pill.active-instock {
         background: #059669 !important;
         color: #ffffff !important;
         border-color: #059669 !important;
-        box-shadow: 0 2px 6px rgba(5, 150, 105, 0.25) !important;
+        box-shadow: 0 2px 8px rgba(5, 150, 105, 0.28) !important;
     }
 
     .filter-pill.active-sold {
         background: #e11d48 !important;
         color: #ffffff !important;
         border-color: #e11d48 !important;
-        box-shadow: 0 2px 6px rgba(225, 29, 72, 0.25) !important;
+        box-shadow: 0 2px 8px rgba(225, 29, 72, 0.28) !important;
     }
 
     /* Items Grid */
     .pos-items-grid {
         padding: 1.25rem;
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(215px, 1fr));
-        gap: 1rem;
+        grid-template-columns: repeat(auto-fill, minmax(235px, 1fr));
+        gap: 1.15rem;
         overflow-y: auto;
         flex: 1;
-        background: #ffffff;
-        max-height: calc(100vh - 280px);
+        background: #f8fafc;
+        max-height: calc(100vh - 270px);
     }
 
-    /* POS Item Card */
+    /* Clean, Elegant Outlined POS Item Card */
     .pos-item-card {
         border: 1.5px solid #e2e8f0;
         border-radius: 14px;
-        padding: 1rem;
+        padding: 1.05rem;
         background: #ffffff;
-        transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+        transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
         display: flex;
         flex-direction: column;
         justify-content: space-between;
         position: relative;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+        box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
     }
 
     .pos-item-card:hover {
-        border-color: #6366f1;
-        box-shadow: 0 10px 22px -4px rgba(99, 102, 241, 0.12);
+        border-color: #818cf8;
+        box-shadow: 0 10px 24px -4px rgba(99, 102, 241, 0.14);
         transform: translateY(-2px);
     }
 
     .pos-item-card.item-sold {
-        background: #fafbfc;
+        background: #fbfcfd;
         border-color: #e2e8f0;
-        opacity: 0.88;
     }
 
     .pos-item-card.item-sold:hover {
@@ -260,32 +258,43 @@
         transform: none;
     }
 
-    /* Brand Chip */
+    /* Outlined Brand Badge & Header */
+    .pos-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 0.5rem;
+        min-height: 24px;
+    }
+
     .pos-item-brand {
-        display: inline-block;
-        font-size: 0.7rem;
-        font-weight: 800;
+        font-size: 0.68rem;
+        font-weight: 750;
         text-transform: uppercase;
         letter-spacing: 0.05em;
-        color: #0369a1;
-        background: #e0f2fe;
+        color: #1d4ed8;
+        background: #eff6ff;
+        border: 1px solid #bfdbfe;
         padding: 0.2rem 0.55rem;
         border-radius: 6px;
         line-height: 1.2;
+        display: inline-flex;
+        align-items: center;
     }
 
-    /* Status Badges */
+    /* Outlined Status Badges */
     .badge-status-instock {
         display: inline-flex;
         align-items: center;
         gap: 0.35rem;
-        background: #ecfdf5;
-        color: #047857;
-        border: 1px solid #a7f3d0;
-        font-size: 0.68rem;
-        font-weight: 750;
+        color: #15803d;
+        background: #f0fdf4;
+        border: 1px solid #86efac;
         padding: 0.2rem 0.6rem;
-        border-radius: 9999px;
+        border-radius: 20px;
+        font-size: 0.72rem;
+        font-weight: 700;
+        line-height: 1.2;
         white-space: nowrap;
     }
 
@@ -293,93 +302,219 @@
         width: 6px;
         height: 6px;
         border-radius: 50%;
-        background: #10b981;
-        box-shadow: 0 0 6px #10b981;
+        background: #16a34a;
+        box-shadow: 0 0 6px rgba(22, 163, 74, 0.5);
         display: inline-block;
+        flex-shrink: 0;
     }
 
     .badge-status-sold {
         display: inline-flex;
         align-items: center;
-        gap: 0.3rem;
-        background: #fef2f2;
+        gap: 0.35rem;
         color: #b91c1c;
+        background: #fef2f2;
         border: 1px solid #fecaca;
-        font-size: 0.68rem;
-        font-weight: 750;
         padding: 0.2rem 0.6rem;
-        border-radius: 9999px;
+        border-radius: 20px;
+        font-size: 0.72rem;
+        font-weight: 700;
+        line-height: 1.2;
         white-space: nowrap;
     }
 
-    /* Model & Specs */
+    .status-dot-sold {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: #ef4444;
+        display: inline-block;
+        flex-shrink: 0;
+    }
+
+    /* Model & Outlined Specs */
     .pos-card-model {
         font-weight: 800;
-        font-size: 0.95rem;
+        font-size: 1.125rem;
         color: #0f172a;
-        line-height: 1.3;
-        margin-top: 0.4rem;
+        line-height: 1.25;
+        margin-top: 0.45rem;
+        margin-bottom: 0.4rem;
+        letter-spacing: -0.01em;
     }
 
     .pos-card-specs {
-        font-size: 0.75rem;
-        color: #64748b;
-        margin-top: 0.25rem;
         display: flex;
-        align-items: center;
-        gap: 0.4rem;
         flex-wrap: wrap;
+        align-items: center;
+        gap: 0.35rem;
+        line-height: 1;
+        margin-bottom: 0.45rem;
     }
 
-    /* IMEI Chip */
-    .pos-imei-chip {
-        font-family: 'JetBrains Mono', monospace;
-        font-size: 0.7rem;
+    /* Micro Outline Spec Chips */
+    .spec-outline-chip {
+        font-size: 0.72rem;
+        font-weight: 600;
         color: #475569;
-        margin-top: 0.45rem;
         background: #f8fafc;
-        padding: 0.3rem 0.6rem;
-        border-radius: 6px;
         border: 1px solid #e2e8f0;
-        display: flex;
+        border-radius: 6px;
+        padding: 0.18rem 0.45rem;
+        display: inline-flex;
         align-items: center;
-        justify-content: space-between;
+        white-space: nowrap;
+        line-height: 1.2;
+    }
+
+    .spec-chip-storage {
+        font-weight: 750;
+        color: #0f172a;
+        background: #f1f5f9;
+        border-color: #cbd5e1;
+    }
+
+    .spec-chip-new {
+        color: #16a34a;
+        background: #f0fdf4;
+        border-color: #86efac;
+        font-weight: 700;
+    }
+
+    .spec-chip-used {
+        color: #c2410c;
+        background: #fff7ed;
+        border-color: #fed7aa;
+        font-weight: 700;
+    }
+
+    .spec-chip-refurb {
+        color: #6d28d9;
+        background: #f5f3ff;
+        border-color: #ddd6fe;
+        font-weight: 700;
+    }
+
+    /* Outlined Monospace IMEI Container */
+    .pos-imei-chip {
+        font-size: 0.72rem;
+        color: #64748b;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
         cursor: pointer;
         transition: all 0.15s ease;
+        width: fit-content;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 7px;
+        padding: 0.28rem 0.55rem;
+        line-height: 1;
     }
 
     .pos-imei-chip:hover {
-        background: #eff6ff;
-        border-color: #93c5fd;
-        color: #1d4ed8;
+        border-color: #38bdf8;
+        background: #f0f9ff;
     }
 
-    /* Buyer Box on Sold Phone Card */
-    .phone-buyer-box {
-        margin-top: 0.5rem;
-        padding: 0.45rem 0.65rem;
-        background: #eff6ff;
-        border-radius: 8px;
-        border: 1px solid #bfdbfe;
+    .pos-imei-chip:hover .pos-imei-icon {
+        stroke: #0284c7;
+        transform: scale(1.1);
+    }
+
+    .pos-imei-label {
+        font-size: 0.64rem;
+        font-weight: 800;
+        color: #64748b;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        line-height: 1;
+    }
+
+    .pos-imei-val {
+        font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
         font-size: 0.75rem;
+        font-weight: 650;
+        color: #0284c7;
+        letter-spacing: 0.02em;
+        line-height: 1;
     }
 
-    /* Card Footer Price & Button */
+    .pos-imei-icon {
+        display: inline-block;
+        flex-shrink: 0;
+        transition: transform 0.15s ease, stroke 0.15s ease;
+        vertical-align: middle;
+    }
+
+    /* Outlined Buyer Info Box (Shown on sold phones) */
+    .phone-buyer-box {
+        margin-top: 0.55rem;
+        padding: 0.5rem 0.65rem;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 9px;
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+
+    .phone-buyer-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.35rem;
+    }
+
+    .phone-buyer-name-row {
+        font-size: 0.78rem;
+        font-weight: 750;
+        color: #1e293b;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+    }
+
+    .phone-buyer-inv {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.64rem;
+        font-weight: 600;
+        color: #64748b;
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        padding: 0.1rem 0.35rem;
+        border-radius: 5px;
+        flex-shrink: 0;
+    }
+
+    .phone-buyer-contact {
+        font-size: 0.72rem;
+        color: #2563eb;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+    }
+
+    /* Card Footer Price & Outlined Actions */
     .pos-item-footer {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        margin-top: 0.75rem;
-        padding-top: 0.65rem;
-        border-top: 1px solid #f1f5f9;
+        margin-top: 0.85rem;
+        padding-top: 0.7rem;
+        border-top: 1px solid #e2e8f0;
         gap: 0.5rem;
     }
 
     .pos-item-price-val {
         font-weight: 850;
-        color: #047857;
-        font-size: 0.975rem;
-        letter-spacing: -0.01em;
+        color: #0f172a;
+        font-size: 1.125rem;
+        letter-spacing: -0.02em;
     }
 
     .btn-sell-action {
@@ -387,84 +522,40 @@
         align-items: center;
         justify-content: center;
         gap: 0.35rem;
-        height: 32px;
-        padding: 0 0.85rem;
-        border-radius: 8px;
-        background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+        height: 34px;
+        padding: 0 1rem;
+        border-radius: 9px;
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
         color: #ffffff;
         font-weight: 750;
-        font-size: 0.75rem;
-        border: none;
-        box-shadow: 0 2px 6px rgba(16, 185, 129, 0.3);
+        font-size: 0.8rem;
+        border: 1px solid #047857;
+        box-shadow: 0 2px 8px rgba(16, 185, 129, 0.32);
         cursor: pointer;
         transition: all 0.18s ease;
         white-space: nowrap;
     }
 
     .btn-sell-action:hover {
-        background: linear-gradient(135deg, #047857 0%, #059669 100%);
-        box-shadow: 0 4px 10px rgba(16, 185, 129, 0.4);
+        background: linear-gradient(135deg, #059669 0%, #047857 100%);
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.42);
         transform: translateY(-1px);
     }
 
     .btn-out-of-stock {
         height: 32px;
         padding: 0 0.75rem;
-        border-radius: 8px;
-        background: #f1f5f9;
         color: #94a3b8;
         font-weight: 700;
-        font-size: 0.72rem;
-        border: 1px solid #e2e8f0;
+        font-size: 0.74rem;
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        cursor: not-allowed;
+        cursor: default;
         white-space: nowrap;
-    }
-
-    /* Customer Purchases Panel (Right) */
-    .pos-purchases-panel {
-        background: #ffffff;
-        border: 1.5px solid #e2e8f0;
-        border-radius: 16px;
-        overflow: hidden;
-        display: flex;
-        flex-direction: column;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03), 0 6px 16px -4px rgba(0, 0, 0, 0.04);
-        position: sticky;
-        top: 80px;
-        max-height: calc(100vh - 165px);
-    }
-
-    .pos-purchases-header {
-        padding: 1.1rem 1.25rem;
-        border-bottom: 1.5px solid #e2e8f0;
-        background: #ffffff;
-    }
-
-    .purchase-feed-list {
-        padding: 0.85rem;
-        overflow-y: auto;
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        gap: 0.75rem;
         background: #f8fafc;
-    }
-
-    .purchase-feed-card {
-        background: #ffffff;
-        border: 1.5px solid #e2e8f0;
-        border-radius: 12px;
-        padding: 0.95rem 1.1rem;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
-        transition: all 0.18s ease;
-    }
-
-    .purchase-feed-card:hover {
-        border-color: #cbd5e1;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
     }
 
     /* ==========================================================================
@@ -1020,6 +1111,9 @@
     }
 </style>
 
+<!-- Unified POS & Sales Sub-Navigation -->
+@include('shop.partials.pos-subnav')
+
 <!-- Modern Status Bar Above POS -->
 <div class="pos-workspace-bar">
     <div style="display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap;">
@@ -1037,9 +1131,9 @@
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
             <span>Recent Invoices ({{ count($recentSales) }})</span>
         </button>
-        <a href="{{ route('shop.sales') }}" class="btn btn-secondary btn-sm" style="border-radius: 8px; font-weight: 650; gap: 0.45rem;">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
-            <span>Sales Directory</span>
+        <a href="{{ route('shop.sales') }}" class="btn btn-primary btn-sm" style="border-radius: 8px; font-weight: 700; gap: 0.45rem; padding: 0.45rem 0.85rem;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+            <span>Sales &amp; Customer Purchases &rarr;</span>
         </a>
     </div>
 </div>
@@ -1079,20 +1173,27 @@
             </div>
             <select id="categoryFilter" class="pos-category-select" onchange="filterItems()">
                 <option value="">All Categories</option>
+                <option value="Phones">Phones</option>
                 @foreach($categories as $category)
-                    <option value="{{ $category->name }}">{{ $category->name }}</option>
+                    @if(strtolower($category->name) !== 'phones')
+                        <option value="{{ $category->name }}">{{ $category->name }}</option>
+                    @endif
                 @endforeach
             </select>
         </div>
 
         <!-- Main Product Tabs -->
         <div class="pos-tabs">
-            <div class="pos-tab active" onclick="switchTab('phones', this)">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="5" y="2" width="14" height="20" rx="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
+            <div class="pos-tab active" onclick="switchTab('all', this)">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="7" height="7" rx="1.5"></rect><rect x="14" y="3" width="7" height="7" rx="1.5"></rect><rect x="14" y="14" width="7" height="7" rx="1.5"></rect><rect x="3" y="14" width="7" height="7" rx="1.5"></rect></svg>
+                <span>All</span>
+            </div>
+            <div class="pos-tab" onclick="switchTab('phones', this)">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="5" y="2" width="14" height="20" rx="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
                 <span>Mobile Phones (IMEI)</span>
             </div>
             <div class="pos-tab" onclick="switchTab('products', this)">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>
                 <span>Accessories &amp; Items</span>
             </div>
         </div>
@@ -1101,19 +1202,19 @@
         <div class="pos-filter-subbar">
             <div class="filter-pills" id="phonesFilterPills">
                 <button type="button" class="filter-pill active" onclick="filterByStockStatus('all', this)">
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="5" y="2" width="14" height="20" rx="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
-                    <span>All Phones (<span id="allPhonesCount">{{ $phones->count() }}</span>)</span>
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="7" height="7" rx="1"></rect><rect x="14" y="3" width="7" height="7" rx="1"></rect><rect x="14" y="14" width="7" height="7" rx="1"></rect><rect x="3" y="14" width="7" height="7" rx="1"></rect></svg>
+                    <span>All (<span id="allPhonesCount">{{ $phones->count() + $products->count() }}</span>)</span>
                 </button>
                 <button type="button" class="filter-pill" onclick="filterByStockStatus('instock', this)">
                     <span class="status-dot-green"></span>
-                    <span>In Stock (<span id="inStockPhonesCount">{{ $phones->where('status', '!=', 'sold')->count() }}</span>)</span>
+                    <span>In Stock (<span id="inStockPhonesCount">{{ $phones->where('status', '!=', 'sold')->count() + $products->where('stock_quantity', '>', 0)->count() }}</span>)</span>
                 </button>
                 <button type="button" class="filter-pill" onclick="filterByStockStatus('sold', this)">
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                    <span>Sold Archive (<span id="soldPhonesCount">{{ $phones->where('status', 'sold')->count() }}</span>)</span>
+                    <span id="pillSoldText">Sold / Out (<span id="soldPhonesCount">{{ $phones->where('status', 'sold')->count() + $products->where('stock_quantity', '<=', 0)->count() }}</span>)</span>
                 </button>
             </div>
-            <div style="font-size: 0.72rem; color: #64748b; font-weight: 600; display: inline-flex; align-items: center; gap: 0.35rem;">
+            <div style="font-size: 0.72rem; color: #166534; font-weight: 600; display: inline-flex; align-items: center; gap: 0.35rem; background: #f0fdf4; border: 1px solid #bbf7d0; padding: 0.25rem 0.65rem; border-radius: 8px;">
                 <span>Click</span>
                 <strong style="color: #047857; display: inline-flex; align-items: center; gap: 0.2rem;">
                     <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
@@ -1123,9 +1224,9 @@
             </div>
         </div>
 
-        <!-- Phone Items Grid -->
-        <div id="tabPhones" class="pos-items-grid">
-            @forelse($phones as $phone)
+        <!-- Unified Items Grid (Phones & Accessories) -->
+        <div id="posItemsGrid" class="pos-items-grid">
+            @foreach($phones as $phone)
                 @php $isSold = in_array(strtolower($phone->status), ['sold']); @endphp
                 <div class="pos-item-card item-card {{ $isSold ? 'item-sold' : '' }}" 
                      id="phoneCard{{ $phone->id }}"
@@ -1141,11 +1242,13 @@
                     @endif
 
                     <div>
-                        <!-- Brand & Status Pill -->
-                        <div style="display: flex; justify-content: space-between; align-items: center; gap: 0.4rem;">
+                        <!-- Header: Brand & Availability -->
+                        <div class="pos-card-header">
                             <span class="pos-item-brand">{{ $phone->brand }}</span>
                             @if($isSold)
-                                <span class="badge-status-sold" id="phoneBadge{{ $phone->id }}">✓ Sold</span>
+                                <span class="badge-status-sold" id="phoneBadge{{ $phone->id }}">
+                                    <span class="status-dot-sold"></span> Sold
+                                </span>
                             @else
                                 <span class="badge-status-instock" id="phoneBadge{{ $phone->id }}">
                                     <span class="status-dot-green"></span> In Stock
@@ -1156,64 +1259,62 @@
                         <!-- Model Name -->
                         <div class="pos-card-model">{{ $phone->model }}</div>
 
-                        <!-- Color & Storage with Original Clean Vector Icons -->
+                        <!-- Clean Outlined Specs Row -->
                         <div class="pos-card-specs">
-                            <span style="display: inline-flex; align-items: center; gap: 0.3rem;">
-                                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="9"></circle><path d="M12 3v18"></path></svg>
-                                <span>{{ $phone->color ?? 'Standard' }}</span>
-                            </span>
-                            <span style="color: #cbd5e1;">&bull;</span>
-                            <span style="display: inline-flex; align-items: center; gap: 0.3rem;">
-                                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg>
-                                <span>{{ $phone->storage ?? 'N/A' }}</span>
-                            </span>
+                            @if($phone->storage)
+                                <span class="spec-outline-chip spec-chip-storage">{{ $phone->storage }}</span>
+                            @endif
+                            @if($phone->color)
+                                <span class="spec-outline-chip">{{ $phone->color }}</span>
+                            @endif
                             @if($phone->condition)
-                                <span style="color: #cbd5e1;">&bull;</span>
-                                <span style="display: inline-flex; align-items: center; gap: 0.3rem; text-transform: capitalize;">
-                                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>
-                                    <span>{{ $phone->condition }}</span>
-                                </span>
+                                @php
+                                    $cond = strtolower(trim($phone->condition));
+                                    $condClass = match($cond) {
+                                        'new' => 'spec-chip-new',
+                                        'refurbished' => 'spec-chip-refurb',
+                                        default => 'spec-chip-used',
+                                    };
+                                @endphp
+                                <span class="spec-outline-chip {{ $condClass }}">{{ ucfirst($phone->condition) }}</span>
                             @endif
                         </div>
 
-                        <!-- Monospace IMEI Chip with Quick Copy -->
+                        <!-- Outlined Monospace IMEI Row with Click-to-Copy -->
                         <div class="pos-imei-chip" title="Click to copy IMEI" onclick="navigator.clipboard && navigator.clipboard.writeText('{{ $phone->imei_1 }}'); showCopiedToast('IMEI {{ $phone->imei_1 }}')">
-                            <span style="font-weight: 700; color: #64748b; font-size: 0.65rem;">IMEI:</span>
-                            <span style="font-weight: 800; color: #0284c7;">{{ $phone->imei_1 }}</span>
-                            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            <span class="pos-imei-label">IMEI</span>
+                            <span class="pos-imei-val">{{ $phone->imei_1 }}</span>
+                            <svg class="pos-imei-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
                         </div>
 
-                        <!-- Buyer Customer Info Display (Shown on sold phones) -->
+                        <!-- Buyer Customer Info (Shown on sold phones - Clean outlined box) -->
                         <div id="phoneBuyerBox{{ $phone->id }}" class="phone-buyer-box" style="{{ $isSold && $phone->sale && $phone->sale->customer ? 'display: block;' : 'display: none;' }}">
-                            <div style="font-size: 0.68rem; font-weight: 800; text-transform: uppercase; color: #1e40af; letter-spacing: 0.03em; margin-bottom: 2px; display: flex; align-items: center; gap: 0.3rem;">
-                                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-                                <span>Sold to Customer</span>
-                            </div>
-                            <div style="font-weight: 800; color: #0f172a; font-size: 0.8rem;" id="phoneBuyerName{{ $phone->id }}">
-                                {{ $phone->sale->customer->name ?? '' }}
-                            </div>
-                            <div style="color: #2563eb; font-size: 0.72rem; font-weight: 600; display: flex; align-items: center; gap: 0.25rem; margin-top: 1px;" id="phoneBuyerPhone{{ $phone->id }}">
-                                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
-                                <span>{{ $phone->sale->customer->phone ?? '' }}</span>
-                            </div>
-                            @if($phone->sale)
-                                <div style="color: #64748b; font-size: 0.65rem; font-family: monospace; margin-top: 1px;">
-                                    Invoice: #{{ $phone->sale->invoice_number }}
+                            <div class="phone-buyer-header">
+                                <div class="phone-buyer-name-row">
+                                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                                    <span id="phoneBuyerName{{ $phone->id }}">{{ $phone->sale->customer->name ?? '' }}</span>
                                 </div>
-                            @endif
+                                @if($phone->sale)
+                                    <span class="phone-buyer-inv">#{{ $phone->sale->invoice_number }}</span>
+                                @endif
+                            </div>
+                            <div class="phone-buyer-contact">
+                                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                                <span id="phoneBuyerPhone{{ $phone->id }}">{{ $phone->sale->customer->phone ?? '' }}</span>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- Footer: Price & Sell Action -->
+                    <!-- Footer: Price & Action -->
                     <div class="pos-item-footer">
                         <div>
-                            <span style="font-size: 0.68rem; color: #64748b; font-weight: 700; display: block; text-transform: uppercase;">Price</span>
+                            <span style="font-size: 0.62rem; color: #94a3b8; font-weight: 700; display: block; text-transform: uppercase; letter-spacing: 0.04em;">Price</span>
                             <span class="pos-item-price-val">LKR {{ number_format($phone->selling_price, 2) }}</span>
                         </div>
                         @if($isSold)
-                            <button type="button" class="btn-out-of-stock" disabled>
-                                ✓ Out of Stock
-                            </button>
+                            <span class="btn-out-of-stock">
+                                Sold Out
+                            </span>
                         @else
                             <button type="button" 
                                     id="phoneSellBtn{{ $phone->id }}"
@@ -1225,20 +1326,9 @@
                         @endif
                     </div>
                 </div>
-            @empty
-                <div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 3.5rem 1rem;">
-                    <div style="width: 52px; height: 52px; border-radius: 50%; background: #f1f5f9; color: #94a3b8; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 0.75rem;">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
-                    </div>
-                    <div style="font-weight: 700; color: #1e293b; font-size: 0.95rem;">No serialized phones registered yet.</div>
-                    <div style="font-size: 0.8rem; margin-top: 0.35rem; color: #64748b;">Add phones under <strong>Phone Inventory</strong> to start making sales.</div>
-                </div>
-            @endforelse
-        </div>
+            @endforeach
 
-        <!-- Products / Accessories Tab -->
-        <div id="tabProducts" class="pos-items-grid" style="display: none;">
-            @forelse($products as $product)
+            @foreach($products as $product)
                 @php $isOut = $product->stock_quantity <= 0; @endphp
                 <div class="pos-item-card item-card {{ $isOut ? 'item-sold' : '' }}" 
                      id="prodCard{{ $product->id }}"
@@ -1254,33 +1344,36 @@
                     @endif
 
                     <div>
-                        <div style="display: flex; justify-content: space-between; align-items: center; gap: 0.4rem;">
-                            <span class="pos-item-brand" style="color: #4f46e5; background: #eef2ff;">{{ $product->category->name ?? 'Accessory' }}</span>
-                            <span class="badge {{ $isOut ? 'badge-danger' : ($product->isLowStock() ? 'badge-warning' : 'badge-success') }}" id="prodStockBadge{{ $product->id }}" style="font-size: 0.68rem; padding: 2px 7px; border-radius: 9999px;">
-                                {{ $isOut ? 'Out of Stock' : 'Stock: '.$product->stock_quantity.' units' }}
+                        <div class="pos-card-header">
+                            <span class="pos-item-brand">{{ $product->category->name ?? 'Accessory' }}</span>
+                            <span class="{{ $isOut ? 'badge-status-sold' : 'badge-status-instock' }}" id="prodStockBadge{{ $product->id }}">
+                                @if($isOut)
+                                    <span class="status-dot-sold"></span> Out of Stock
+                                @else
+                                    <span class="status-dot-green"></span> {{ $product->stock_quantity }} units
+                                @endif
                             </span>
                         </div>
 
                         <div class="pos-card-model">{{ $product->name }}</div>
 
                         <div class="pos-card-specs">
-                            <span>SKU: {{ $product->sku ?? 'N/A' }}</span>
+                            <span class="spec-outline-chip">SKU: {{ $product->sku ?? 'N/A' }}</span>
                             @if($product->barcode)
-                                <span>&bull;</span>
-                                <span>Barcode: {{ $product->barcode }}</span>
+                                <span class="spec-outline-chip">Barcode: {{ $product->barcode }}</span>
                             @endif
                         </div>
                     </div>
 
                     <div class="pos-item-footer">
                         <div>
-                            <span style="font-size: 0.68rem; color: #64748b; font-weight: 700; display: block; text-transform: uppercase;">Price</span>
+                            <span style="font-size: 0.62rem; color: #94a3b8; font-weight: 700; display: block; text-transform: uppercase; letter-spacing: 0.04em;">Price</span>
                             <span class="pos-item-price-val">LKR {{ number_format($product->selling_price, 2) }}</span>
                         </div>
                         @if($isOut)
-                            <button type="button" class="btn-out-of-stock" disabled>
+                            <span class="btn-out-of-stock">
                                 Out of Stock
-                            </button>
+                            </span>
                         @else
                             <button type="button" 
                                     id="prodSellBtn{{ $product->id }}"
@@ -1292,142 +1385,16 @@
                         @endif
                     </div>
                 </div>
-            @empty
-                <div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 3.5rem 1rem;">
-                    <div style="width: 52px; height: 52px; border-radius: 50%; background: #f1f5f9; color: #94a3b8; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 0.75rem;">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>
-                    </div>
-                    <div style="font-weight: 700; color: #1e293b; font-size: 0.95rem;">No accessories or items registered yet.</div>
-                </div>
-            @endforelse
-        </div>
-    </div>
+            @endforeach
 
-    <!-- Right: Customer Purchases & Stock Deductions Audit Panel -->
-    <div class="pos-purchases-panel">
-        <!-- Panel Header -->
-        <div class="pos-purchases-header">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-                <div style="display: flex; align-items: center; gap: 0.65rem;">
-                    <span style="display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 10px; background: #e0e7ff; color: #4338ca;">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M16 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-                    </span>
-                    <div>
-                        <h2 style="font-size: 1rem; font-weight: 850; color: #0f172a; margin: 0; line-height: 1.2;">Customer Purchases</h2>
-                        <div style="font-size: 0.75rem; color: #64748b; margin-top: 1px;">Live sold inventory &amp; buyer ledger</div>
-                    </div>
+            <!-- Empty State Placeholder -->
+            <div id="noItemsPlaceholder" style="{{ ($phones->isEmpty() && $products->isEmpty()) ? 'display: block;' : 'display: none;' }} grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 3.5rem 1rem;">
+                <div style="width: 52px; height: 52px; border-radius: 50%; background: #f1f5f9; color: #94a3b8; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 0.75rem;">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
                 </div>
-                <span class="badge" id="purchasesCountBadge" style="background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; font-size: 0.75rem; font-weight: 800; padding: 0.3rem 0.65rem; border-radius: 9999px;">
-                    {{ $recentSales->count() }} Recorded
-                </span>
+                <div style="font-weight: 700; color: #1e293b; font-size: 0.95rem;">No items found.</div>
+                <div style="font-size: 0.8rem; margin-top: 0.35rem; color: #64748b;">Try adjusting your search, tab, or category filter.</div>
             </div>
-
-            <!-- Instant Search in Purchases Feed -->
-            <div style="margin-top: 0.85rem; position: relative;">
-                <input type="text" id="filterPurchasesInput" class="form-control" style="height: 38px; font-size: 0.825rem; border-radius: 10px; padding-left: 2rem; background: #f8fafc;" placeholder="Search buyer customer, phone, or invoice..." oninput="filterCustomerPurchases(this.value)">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2.5" style="position: absolute; left: 0.75rem; top: 12px; pointer-events: none;"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-            </div>
-        </div>
-
-        <!-- Feed List of Sold Products & Buyer Customer Details -->
-        <div class="purchase-feed-list" id="customerPurchasesFeed">
-            @forelse($recentSales as $sale)
-                <div class="purchase-feed-card" 
-                     data-search="{{ strtolower(($sale->customer->name ?? '').' '.($sale->customer->phone ?? '').' '.($sale->customer->nic ?? '').' '.$sale->invoice_number.' '.implode(' ', $sale->items->pluck('item_name')->toArray())) }}">
-                    
-                    <!-- Header with Monospace Invoice Number & Relative Time -->
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.55rem;">
-                        <span style="font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; font-weight: 850; color: #4338ca; background: #eef2ff; border: 1px solid #c7d2fe; padding: 2px 8px; border-radius: 6px;">
-                            #{{ $sale->invoice_number }}
-                        </span>
-                        <span style="font-size: 0.7rem; color: #64748b; font-weight: 600; display: inline-flex; align-items: center; gap: 0.25rem;">
-                            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-                            {{ $sale->created_at->diffForHumans() }}
-                        </span>
-                    </div>
-
-                    <!-- Items Sold Section -->
-                    <div style="margin-bottom: 0.65rem; padding-bottom: 0.65rem; border-bottom: 1px dashed #e2e8f0;">
-                        @foreach($sale->items as $item)
-                            <div style="font-size: 0.85rem; font-weight: 800; color: #0f172a; line-height: 1.3;">
-                                {{ $item->item_name }}
-                                @if($item->quantity > 1)
-                                    <span style="color: #64748b; font-size: 0.75rem; font-weight: 600;">(x{{ $item->quantity }})</span>
-                                @endif
-                            </div>
-                            @if($item->phoneDevice)
-                                <div style="font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: #0284c7; background: #f0f9ff; padding: 2px 6px; border-radius: 4px; display: inline-block; margin-top: 2px;">
-                                    IMEI: {{ $item->phoneDevice->imei_1 }}
-                                </div>
-                            @endif
-                        @endforeach
-                        
-                        <div style="margin-top: 0.45rem; display: flex; align-items: center; justify-content: space-between;">
-                            <span class="badge" style="background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; font-size: 0.68rem; font-weight: 750; padding: 2px 7px; border-radius: 6px;">
-                                ✓ Stock Deducted
-                            </span>
-                            <span style="font-size: 0.85rem; font-weight: 850; color: #047857;">
-                                LKR {{ number_format($sale->total_amount, 2) }}
-                            </span>
-                        </div>
-                    </div>
-
-                    <!-- Buyer Customer Details Box -->
-                    <div style="background: #f8fafc; border-radius: 10px; padding: 0.6rem 0.75rem; border: 1px solid #e2e8f0;">
-                        <div style="font-size: 0.68rem; font-weight: 800; text-transform: uppercase; color: #475569; letter-spacing: 0.03em; margin-bottom: 3px; display: flex; align-items: center; gap: 0.35rem;">
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-                            <span>Buying Customer</span>
-                        </div>
-                        <div style="font-size: 0.875rem; font-weight: 850; color: #0f172a;">
-                            {{ $sale->customer->name ?? 'Walk-in Customer' }}
-                        </div>
-                        <div style="font-size: 0.75rem; color: #475569; margin-top: 3px; display: flex; align-items: center; gap: 0.45rem; flex-wrap: wrap;">
-                            @if($sale->customer?->phone)
-                                <span style="color: #2563eb; font-weight: 650; display: inline-flex; align-items: center; gap: 0.25rem;">
-                                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
-                                    <span>{{ $sale->customer->phone }}</span>
-                                </span>
-                            @endif
-                            @if($sale->customer?->nic)
-                                <span style="color: #cbd5e1;">&bull;</span>
-                                <span style="display: inline-flex; align-items: center; gap: 0.25rem;">
-                                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="4" width="18" height="16" rx="2"></rect><circle cx="9" cy="10" r="2"></circle><line x1="15" y1="8" x2="17" y2="8"></line><line x1="15" y1="12" x2="17" y2="12"></line><line x1="7" y1="16" x2="17" y2="16"></line></svg>
-                                    <span>{{ $sale->customer->nic }}</span>
-                                </span>
-                            @endif
-                            @if($sale->customer?->address)
-                                <span style="color: #cbd5e1;">&bull;</span>
-                                <span style="display: inline-flex; align-items: center; gap: 0.25rem;">
-                                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-                                    <span>{{ $sale->customer->address }}</span>
-                                </span>
-                            @endif
-                        </div>
-                    </div>
-
-                    <!-- Receipt & Slip Buttons -->
-                    <div style="margin-top: 0.65rem; display: flex; justify-content: flex-end; align-items: center; gap: 0.4rem;">
-                        @if($sale->bank_slip_url)
-                            <a href="{{ $sale->bank_slip_url }}" target="_blank" class="btn btn-sm" style="font-size: 0.72rem; padding: 0.25rem 0.55rem; color: #2563eb; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 6px; font-weight: 700; text-decoration: none; display: inline-flex; align-items: center; gap: 0.25rem;">
-                                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path></svg>
-                                <span>Slip</span>
-                            </a>
-                        @endif
-                        <button type="button" onclick="openSaleReceipt({{ $sale->id }})" class="btn btn-sm btn-secondary" style="font-size: 0.75rem; padding: 0.25rem 0.75rem; border-radius: 6px; font-weight: 700; gap: 0.35rem; cursor: pointer; display: inline-flex; align-items: center;">
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
-                            <span>View Receipt</span>
-                        </button>
-                    </div>
-                </div>
-            @empty
-                <div id="noPurchasesNotice" style="text-align: center; color: var(--text-muted); padding: 3rem 1rem;">
-                    <div style="width: 52px; height: 52px; border-radius: 50%; background: #ffffff; color: #94a3b8; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 0.75rem; box-shadow: 0 2px 6px rgba(0,0,0,0.04);">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
-                    </div>
-                    <div style="font-weight: 800; color: #1e293b; font-size: 0.95rem;">No customer purchases yet</div>
-                    <div style="font-size: 0.78rem; margin-top: 0.35rem; color: #64748b; line-height: 1.4;">When customers buy phones or accessories, customer details and deducted inventory will appear here live.</div>
-                </div>
-            @endforelse
         </div>
     </div>
 </div>
@@ -1983,18 +1950,27 @@
         }
     }
 
+    let currentTab = 'all'; // 'all' | 'phones' | 'products'
     let currentStockFilter = 'all'; // 'all' | 'instock' | 'sold'
 
     function switchTab(tab, el) {
-        document.querySelectorAll('.pos-tab').forEach(t => t.classList.remove('active'));
-        el.classList.add('active');
-        if (tab === 'phones') {
-            document.getElementById('tabPhones').style.display = 'grid';
-            document.getElementById('tabProducts').style.display = 'none';
-        } else {
-            document.getElementById('tabPhones').style.display = 'none';
-            document.getElementById('tabProducts').style.display = 'grid';
+        currentTab = tab;
+        document.querySelectorAll('.pos-tabs .pos-tab').forEach(t => t.classList.remove('active'));
+        if (el) el.classList.add('active');
+
+        const pillSoldText = document.getElementById('pillSoldText');
+        if (pillSoldText) {
+            if (tab === 'phones') {
+                pillSoldText.innerHTML = 'Sold Archive (<span id="soldPhonesCount">0</span>)';
+            } else if (tab === 'products') {
+                pillSoldText.innerHTML = 'Out of Stock (<span id="soldPhonesCount">0</span>)';
+            } else {
+                pillSoldText.innerHTML = 'Sold / Out (<span id="soldPhonesCount">0</span>)';
+            }
         }
+
+        updateStockCounts();
+        filterItems();
     }
 
     function filterByStockStatus(status, btn) {
@@ -2016,12 +1992,19 @@
         const query = (document.getElementById('searchInput').value || '').toLowerCase().trim();
         const cat = (document.getElementById('categoryFilter').value || '').toLowerCase().trim();
 
+        let visibleCount = 0;
+
         document.querySelectorAll('.item-card').forEach(card => {
+            const type = card.dataset.type || '';
             const name = (card.dataset.name || '').toLowerCase();
             const imei = (card.dataset.imei || '').toLowerCase();
             const barcode = (card.dataset.barcode || '').toLowerCase();
             const category = (card.dataset.category || '').toLowerCase();
             const isSold = card.classList.contains('item-sold');
+
+            const matchesTab = (currentTab === 'all') || 
+                               (currentTab === 'phones' && type === 'phone') || 
+                               (currentTab === 'products' && type === 'product');
 
             const matchesQuery = !query || name.includes(query) || imei.includes(query) || barcode.includes(query);
             const matchesCat = !cat || category.includes(cat);
@@ -2033,15 +2016,31 @@
                 matchesStatus = isSold;
             }
 
-            card.style.display = (matchesQuery && matchesCat && matchesStatus) ? 'flex' : 'none';
+            const isVisible = matchesTab && matchesQuery && matchesCat && matchesStatus;
+            card.style.display = isVisible ? 'flex' : 'none';
+
+            if (isVisible) visibleCount++;
         });
+
+        const noItems = document.getElementById('noItemsPlaceholder');
+        if (noItems) {
+            noItems.style.display = (visibleCount === 0) ? 'block' : 'none';
+        }
     }
 
     function updateStockCounts() {
-        const phoneCards = document.querySelectorAll('#tabPhones .pos-item-card');
-        let total = phoneCards.length;
+        let targetCards;
+        if (currentTab === 'phones') {
+            targetCards = document.querySelectorAll('.item-card[data-type="phone"]');
+        } else if (currentTab === 'products') {
+            targetCards = document.querySelectorAll('.item-card[data-type="product"]');
+        } else {
+            targetCards = document.querySelectorAll('.item-card');
+        }
+
+        let total = targetCards.length;
         let sold = 0;
-        phoneCards.forEach(c => {
+        targetCards.forEach(c => {
             if (c.classList.contains('item-sold')) sold++;
         });
         let inStock = total - sold;
@@ -2392,17 +2391,6 @@
         document.getElementById('quickSellModal').classList.remove('open');
     }
 
-
-
-    function filterCustomerPurchases(query) {
-        const q = (query || '').toLowerCase().trim();
-        const cards = document.querySelectorAll('.purchase-feed-card');
-        cards.forEach(card => {
-            const text = (card.getAttribute('data-search') || '').toLowerCase();
-            card.style.display = (!q || text.includes(q)) ? 'block' : 'none';
-        });
-    }
-
     async function submitQuickSell(e) {
         e.preventDefault();
 
@@ -2512,10 +2500,10 @@
                 }
                 if (badge) {
                     badge.className = 'badge-status-sold';
-                    badge.innerHTML = '✓ Sold';
+                    badge.innerHTML = '<span class="status-dot-sold"></span> Sold';
                 }
                 if (sellBtn) {
-                    sellBtn.outerHTML = '<button type="button" class="btn-out-of-stock" disabled>✓ Out of Stock</button>';
+                    sellBtn.outerHTML = '<span class="btn-out-of-stock">Sold Out</span>';
                 }
                 if (buyerBox) {
                     buyerBox.style.display = 'block';
@@ -2530,14 +2518,15 @@
                 const remaining = currentQsMaxStock - qty;
                 if (stockBadge) {
                     if (remaining <= 0) {
-                        stockBadge.className = 'badge badge-danger';
-                        stockBadge.innerText = 'Out of Stock';
-                        if (sellBtn) sellBtn.outerHTML = '<button type="button" class="btn-out-of-stock" disabled>Out of Stock</button>';
+                        stockBadge.className = 'badge-status-sold';
+                        stockBadge.innerHTML = '<span class="status-dot-sold"></span> Out of Stock';
+                        if (sellBtn) sellBtn.outerHTML = '<span class="btn-out-of-stock">Out of Stock</span>';
                         if (card) {
                             card.classList.add('item-sold');
                         }
                     } else {
-                        stockBadge.innerText = 'Stock: ' + remaining + ' units';
+                        stockBadge.className = 'badge-status-instock';
+                        stockBadge.innerHTML = '<span class="status-dot-green"></span> ' + remaining + ' units';
                     }
                 }
             }
@@ -2545,80 +2534,9 @@
             // Update Counts
             updateStockCounts();
 
-            // 2. Add to Customer Purchases feed on the right panel
-            const feed = document.getElementById('customerPurchasesFeed');
-            const emptyNotice = document.getElementById('noPurchasesNotice');
-            if (emptyNotice) emptyNotice.remove();
-
+            // 2. Cache sale data
             const sale = data.sale;
             salesMap[sale.id] = sale;
-
-            const newCard = document.createElement('div');
-            newCard.className = 'purchase-feed-card';
-            newCard.setAttribute('data-search', (custName + ' ' + custPhone + ' ' + custNic + ' ' + sale.invoice_number).toLowerCase());
-            newCard.style.cssText = 'background: #ffffff; border: 1.5px solid #86efac; border-radius: 12px; padding: 0.95rem 1.1rem; box-shadow: 0 4px 14px rgba(16, 185, 129, 0.12); animation: fadeIn 0.3s ease;';
-            newCard.innerHTML = `
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.55rem;">
-                    <span style="font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; font-weight: 850; color: #047857; background: #dcfce7; border: 1px solid #86efac; padding: 2px 8px; border-radius: 6px;">
-                        #${sale.invoice_number}
-                    </span>
-                    <span style="font-size: 0.7rem; color: #16a34a; font-weight: 700; display: inline-flex; align-items: center; gap: 0.25rem;">
-                        <span class="status-dot-green"></span> Just Now
-                    </span>
-                </div>
-                <div style="margin-bottom: 0.65rem; padding-bottom: 0.65rem; border-bottom: 1px dashed #e2e8f0;">
-                    <div style="font-size: 0.85rem; font-weight: 800; color: #0f172a; line-height: 1.3;">
-                        ${sale.items && sale.items[0] ? sale.items[0].item_name : 'Sold Item'} (x${qty})
-                    </div>
-                    <div style="margin-top: 0.45rem; display: flex; align-items: center; justify-content: space-between;">
-                        <span class="badge" style="background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; font-size: 0.68rem; font-weight: 750; padding: 2px 7px; border-radius: 6px;">
-                            ✓ Stock Deducted (-${qty})
-                        </span>
-                        <span style="font-size: 0.85rem; font-weight: 850; color: #047857;">
-                            LKR ${(currentQsUnitPrice * qty).toLocaleString('en-US', {minimumFractionDigits: 2})}
-                        </span>
-                    </div>
-                </div>
-                <div style="background: #f8fafc; border-radius: 10px; padding: 0.6rem 0.75rem; border: 1px solid #e2e8f0;">
-                    <div style="font-size: 0.68rem; font-weight: 800; text-transform: uppercase; color: #047857; margin-bottom: 3px; display: inline-flex; align-items: center; gap: 0.25rem;">
-                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-                        <span>Buying Customer</span>
-                    </div>
-                    <div style="font-size: 0.875rem; font-weight: 850; color: #0f172a;">${custName}</div>
-                    <div style="font-size: 0.75rem; color: #475569; margin-top: 3px; display: flex; align-items: center; gap: 0.35rem; flex-wrap: wrap;">
-                        <span style="display: inline-flex; align-items: center; gap: 0.25rem;">
-                            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
-                            <strong>${custPhone}</strong>
-                        </span>
-                        ${custNic ? `
-                            <span style="color: #cbd5e1;">&bull;</span>
-                            <span style="display: inline-flex; align-items: center; gap: 0.25rem;">
-                                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="4" width="18" height="16" rx="2"></rect><line x1="7" y1="8" x2="17" y2="8"></line><line x1="7" y1="12" x2="13" y2="12"></line></svg>
-                                <span>${custNic}</span>
-                            </span>
-                        ` : ''}
-                    </div>
-                </div>
-                <div style="margin-top: 0.65rem; display: flex; justify-content: flex-end; align-items: center; gap: 0.4rem;">
-                    ${sale.bank_slip_url ? `
-                        <a href="${sale.bank_slip_url}" target="_blank" class="btn btn-sm" style="font-size: 0.72rem; padding: 0.25rem 0.55rem; color: #2563eb; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 6px; font-weight: 700; text-decoration: none; display: inline-flex; align-items: center; gap: 0.25rem;">
-                            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path></svg>
-                            <span>Slip</span>
-                        </a>
-                    ` : ''}
-                    <button type="button" onclick="openSaleReceipt(${sale.id})" class="btn btn-sm btn-secondary" style="font-size: 0.75rem; padding: 0.25rem 0.75rem; border-radius: 6px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 0.35rem;">
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
-                        <span>View Receipt</span>
-                    </button>
-                </div>
-            `;
-            feed.prepend(newCard);
-
-            const countBadge = document.getElementById('purchasesCountBadge');
-            if (countBadge) {
-                const currentCount = parseInt(countBadge.innerText) || 0;
-                countBadge.innerText = (currentCount + 1) + ' Recorded';
-            }
 
             // 3. Update top banner
             const banner = document.getElementById('latestSaleBanner');

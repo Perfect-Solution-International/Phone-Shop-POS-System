@@ -36,7 +36,12 @@ class RegisterController extends Controller
 
     public function register(RegisterRequest $request, ShopOnboardingService $onboardingService): JsonResponse|RedirectResponse
     {
-        $result = $onboardingService->onboard($request->validated());
+        $data = $request->validated();
+        if ($request->hasFile('receipt')) {
+            $data['receipt'] = $request->file('receipt');
+        }
+
+        $result = $onboardingService->onboard($data);
         /** @var User $user */
         $user = $result['user'];
 

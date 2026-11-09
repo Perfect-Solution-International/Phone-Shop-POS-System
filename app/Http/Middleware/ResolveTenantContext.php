@@ -52,11 +52,11 @@ class ResolveTenantContext
             $tenant = Shop::find($tenantId);
             abort_unless($tenant, 403, 'Assigned tenant workspace does not exist or is inaccessible.');
 
-            // 4. Enforce tenant suspension: blocked shops cannot perform daily operations
+            // 4. Enforce tenant suspension or trial expiry: blocked shops cannot perform daily operations
             $sub = $tenant->subscription;
-            if ($sub && $sub->isSuspended()) {
+            if ($sub && ($sub->isSuspended() || $sub->isExpired() || $sub->isTrialExpired())) {
                 if ($request->wantsJson() || $request->is('api/*')) {
-                    abort(403, 'Your shop workspace has been suspended by platform administration.');
+                    abort(403, 'Your shop subscription has expired. Please renew your subscription to continue.');
                 }
 
                 if ($user->hasRole('Customer')) {
@@ -64,8 +64,12 @@ class ResolveTenantContext
                 }
 
                 if (! $request->routeIs('shop.subscription.*') && ! $request->is('shop/subscription*')) {
+                    $errorMessage = $sub->isTrialExpired()
+                        ? 'Your 7-day free trial has expired. Please choose a subscription plan to continue using your shop workspace.'
+                        : 'Your shop workspace has been suspended or expired. Please renew your subscription plan or contact platform administration to reactivate your workspace.';
+
                     return redirect()->route('shop.subscription.index')
-                        ->with('error', 'Your shop workspace has been suspended. Please renew your subscription plan or contact platform administration to reactivate your workspace.');
+                        ->with('error', $errorMessage);
                 }
             }
         }

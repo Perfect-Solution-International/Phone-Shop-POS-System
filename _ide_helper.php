@@ -11,6 +11,11 @@
 namespace {
     class App extends \Illuminate\Support\Facades\App {}
     class Artisan extends \Illuminate\Support\Facades\Artisan {}
+    /**
+     * @method static \App\Models\User|null user()
+     * @method static bool check()
+     * @method static int|string|null id()
+     */
     class Auth extends \Illuminate\Support\Facades\Auth {}
     class Blade extends \Illuminate\Support\Facades\Blade {}
     class Broadcast extends \Illuminate\Support\Facades\Broadcast {}
@@ -94,6 +99,36 @@ namespace Illuminate\Database\Query {
      * @method \Illuminate\Pagination\Paginator simplePaginate(int|null $perPage = null, array|string $columns = ['*'], string $pageName = 'page', int|null $page = null)
      */
     class Builder
+    {
+    }
+}
+
+namespace Illuminate\Contracts\Auth {
+    /**
+     * @method bool isOwnerOrAdmin()
+     * @method bool isStaff()
+     * @method bool hasRole(string|array $roles, string|null $guard = null)
+     * @method bool hasAnyRole(string|array $roles, string|null $guard = null)
+     * @method bool hasAllRoles(string|array $roles, string|null $guard = null)
+     * @property int $id
+     * @property string $name
+     * @property string $email
+     */
+    interface Authenticatable
+    {
+    }
+
+    /**
+     * @method \App\Models\User|null user()
+     */
+    interface Guard
+    {
+    }
+
+    /**
+     * @method \App\Models\User|null user()
+     */
+    interface StatefulGuard
     {
     }
 }

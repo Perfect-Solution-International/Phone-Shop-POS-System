@@ -4,6 +4,7 @@
 @section('page-title', 'Sales Returns & Customer Refunds')
 
 @section('content')
+@include('shop.partials.pos-subnav')
 <div class="card">
     <div class="card-header" style="flex-wrap: wrap; gap: 1rem;">
         <form method="GET" action="{{ route('shop.sales.returns') }}" style="display: flex; gap: 0.75rem; flex: 1; max-width: 460px;">

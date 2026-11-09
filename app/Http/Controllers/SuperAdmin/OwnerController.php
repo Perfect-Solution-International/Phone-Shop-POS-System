@@ -22,8 +22,10 @@ class OwnerController extends Controller
      */
     public function index(Request $request): View|JsonResponse
     {
-        $query = User::role('Shop Owner')
-            ->with(['shop.subscription.plan', 'shop.outlets', 'roles']);
+        $query = User::where(function ($q) {
+            $q->role('Shop Owner')
+                ->orWhere(fn ($sq) => $sq->whereNotNull('shop_id')->whereHas('roles', fn ($rq) => $rq->whereIn('name', ['Shop Owner', 'Administrator'])));
+        })->with(['shop.subscription.plan', 'shop.outlets', 'roles']);
 
         if ($search = $request->input('search')) {
             $query->where(function ($q) use ($search) {
@@ -46,11 +48,15 @@ class OwnerController extends Controller
             }
         }
 
-        $owners = $query->latest()->paginate(15)->withQueryString();
+        $owners = $query->latest('id')->paginate(15)->withQueryString();
 
         // Metrics for summary cards
-        $totalOwners = User::role('Shop Owner')->count();
-        $verifiedOwners = User::role('Shop Owner')->whereNotNull('email_verified_at')->count();
+        $ownersQuery = User::where(function ($q) {
+            $q->role('Shop Owner')
+                ->orWhere(fn ($sq) => $sq->whereNotNull('shop_id')->whereHas('roles', fn ($rq) => $rq->whereIn('name', ['Shop Owner', 'Administrator'])));
+        });
+        $totalOwners = (clone $ownersQuery)->count();
+        $verifiedOwners = (clone $ownersQuery)->whereNotNull('email_verified_at')->count();
         $unverifiedOwners = $totalOwners - $verifiedOwners;
         $totalShops = Shop::count();
 
@@ -81,7 +87,7 @@ class OwnerController extends Controller
     /**
      * Store a newly created Shop Owner.
      */
-    public function store(Request $request, ShopOnboardingService $onboardingService): RedirectResponse
+    public function store(Request $request, ShopOnboardingService $onboardingService): RedirectResponse|JsonResponse
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
@@ -119,7 +125,7 @@ class OwnerController extends Controller
                 'password' => $validated['password'],
                 'business_address' => $validated['business_address'] ?? null,
                 'plan_id' => $validated['plan_id'] ?? null,
-                'payment_method' => $validated['payment_method'] ?? 'card',
+                'payment_method' => $validated['payment_method'] ?? 'trial',
                 'cardholder_name' => $validated['cardholder_name'] ?? null,
                 'card_number' => $validated['card_number'] ?? null,
                 'card_expiry' => $validated['card_expiry'] ?? null,
@@ -129,7 +135,7 @@ class OwnerController extends Controller
             ]);
 
             $user = $onboardResult['user'];
-            if ($request->boolean('is_verified')) {
+            if ($request->boolean('is_verified', true)) {
                 $user->update(['email_verified_at' => now()]);
             }
 
@@ -145,6 +151,17 @@ class OwnerController extends Controller
                 ? "Shop Owner '{$user->name}' registered successfully! Bank deposit slip submitted and is now awaiting verification under Bank Approvals."
                 : "Shop Owner '{$user->name}' registered successfully with store '{$shopName}' under their account!";
 
+            session()->flash('status', $statusMsg);
+
+            if ($request->wantsJson() || $request->ajax()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => $statusMsg,
+                    'user' => $user->load(['shop.subscription.plan', 'shop.outlets', 'roles']),
+                    'redirect' => route('superadmin.owners.index'),
+                ], 201);
+            }
+
             return redirect()->route('superadmin.owners.index')
                 ->with('status', $statusMsg);
         }
@@ -157,12 +174,12 @@ class OwnerController extends Controller
             'name' => $validated['name'],
             'email' => $validated['email'],
             'phone' => $validated['phone'] ?? null,
-            'password' => Hash::make($validated['password']),
+            'password' => $validated['password'],
             'shop_id' => $shop->id,
-            'email_verified_at' => $request->boolean('is_verified') ? now() : null,
+            'email_verified_at' => $request->boolean('is_verified', true) ? now() : null,
         ]);
 
-        $user->assignRole('Shop Owner');
+        $user->assignRole(['Shop Owner', 'Administrator']);
 
         SystemActivity::log(
             'owner.created',
@@ -172,8 +189,21 @@ class OwnerController extends Controller
             ['user_id' => $user->id, 'shop_id' => $shop->id]
         );
 
+        $statusMsg = "Shop Owner '{$user->name}' registered and assigned to store '{$shop->name}' successfully!";
+
+        session()->flash('status', $statusMsg);
+
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => $statusMsg,
+                'user' => $user->load(['shop.subscription.plan', 'shop.outlets', 'roles']),
+                'redirect' => route('superadmin.owners.index'),
+            ], 201);
+        }
+
         return redirect()->route('superadmin.owners.index')
-            ->with('status', "Shop Owner '{$user->name}' registered and assigned to store '{$shop->name}' successfully!");
+            ->with('status', $statusMsg);
     }
 
     /**
